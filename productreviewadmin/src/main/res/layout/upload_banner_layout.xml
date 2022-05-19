@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#00000000">
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/materialCardView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/white"
+        android:elevation="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout2"
+            android:layout_width="match_parent"
+            android:layout_height="?actionBarSize"
+            android:background="@color/black"
+            android:elevation="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/back_btn"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_margin="10dp"
+                android:contentDescription="@string/todo"
+                android:src="@drawable/ic_baseline_cancel"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/app_name"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/ok_btn"
+                app:layout_constraintStart_toEndOf="@+id/back_btn"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/ok_btn"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_margin="10dp"
+                android:contentDescription="@string/todo"
+                android:src="@drawable/ic_baseline_check_circle_24"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.core.widget.NestedScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="50dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/constraintLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:padding="5dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/constraintLayout2">
+
+                    <ImageView
+                        android:id="@+id/selectImage"
+                        android:layout_width="match_parent"
+                        android:layout_height="170sp"
+                        android:layout_margin="10dp"
+                        android:background="@drawable/item_bg"
+                        android:contentDescription="@string/todo"
+                        android:elevation="8dp"
+                        android:src="@drawable/ic_launcher_background"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/original_size"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="Original File Size"
+                        android:textColor="@color/black"
+                        android:textSize="16sp"
+                        android:visibility="gone"
+                        app:layout_constraintStart_toStartOf="@+id/selectImage"
+                        app:layout_constraintTop_toBottomOf="@+id/selectImage" />
+
+                    <TextView
+                        android:id="@+id/compressed_size"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="@string/compressed_file_size"
+                        android:textColor="@color/black"
+                        android:textSize="16sp"
+                        android:visibility="gone"
+                        app:layout_constraintEnd_toEndOf="@+id/selectImage"
+                        app:layout_constraintTop_toBottomOf="@+id/selectImage" />
+
+                    <TextView
+                        android:id="@+id/qualti_size"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="15dp"
+                        android:gravity="center"
+                        android:text="Quality"
+                        android:textColor="@color/black"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:visibility="gone"
+                        app:layout_constraintEnd_toEndOf="@+id/compressed_size"
+                        app:layout_constraintStart_toStartOf="@+id/original_size"
+                        app:layout_constraintTop_toBottomOf="@+id/original_size" />
+
+                    <Button
+                        android:id="@+id/compress_Btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="15dp"
+                        android:gravity="center"
+                        android:text="Compress"
+                        android:textColor="@color/white"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:visibility="gone"
+                        app:layout_constraintEnd_toEndOf="@+id/compressed_size"
+                        app:layout_constraintTop_toBottomOf="@+id/seekbar" />
+
+
+                    <SeekBar
+                        android:id="@+id/seekbar"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_margin="10dp"
+                        android:visibility="gone"
+                        app:layout_constraintEnd_toEndOf="@+id/qualti_size"
+                        app:layout_constraintStart_toStartOf="@+id/qualti_size"
+                        app:layout_constraintTop_toBottomOf="@+id/qualti_size" />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textInputLayout"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="8dp"
+                        android:layout_marginTop="16dp"
+                        android:hint="@string/enter_url"
+                        android:textColorHint="@color/black"
+                        app:boxStrokeColor="@color/black"
+                        app:endIconMode="clear_text"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/compress_Btn">
+
+                        <EditText
+                            android:id="@+id/url"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:importantForAutofill="no"
+                            android:inputType="textUri"
+                            android:textColor="@color/black"
+                            tools:ignore="LabelFor" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.core.widget.NestedScrollView>
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
