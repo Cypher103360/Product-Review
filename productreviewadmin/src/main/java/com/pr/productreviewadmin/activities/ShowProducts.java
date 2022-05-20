@@ -19,6 +19,7 @@ import com.pr.productreviewadmin.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -73,7 +74,7 @@ public class ShowProducts extends AppCompatActivity implements ProductInterface 
                     productAdapter.updateCategoryList(productModels);
 
                 }
-                Log.d("ContentValue", response.body().toString());
+                Log.d("ContentValue", Objects.requireNonNull(response.body()).toString());
 
                 loadingDialog.dismiss();
             }
@@ -90,6 +91,7 @@ public class ShowProducts extends AppCompatActivity implements ProductInterface 
 
     @Override
     public void productClicked(ProductModel productModel) {
+
 
     }
 }

@@ -21,15 +21,23 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.pr.productreviewadmin.R;
+import com.pr.productreviewadmin.adapters.BannerAdapter;
+import com.pr.productreviewadmin.adapters.BannerInterface;
 import com.pr.productreviewadmin.databinding.ActivityMainBinding;
 import com.pr.productreviewadmin.databinding.AdsUpdateLayoutBinding;
+import com.pr.productreviewadmin.databinding.ShowBannersLayoutBinding;
 import com.pr.productreviewadmin.databinding.UploadBannerLayoutBinding;
 import com.pr.productreviewadmin.databinding.UploadTopBrandLayoutBinding;
 import com.pr.productreviewadmin.models.AdsModel;
 import com.pr.productreviewadmin.models.ApiInterface;
 import com.pr.productreviewadmin.models.ApiWebServices;
+import com.pr.productreviewadmin.models.BannerModel;
 import com.pr.productreviewadmin.models.MessageModel;
 import com.pr.productreviewadmin.models.UrlModel;
 import com.pr.productreviewadmin.utils.Utils;
@@ -37,6 +45,7 @@ import com.pr.productreviewadmin.utils.Utils;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,14 +55,15 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements BannerInterface {
 
     // binding variables
     ActivityMainBinding binding;
     UploadBannerLayoutBinding uploadBannerLayoutBinding;
     UploadTopBrandLayoutBinding topBrandLayoutBinding;
+    ShowBannersLayoutBinding showBannersLayoutBinding;
     // dialog variables
-    Dialog uploadBannerDialog, loadingDialog, topBrandLayoutDialog, adsUpdateDialog;
+    Dialog uploadBannerDialog, loadingDialog, topBrandLayoutDialog, adsUpdateDialog, showBannerDialog;
     ActivityResultLauncher<String> launcher;
     String encodedImage, encodedImage2;
     Map<String, String> map = new HashMap<>();
@@ -68,13 +78,18 @@ public class MainActivity extends AppCompatActivity {
     AutoCompleteTextView BannerTopNetworkName, BannerBottomNetworkName, InterstitialNetwork, NativeAdsNetworkName, RewardAdsNetwork, nativeType;
     EditText AppId, AppLovinSdkKey, BannerTop, BannerBottom, InterstitialAds, NativeAds, rewardAds;
     Button UploadAdsBtn;
-    String key;
     Dialog loading;
     String appId, appLovinSdkKey, bannerTopNetworkName, bannerTop, bannerBottomNetworkName,
             bannerBottom, interstitialNetwork, interstitialAds, nativeAdsNetworkName,
             nativeAds, nativeAdsType, rewardAd, rewardAdsNetwork;
 
     AdsUpdateLayoutBinding adsUpdateLayoutBinding;
+
+    LinearLayoutManager layoutManager;
+    BannerAdapter bannerAdapter;
+    List<BannerModel> bannerModelList;
+    // dialog variables
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,29 +99,17 @@ public class MainActivity extends AppCompatActivity {
 
         loadingDialog = Utils.loadingDialog(this);
 
-        binding.uploadBanner.setOnClickListener(view -> {
-            showUploadBannerDialog("banner");
-        });
-        binding.uploadCat.setOnClickListener(view -> {
-            uploadTopBrandsDialog("cat");
-
-        });
-        binding.uploadTopBrands.setOnClickListener(view -> {
-            uploadTopBrandsDialog("brands");
-        });
-        binding.uploadExpertTipsUrl.setOnClickListener(view -> {
-            showUploadBannerDialog("tips");
-
-        });
-        binding.uploadWebsiteUrl.setOnClickListener(view -> {
-            showUploadBannerDialog("site");
-
-        });
+        binding.uploadBanner.setOnClickListener(view -> showUploadBannerDialog("banner", null));
+        binding.uploadCat.setOnClickListener(view -> uploadTopBrandsDialog("cat"));
+        binding.uploadTopBrands.setOnClickListener(view -> uploadTopBrandsDialog("brands"));
+        binding.uploadExpertTipsUrl.setOnClickListener(view -> showUploadBannerDialog("tips", null));
+        binding.uploadWebsiteUrl.setOnClickListener(view -> showUploadBannerDialog("site", null));
         binding.showCategory.setOnClickListener(view -> {
             intent = new Intent(this, ShowCategoryActivity.class);
             intent.putExtra("key", "cat");
             startActivity(intent);
         });
+        binding.showBanners.setOnClickListener(view -> ShowBanners());
         binding.showBrands.setOnClickListener(view -> {
             intent = new Intent(this, ShowBrandsActivity.class);
             intent.putExtra("key", "Top Brands");
@@ -127,10 +130,7 @@ public class MainActivity extends AppCompatActivity {
             intent.putExtra("key", "best");
             startActivity(intent);
         });
-        binding.updateAds.setOnClickListener(view -> {
-
-            showUpdateAdsDialog("Product Review");
-        });
+        binding.updateAds.setOnClickListener(view -> showUpdateAdsDialog());
 
         apiInterface = ApiWebServices.getApiInterface();
         launcher = registerForActivityResult(new ActivityResultContracts.GetContent(), result -> {
@@ -156,7 +156,7 @@ public class MainActivity extends AppCompatActivity {
                     }
 
 
-                    Log.d("ContentValue", encodedImage + " @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@/n@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@/n" + encodedImage2);
+                    Log.d("ContentValue", "encodedImage:   " + encodedImage + " @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@/n@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@/n" + encodedImage2);
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
@@ -167,7 +167,60 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void showUpdateAdsDialog(String id) {
+    private void ShowBanners() {
+
+        showBannerDialog = new Dialog(this);
+        showBannersLayoutBinding = ShowBannersLayoutBinding.inflate(getLayoutInflater());
+        showBannerDialog.setContentView(showBannersLayoutBinding.getRoot());
+        showBannerDialog.getWindow().setLayout(LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT);
+        showBannerDialog.getWindow().setBackgroundDrawable(ContextCompat.getDrawable(MainActivity.this, R.drawable.item_bg));
+        showBannerDialog.setCancelable(false);
+        showBannerDialog.show();
+
+        showBannersLayoutBinding.backBtn.setOnClickListener(view -> showBannerDialog.dismiss());
+        layoutManager = new LinearLayoutManager(this);
+        layoutManager.setOrientation(RecyclerView.VERTICAL);
+        showBannersLayoutBinding.bannerRV.setLayoutManager(layoutManager);
+
+        bannerModelList = new ArrayList<>();
+        bannerAdapter = new BannerAdapter(this, this);
+        showBannersLayoutBinding.bannerRV.setAdapter(bannerAdapter);
+
+        fetchBanners();
+
+    }
+
+
+    private void fetchBanners() {
+        loadingDialog.show();
+        Call<List<BannerModel>> call = apiInterface.fetchBanner();
+        call.enqueue(new Callback<List<BannerModel>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<BannerModel>> call, @NonNull Response<List<BannerModel>> response) {
+                if (response.isSuccessful()) {
+                    if (response.body() != null) {
+                        bannerModelList.clear();
+                        bannerModelList.addAll(response.body());
+                    }
+                    bannerAdapter.updateBannerList(bannerModelList);
+
+                }
+                Log.d("ContentValue", Objects.requireNonNull(response.body()).toString());
+
+                loadingDialog.dismiss();
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<BannerModel>> call, @NonNull Throwable t) {
+                loadingDialog.dismiss();
+                Log.d("ContentValue", t.getMessage());
+
+            }
+        });
+    }
+
+    private void showUpdateAdsDialog() {
 
         adsUpdateDialog = new Dialog(this);
         adsUpdateLayoutBinding = AdsUpdateLayoutBinding.inflate(getLayoutInflater());
@@ -196,9 +249,9 @@ public class MainActivity extends AppCompatActivity {
         nativeType = adsUpdateLayoutBinding.nativeAdsType;
         rewardAds = adsUpdateLayoutBinding.rewardAds;
 
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(MainActivity.this,
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(MainActivity.this,
                 androidx.appcompat.R.layout.support_simple_spinner_dropdown_item, items);
-        ArrayAdapter<String> arrayAdapter2 = new ArrayAdapter<String>(MainActivity.this,
+        ArrayAdapter<String> arrayAdapter2 = new ArrayAdapter<>(MainActivity.this,
                 androidx.appcompat.R.layout.support_simple_spinner_dropdown_item, item2);
         nativeType.setAdapter(arrayAdapter2);
         BannerTopNetworkName.setAdapter(arrayAdapter);
@@ -208,7 +261,7 @@ public class MainActivity extends AppCompatActivity {
         RewardAdsNetwork.setAdapter(arrayAdapter);
 
         apiInterface = ApiWebServices.getApiInterface();
-        Call<List<AdsModel>> call = apiInterface.fetchAds(id);
+        Call<List<AdsModel>> call = apiInterface.fetchAds("Product Review");
         call.enqueue(new Callback<List<AdsModel>>() {
             @Override
             public void onResponse(@NonNull Call<List<AdsModel>> call, @NonNull Response<List<AdsModel>> response) {
@@ -313,7 +366,7 @@ public class MainActivity extends AppCompatActivity {
                 loading.dismiss();
             } else {
                 loadingDialog.show();
-                map.put("id", id);
+                map.put("id", "Product Review");
                 map.put("appId", appId);
                 map.put("appLovinSdkKey", appLovinSdkKey);
                 map.put("bannerTop", bannerTop);
@@ -376,13 +429,13 @@ public class MainActivity extends AppCompatActivity {
 
         if (key.equals("brands")) {
 
-            topBrandLayoutBinding.title.setText("Upload Brands");
+            topBrandLayoutBinding.title.setText(R.string.upload_top_brands);
             topBrandLayoutBinding.desc.setVisibility(View.VISIBLE);
             topBrandLayoutBinding.url.setVisibility(View.VISIBLE);
         } else {
 
-            topBrandLayoutBinding.title.setText("Upload Category");
-            topBrandLayoutBinding.title.setText("Upload Brands");
+            topBrandLayoutBinding.title.setText(R.string.upload_category);
+            topBrandLayoutBinding.title.setText(R.string.upload_banners);
             topBrandLayoutBinding.desc.setVisibility(View.GONE);
             topBrandLayoutBinding.url.setVisibility(View.GONE);
             topBrandLayoutBinding.logo.setVisibility(View.GONE);
@@ -449,7 +502,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void showUploadBannerDialog(String key) {
+    private void showUploadBannerDialog(String key, BannerModel bannerModel) {
         uploadBannerDialog = new Dialog(this);
         uploadBannerLayoutBinding = UploadBannerLayoutBinding.inflate(getLayoutInflater());
         uploadBannerDialog.setContentView(uploadBannerLayoutBinding.getRoot());
@@ -506,6 +559,14 @@ public class MainActivity extends AppCompatActivity {
                 uploadBannerLayoutBinding.selectImage.setVisibility(View.GONE);
                 break;
             }
+            case "update": {
+                encodedImage2 = bannerModel.getImage();
+                encodedImage = bannerModel.getImage();
+                Glide.with(this).load(ApiWebServices.base_url + "bannerImages/" + bannerModel.getImage()).into(uploadBannerLayoutBinding.selectImage);
+                uploadBannerLayoutBinding.url.setText(bannerModel.getUrl());
+                break;
+            }
+
         }
 
         uploadBannerLayoutBinding.backBtn.setOnClickListener(view -> uploadBannerDialog.dismiss());
@@ -515,34 +576,64 @@ public class MainActivity extends AppCompatActivity {
         uploadBannerLayoutBinding.okBtn.setOnClickListener(view -> {
             loadingDialog.show();
             String url = uploadBannerLayoutBinding.url.getText().toString().trim();
-            if (key.equals("banner")) {
-                if (encodedImage == null) {
-                    loadingDialog.dismiss();
-                    Toast.makeText(MainActivity.this, "Please Select an Image", Toast.LENGTH_SHORT).show();
-                } else if (TextUtils.isEmpty(url)) {
-                    uploadBannerLayoutBinding.url.setError("Url Required");
-                    uploadBannerLayoutBinding.url.requestFocus();
-                    loadingDialog.dismiss();
-                } else {
-                    map.put("img", encodedImage);
-                    map.put("url", url);
-                    call = apiInterface.uploadBanners(map);
-                    uploadBanners(call, uploadBannerDialog);
+            switch (key) {
+                case "banner":
+                    if (encodedImage == null) {
+                        loadingDialog.dismiss();
+                        Toast.makeText(MainActivity.this, "Please Select an Image", Toast.LENGTH_SHORT).show();
+                    } else if (TextUtils.isEmpty(url)) {
+                        uploadBannerLayoutBinding.url.setError("Url Required");
+                        uploadBannerLayoutBinding.url.requestFocus();
+                        loadingDialog.dismiss();
+                    } else {
+                        map.put("img", encodedImage);
+                        map.put("url", url);
+                        call = apiInterface.uploadBanners(map);
+                        uploadBanners(call, uploadBannerDialog);
 
-                }
-            } else if (key.equals("tips") || key.equals("site")) {
+                    }
+                    break;
+                case "tips":
+                case "site":
 
-                if (TextUtils.isEmpty(url)) {
-                    uploadBannerLayoutBinding.url.setError("Url Required");
-                    uploadBannerLayoutBinding.url.requestFocus();
-                    loadingDialog.dismiss();
-                } else {
-                    map.put("id", urlId);
-                    map.put("url", url);
-                    call = apiInterface.updateUrls(map);
-                    uploadBanners(call, uploadBannerDialog);
+                    if (TextUtils.isEmpty(url)) {
+                        uploadBannerLayoutBinding.url.setError("Url Required");
+                        uploadBannerLayoutBinding.url.requestFocus();
+                        loadingDialog.dismiss();
+                    } else {
+                        map.put("id", urlId);
+                        map.put("url", url);
+                        call = apiInterface.updateUrls(map);
+                        uploadBanners(call, uploadBannerDialog);
 
-                }
+                    }
+                    break;
+                case "update":
+                    if (TextUtils.isEmpty(url)) {
+                        uploadBannerLayoutBinding.url.setError("Url Required");
+                        uploadBannerLayoutBinding.url.requestFocus();
+                        loadingDialog.dismiss();
+                    } else {
+                        if (encodedImage.length() > 100) {
+                            Log.d("ContentValue", encodedImage);
+                            map.put("id", bannerModel.getId());
+                            map.put("img", encodedImage);
+                            map.put("url", url);
+                            map.put("deleteImg", encodedImage2);
+                            map.put("key", "1");
+
+                        } else {
+                            map.put("id", bannerModel.getId());
+                            map.put("img", encodedImage);
+                            map.put("url", url);
+                            map.put("deleteImg", encodedImage2);
+                            map.put("key", "0");
+
+                        }
+                        call = apiInterface.updateBanners(map);
+                        updateBanners(call, uploadBannerDialog);
+                    }
+                    break;
             }
         });
 
@@ -554,6 +645,28 @@ public class MainActivity extends AppCompatActivity {
 
         byte[] imageBytes = stream.toByteArray();
         return android.util.Base64.encodeToString(imageBytes, Base64.DEFAULT);
+    }
+
+    private void updateBanners(Call<MessageModel> call, Dialog uploadDialog) {
+        call.enqueue(new Callback<MessageModel>() {
+            @Override
+            public void onResponse(@NonNull Call<MessageModel> call, @NonNull Response<MessageModel> response) {
+                if (response.isSuccessful()) {
+                    Toast.makeText(MainActivity.this, Objects.requireNonNull(response.body()).getMessage(), Toast.LENGTH_SHORT).show();
+                    uploadDialog.dismiss();
+                    fetchBanners();
+                } else {
+                    Toast.makeText(MainActivity.this, Objects.requireNonNull(response.body()).getError(), Toast.LENGTH_SHORT).show();
+                }
+                loadingDialog.dismiss();
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<MessageModel> call, @NonNull Throwable t) {
+                Log.d("responseError", t.getMessage());
+                loadingDialog.dismiss();
+            }
+        });
     }
 
     private void uploadBanners(Call<MessageModel> call, Dialog uploadDialog) {
@@ -576,4 +689,61 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+    @Override
+    public void onBannerClicked(BannerModel bannerModel) {
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this);
+        String[] items3 = new String[]{"Update Banner", "DeleteBanner"};
+        builder.setTitle("Delete Or Update").setCancelable(true).setItems(items3, (dialogInterface, which) -> {
+            switch (which) {
+                case 0:
+                    showUploadBannerDialog("update", bannerModel);
+                    break;
+                case 1:
+                    deleteBanner(bannerModel);
+
+                    break;
+            }
+        });
+
+        builder.show();
+
+
+    }
+
+    private void deleteBanner(BannerModel bannerModel) {
+        loadingDialog.show();
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this);
+        builder.setTitle("Delete Banner")
+                .setMessage("Would you like to delete this banner?")
+                .setNegativeButton("Cancel", (dialogInterface, i) -> {
+                })
+                .setPositiveButton("Ok", (dialogInterface, i) -> {
+                    map.put("id", bannerModel.getId());
+                    map.put("img", bannerModel.getImage());
+                    map.put("url", bannerModel.getUrl());
+                    call = apiInterface.deleteBanners(map);
+                    call.enqueue(new Callback<MessageModel>() {
+                        @Override
+                        public void onResponse(@NonNull Call<MessageModel> call, @NonNull Response<MessageModel> response) {
+                            if (response.isSuccessful()) {
+                                Toast.makeText(MainActivity.this, Objects.requireNonNull(response.body()).getMessage(), Toast.LENGTH_SHORT).show();
+                                fetchBanners();
+                            } else {
+                                Toast.makeText(MainActivity.this, Objects.requireNonNull(response.body()).getError(), Toast.LENGTH_SHORT).show();
+                            }
+                            loadingDialog.dismiss();
+                        }
+
+
+                        @Override
+                        public void onFailure(@NonNull Call<MessageModel> call, @NonNull Throwable t) {
+                            loadingDialog.dismiss();
+
+                        }
+                    });
+                }).show();
+    }
+
+
 }

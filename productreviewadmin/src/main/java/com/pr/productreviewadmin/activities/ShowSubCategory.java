@@ -19,7 +19,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.pr.productreviewadmin.R;
 import com.pr.productreviewadmin.adapters.CategoryAdapter;
 import com.pr.productreviewadmin.adapters.CateogryInterface;
 import com.pr.productreviewadmin.databinding.ActivityShowSubCategoryBinding;
@@ -98,10 +100,10 @@ public class ShowSubCategory extends AppCompatActivity implements CateogryInterf
                         banner = false;
                         final InputStream inputStream = getContentResolver().openInputStream(result);
                         final Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-                        if (topBrandLayoutBinding!=null){
+                        if (topBrandLayoutBinding != null) {
                             topBrandLayoutBinding.banner.setImageBitmap(bitmap);
 
-                        }else if (productLaytoutBinding!=null){
+                        } else if (productLaytoutBinding != null) {
                             productLaytoutBinding.banner.setImageBitmap(bitmap);
 
                         }
@@ -136,7 +138,7 @@ public class ShowSubCategory extends AppCompatActivity implements CateogryInterf
                     categoryAdapter.updateCategoryList(catModels);
 
                 }
-                Log.d("ContentValue", response.body().toString());
+                Log.d("ContentValue", Objects.requireNonNull(response.body()).toString());
 
                 loadingDialog.dismiss();
             }
@@ -158,34 +160,19 @@ public class ShowSubCategory extends AppCompatActivity implements CateogryInterf
             builder.setTitle("Add Sub Category or Item").setCancelable(true).setItems(items, (dialogInterface, which) -> {
                 switch (which) {
                     case 0:
-                        uploadTopBrandsDialog(catModel);
+                        uploadTopBrandsDialog(catModel, "upload");
                         break;
                     case 1:
                         uploadProducts(catModel);
                         break;
                     case 2:
-                        // update category
-//                        catId = categoryModel.getId();
-//                        catImage = categoryModel.getImage();
-//                        catTitle = categoryModel.getTitle();
-//                        updateCategoryDialog(catId, catImage, catTitle);
+                        uploadTopBrandsDialog(catModel, "update");
+
+
                         break;
                     case 3:
-//                        // delete cat
-//                        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this);
-//                        builder.setTitle("Delete this Category?")
-//                                .setNegativeButton("Cancel", (dialog1, which1) -> {
-//
-//                                }).setPositiveButton("Delete", (dialog12, which12) -> {
-//                                    loadingDialog.show();
-//                                    catId = categoryModel.getId();
-//                                    catImage = categoryModel.getImage();
-//                                    map.put("id", catId);
-//                                    map.put("title", "category");
-//                                    map.put("path", "category_images/" + catImage);
-//                                    deleteCategory(map, "category");
-//                                }).show();
-//                        break;
+                        deleteCategory(catModel);
+
                 }
             });
         } else if (catModel.getSubCat().equals("true")) {
@@ -193,7 +180,7 @@ public class ShowSubCategory extends AppCompatActivity implements CateogryInterf
             builder.setTitle("Add Subcategories").setCancelable(true).setItems(items2, (dialogInterface, which) -> {
                 switch (which) {
                     case 0:
-                        uploadTopBrandsDialog(catModel);
+                        uploadTopBrandsDialog(catModel, "upload");
                         break;
                     case 1:
                         Intent intent = new Intent(this, ShowSubCategory.class);
@@ -201,11 +188,8 @@ public class ShowSubCategory extends AppCompatActivity implements CateogryInterf
                         startActivity(intent);
                         break;
                     case 2:
-                        // Update Category
-//                        catId = categoryModel.getId();
-//                        catImage = categoryModel.getImage();
-//                        catTitle = categoryModel.getTitle();
-//                        updateCategoryDialog(catId, catImage, catTitle);
+                        uploadTopBrandsDialog(catModel, "update");
+
                         break;
                 }
             });
@@ -224,11 +208,8 @@ public class ShowSubCategory extends AppCompatActivity implements CateogryInterf
                         startActivity(intent);
                         break;
                     case 2:
-                        // Update Category
-//                        catId = categoryModel.getId();
-//                        catImage = categoryModel.getImage();
-//                        catTitle = categoryModel.getTitle();
-//                        updateCategoryDialog(catId, catImage, catTitle);
+                        uploadTopBrandsDialog(catModel, "update");
+
                         break;
                 }
             });
@@ -265,7 +246,7 @@ public class ShowSubCategory extends AppCompatActivity implements CateogryInterf
             best = productLaytoutBinding.bestProduct.isChecked();
             latest = productLaytoutBinding.latestProduct.isChecked();
             String tittle = productLaytoutBinding.titleTv.getText().toString().trim();
-            String buingGuideHindi = productLaytoutBinding.buyingGuideHindi.getText().toString().trim();
+            String buyingGuideHindi = productLaytoutBinding.buyingGuideHindi.getText().toString().trim();
             String buyingGuideEnglish = productLaytoutBinding.buyingGuideEnglish.getText().toString().trim();
             String enterRatingInHindi = productLaytoutBinding.enterRatingInHindi.getText().toString().trim();
             String enterRatingInEnglish = productLaytoutBinding.enterRatingInEnglish.getText().toString().trim();
@@ -280,7 +261,7 @@ public class ShowSubCategory extends AppCompatActivity implements CateogryInterf
                 productLaytoutBinding.titleTv.setError("Url Required");
                 productLaytoutBinding.titleTv.requestFocus();
                 loadingDialog.dismiss();
-            } else if (TextUtils.isEmpty(buingGuideHindi)) {
+            } else if (TextUtils.isEmpty(buyingGuideHindi)) {
                 productLaytoutBinding.buyingGuideHindi.setError("Url Required");
                 productLaytoutBinding.buyingGuideHindi.requestFocus();
                 loadingDialog.dismiss();
@@ -301,7 +282,7 @@ public class ShowSubCategory extends AppCompatActivity implements CateogryInterf
                 map.put("img", encodedImage);
                 map.put("banner", encodedImage2);
                 map.put("title", tittle);
-                map.put("buyGuideH", buingGuideHindi);
+                map.put("buyGuideH", buyingGuideHindi);
                 map.put("buyGuideE", buyingGuideEnglish);
                 map.put("ratingH", enterRatingInHindi);
                 map.put("ratingE", enterRatingInEnglish);
@@ -318,7 +299,7 @@ public class ShowSubCategory extends AppCompatActivity implements CateogryInterf
 
     }
 
-    private void uploadTopBrandsDialog(CatModel catModel) {
+    private void uploadTopBrandsDialog(CatModel catModel, String catKey) {
 
         topBrandLayoutDialog = new Dialog(this);
         topBrandLayoutBinding = UploadTopBrandLayoutBinding.inflate(getLayoutInflater());
@@ -337,32 +318,68 @@ public class ShowSubCategory extends AppCompatActivity implements CateogryInterf
             logo = true;
         });
 
-        topBrandLayoutBinding.title.setText("Upload Category");
-        topBrandLayoutBinding.title.setText("Upload Brands");
+        topBrandLayoutBinding.title.setText(R.string.upload_category);
         topBrandLayoutBinding.desc.setVisibility(View.GONE);
         topBrandLayoutBinding.url.setVisibility(View.GONE);
         topBrandLayoutBinding.banner.setVisibility(View.GONE);
-
+        if (catKey.equals("update")) {
+            topBrandLayoutBinding.banner.setVisibility(View.GONE);
+            topBrandLayoutBinding.logo.setVisibility(View.VISIBLE);
+            topBrandLayoutBinding.titleTv.setText(catModel.getTitle());
+            Glide.with(this).load(ApiWebServices.base_url + "all_categories_images/" + catModel.getBanner()).into(topBrandLayoutBinding.logo);
+            encodedImage2 = catModel.getBanner();
+            encodedImage = encodedImage2;
+        }
         topBrandLayoutBinding.okBtn.setOnClickListener(view -> {
             loadingDialog.show();
             String tittle = topBrandLayoutBinding.titleTv.getText().toString().trim();
 
-            if (encodedImage == null) {
-                loadingDialog.dismiss();
-                Toast.makeText(ShowSubCategory.this, "Please Select an Image", Toast.LENGTH_SHORT).show();
-            } else if (TextUtils.isEmpty(tittle)) {
-                topBrandLayoutBinding.titleTv.setError("Url Required");
-                topBrandLayoutBinding.titleTv.requestFocus();
-                loadingDialog.dismiss();
-            } else {
-                map.put("logo", encodedImage);
-                map.put("title", tittle);
-                map.put("parentId", catModel.getId());
-                map.put("subCat", "true");
-                map.put("product", "false");
-                call = apiInterface.uploadSubCategory(map);
-                uploadData(call, topBrandLayoutDialog);
+            if (catKey.equals("upload")) {
+                if (encodedImage == null) {
+                    loadingDialog.dismiss();
+                    Toast.makeText(ShowSubCategory.this, "Please Select an Image", Toast.LENGTH_SHORT).show();
+                } else if (TextUtils.isEmpty(tittle)) {
+                    topBrandLayoutBinding.titleTv.setError("Url Required");
+                    topBrandLayoutBinding.titleTv.requestFocus();
+                    loadingDialog.dismiss();
+                } else {
+                    map.put("logo", encodedImage);
+                    map.put("title", tittle);
+                    map.put("parentId", catModel.getId());
+                    map.put("subCat", "true");
+                    map.put("product", "false");
+                    call = apiInterface.uploadSubCategory(map);
+                    uploadData(call, topBrandLayoutDialog);
 
+
+                }
+            } else if (catKey.equals("update")) {
+
+                if (TextUtils.isEmpty(tittle)) {
+                    topBrandLayoutBinding.titleTv.setError("Url Required");
+                    topBrandLayoutBinding.titleTv.requestFocus();
+                    loadingDialog.dismiss();
+                } else {
+                    if (encodedImage.length() > 100) {
+                        map.put("logo", encodedImage);
+                        map.put("deleteLogo", encodedImage2);
+                        map.put("title", tittle);
+                        map.put("catId", catModel.getId());
+                        map.put("key", "1");
+                        call = apiInterface.updateCategory(map);
+                        uploadData(call, topBrandLayoutDialog);
+                    } else {
+                        map.put("logo", encodedImage);
+                        map.put("deleteLogo", encodedImage2);
+                        map.put("title", tittle);
+                        map.put("catId", catModel.getId());
+                        map.put("key", "0");
+                        call = apiInterface.updateCategory(map);
+                        uploadData(call, topBrandLayoutDialog);
+                    }
+                    Log.d("ContentValue", encodedImage);
+
+                }
             }
 
         });
@@ -376,6 +393,7 @@ public class ShowSubCategory extends AppCompatActivity implements CateogryInterf
                 if (response.isSuccessful()) {
                     Toast.makeText(ShowSubCategory.this, Objects.requireNonNull(response.body()).getMessage(), Toast.LENGTH_SHORT).show();
                     uploadDialog.dismiss();
+                    fetchCategory(key);
                 } else {
                     Toast.makeText(ShowSubCategory.this, Objects.requireNonNull(response.body()).getError(), Toast.LENGTH_SHORT).show();
                 }
@@ -396,5 +414,39 @@ public class ShowSubCategory extends AppCompatActivity implements CateogryInterf
 
         byte[] imageBytes = stream.toByteArray();
         return android.util.Base64.encodeToString(imageBytes, Base64.DEFAULT);
+    }
+
+    private void deleteCategory(CatModel catModel) {
+        loadingDialog.show();
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this);
+        builder.setTitle("Delete Banner")
+                .setMessage("Would you like to delete this banner?")
+                .setNegativeButton("Cancel", (dialogInterface, i) -> {
+                })
+                .setPositiveButton("Ok", (dialogInterface, i) -> {
+                    map.put("id", catModel.getId());
+                    map.put("img", catModel.getBanner());
+                    map.put("title", catModel.getTitle());
+                    call = apiInterface.deleteCategory(map);
+                    call.enqueue(new Callback<MessageModel>() {
+                        @Override
+                        public void onResponse(@NonNull Call<MessageModel> call, @NonNull Response<MessageModel> response) {
+                            if (response.isSuccessful()) {
+                                Toast.makeText(ShowSubCategory.this, Objects.requireNonNull(response.body()).getMessage(), Toast.LENGTH_SHORT).show();
+                                fetchCategory("0");
+                            } else {
+                                Toast.makeText(ShowSubCategory.this, Objects.requireNonNull(response.body()).getError(), Toast.LENGTH_SHORT).show();
+                            }
+                            loadingDialog.dismiss();
+                        }
+
+
+                        @Override
+                        public void onFailure(@NonNull Call<MessageModel> call, @NonNull Throwable t) {
+                            loadingDialog.dismiss();
+
+                        }
+                    });
+                }).show();
     }
 }
