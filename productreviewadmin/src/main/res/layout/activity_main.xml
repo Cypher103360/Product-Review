@@ -60,6 +60,14 @@
             android:textSize="20sp" />
 
         <Button
+            android:id="@+id/show_banners"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="15dp"
+            android:text="@string/show_banners"
+            android:textSize="20sp" />
+
+        <Button
             android:id="@+id/show_brands"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

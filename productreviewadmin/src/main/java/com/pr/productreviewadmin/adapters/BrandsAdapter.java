@@ -43,7 +43,7 @@ public class BrandsAdapter extends RecyclerView.Adapter<BrandsAdapter.ViewHolder
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             holder.itemTitle.setText(Html.fromHtml(brandsModels.get(position).getTitle(), Html.FROM_HTML_MODE_LEGACY));
         }
-        Glide.with(context).load(ApiWebServices.base_url + "top_brands_images/" + brandsModels.get(position).getBanner()).into(holder.itemImg);
+        Glide.with(context).load(ApiWebServices.base_url + "top_brands_images/" + brandsModels.get(position).getLogo()).into(holder.itemImg);
         holder.itemView.setOnClickListener(view -> brandsInterface.brandsClicked(brandsModels.get(position)));
 
     }

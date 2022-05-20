@@ -26,5 +26,8 @@
     <string name="best_product">Best Product</string>
     <string name="show_trending">Show Trending Products</string>
     <string name="native_ads_type">Native Ads Type</string>
+    <string name="show_banners">Show Banners</string>
+    <string name="banners">Banners</string>
+    <string name="upload_banner">Upload Brands</string>
 
 </resources>

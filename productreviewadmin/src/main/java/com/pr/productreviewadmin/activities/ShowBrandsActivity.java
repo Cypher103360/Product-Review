@@ -19,6 +19,7 @@ import com.pr.productreviewadmin.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -39,7 +40,7 @@ public class ShowBrandsActivity extends AppCompatActivity implements BrandsInter
         setContentView(binding.getRoot());
 
 
-        layoutManager = new GridLayoutManager(this, 2);
+        layoutManager = new GridLayoutManager(this, 3);
         layoutManager.setOrientation(RecyclerView.VERTICAL);
         binding.productRV.setLayoutManager(layoutManager);
 
@@ -65,7 +66,7 @@ public class ShowBrandsActivity extends AppCompatActivity implements BrandsInter
                     brandsAdapter.updateCategoryList(brandsModels);
 
                 }
-                Log.d("ContentValue", response.body().toString());
+                Log.d("ContentValue", Objects.requireNonNull(response.body()).toString());
 
                 loadingDialog.dismiss();
             }
