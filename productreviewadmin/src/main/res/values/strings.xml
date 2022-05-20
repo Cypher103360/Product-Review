@@ -1,3 +1,30 @@
 <resources>
     <string name="app_name">Product Review Admin</string>
+    <string name="upload_banners">Upload Banners</string>
+    <string name="upload_category">Upload Category</string>
+    <string name="upload_top_brands">Upload Top Brands</string>
+    <string name="show_latest_product">Show Latest Products</string>
+    <string name="show_best_product">Show Best Products</string>
+    <string name="show_category">Show Category</string>
+    <string name="update_ads_ids">Update Ads Ids</string>
+    <string name="upload_expert_tips_url">Upload Expert Tips url</string>
+    <string name="upload_website_url">Upload Website Url</string>
+    <string name="todo">Todo</string>
+    <string name="enter_url">Enter Url</string>
+    <string name="compressed_file_size">Compressed File Size</string>
+    <string name="enter_title">Enter Title</string>
+    <string name="enter_description">Enter Description</string>
+    <string name="top_brands">Top Brands</string>
+    <string name="show_brands">Show Brands</string>
+    <string name="add_latest_product">Latest Product</string>
+    <string name="add_tranding_product">Tranding Product</string>
+    <string name="you_can_add_products_in_this_category">You can Add Products In this Category</string>
+    <string name="enter_buying_guide_hindi">Enter Buying Guide Hindi</string>
+    <string name="enter_buying_guide_english">Enter Buying Guide English</string>
+    <string name="enter_rating_in_hindi">Enter Rating in Hindi</string>
+    <string name="enter_rating_in_english">Enter Rating in English</string>
+    <string name="best_product">Best Product</string>
+    <string name="show_trending">Show Trending Products</string>
+    <string name="native_ads_type">Native Ads Type</string>
+
 </resources>
