@@ -1,6 +1,8 @@
 package com.pr.productreviewadmin.adapters;
 
 import android.app.Activity;
+import android.os.Build;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,7 +41,9 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
-        holder.title.setText(productModels.get(position).getProductTitle());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            holder.title.setText(Html.fromHtml(productModels.get(position).getProductTitle(), Html.FROM_HTML_MODE_LEGACY));
+        }
         Glide.with(context).load(ApiWebServices.base_url + "all_products_images/" + productModels.get(position).getProductImage()).into(holder.img);
         holder.itemView.setOnClickListener(view -> productInterface.productClicked(productModels.get(position)));
 

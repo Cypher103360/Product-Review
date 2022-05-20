@@ -1,6 +1,8 @@
 package com.pr.productreviewadmin.adapters;
 
 import android.app.Activity;
+import android.os.Build;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,7 +41,9 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
-        holder.itemTitle.setText(catModels.get(position).getTitle());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            holder.itemTitle.setText(Html.fromHtml(catModels.get(position).getTitle(), Html.FROM_HTML_MODE_LEGACY));
+        }
         Glide.with(context).load(ApiWebServices.base_url + "all_categories_images/" + catModels.get(position).getBanner()).into(holder.itemImg);
         holder.itemView.setOnClickListener(view -> cateogryInterface.onCategoryClicked(catModels.get(position)));
     }

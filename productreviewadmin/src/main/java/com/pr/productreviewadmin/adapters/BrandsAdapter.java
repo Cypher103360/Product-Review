@@ -1,6 +1,8 @@
 package com.pr.productreviewadmin.adapters;
 
 import android.app.Activity;
+import android.os.Build;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,7 +40,9 @@ public class BrandsAdapter extends RecyclerView.Adapter<BrandsAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.itemTitle.setText(brandsModels.get(position).getTitle());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            holder.itemTitle.setText(Html.fromHtml(brandsModels.get(position).getTitle(), Html.FROM_HTML_MODE_LEGACY));
+        }
         Glide.with(context).load(ApiWebServices.base_url + "top_brands_images/" + brandsModels.get(position).getBanner()).into(holder.itemImg);
         holder.itemView.setOnClickListener(view -> brandsInterface.brandsClicked(brandsModels.get(position)));
 
