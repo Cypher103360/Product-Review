@@ -23,9 +23,22 @@ public interface ApiInterface {
     @FormUrlEncoded
     @POST("delete_banner.php")
     Call<MessageModel> deleteBanners(@FieldMap Map<String, String> map);
-@FormUrlEncoded
+
+    @FormUrlEncoded
     @POST("delete_category.php")
     Call<MessageModel> deleteCategory(@FieldMap Map<String, String> map);
+
+    @FormUrlEncoded
+    @POST("delete_product.php")
+    Call<MessageModel> deleteProduct(@FieldMap Map<String, String> map);
+
+    @FormUrlEncoded
+    @POST("delete_brand.php")
+    Call<MessageModel> deleteBrand(@FieldMap Map<String, String> map);
+
+    @FormUrlEncoded
+    @POST("remove_product.php")
+    Call<MessageModel> removeProduct(@FieldMap Map<String, String> map);
 
     @FormUrlEncoded
     @POST("upload_top_brands.php")
@@ -54,6 +67,14 @@ public interface ApiInterface {
     @FormUrlEncoded
     @POST("upload_products.php")
     Call<MessageModel> uploadProducts(@FieldMap Map<String, String> map);
+
+    @FormUrlEncoded
+    @POST("update_products.php")
+    Call<MessageModel> updateProducts(@FieldMap Map<String, String> map);
+
+    @FormUrlEncoded
+    @POST("update_brands.php")
+    Call<MessageModel> updateBrands(@FieldMap Map<String, String> map);
 
 
     @FormUrlEncoded

@@ -712,13 +712,15 @@ public class MainActivity extends AppCompatActivity implements BannerInterface {
     }
 
     private void deleteBanner(BannerModel bannerModel) {
-        loadingDialog.show();
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this);
         builder.setTitle("Delete Banner")
                 .setMessage("Would you like to delete this banner?")
                 .setNegativeButton("Cancel", (dialogInterface, i) -> {
+
                 })
                 .setPositiveButton("Ok", (dialogInterface, i) -> {
+                    loadingDialog.show();
+
                     map.put("id", bannerModel.getId());
                     map.put("img", bannerModel.getImage());
                     map.put("url", bannerModel.getUrl());

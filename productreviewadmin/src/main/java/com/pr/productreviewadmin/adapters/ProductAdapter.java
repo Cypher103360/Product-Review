@@ -1,11 +1,14 @@
 package com.pr.productreviewadmin.adapters;
 
+import static com.pr.productreviewadmin.activities.ShowProducts.key;
+
 import android.app.Activity;
 import android.os.Build;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -20,6 +23,7 @@ import com.pr.productreviewadmin.models.ProductModel;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHolder> {
 
@@ -44,6 +48,19 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             holder.title.setText(Html.fromHtml(productModels.get(position).getProductTitle(), Html.FROM_HTML_MODE_LEGACY));
         }
+
+        if (Objects.equals(key, "latest")) {
+            holder.checkBox.setVisibility(View.VISIBLE);
+            holder.checkBox.setChecked(Boolean.parseBoolean(productModels.get(position).getLatestProduct()));
+
+        } else if (Objects.equals(key, "best")) {
+            holder.checkBox.setVisibility(View.VISIBLE);
+            holder.checkBox.setChecked(Boolean.parseBoolean(productModels.get(position).getBestProduct()));
+
+        } else if (Objects.equals(key, "trending")) {
+            holder.checkBox.setVisibility(View.VISIBLE);
+            holder.checkBox.setChecked(Boolean.parseBoolean(productModels.get(position).getTrendingProduct()));
+        }
         Glide.with(context).load(ApiWebServices.base_url + "all_products_images/" + productModels.get(position).getProductImage()).into(holder.img);
         holder.itemView.setOnClickListener(view -> productInterface.productClicked(productModels.get(position)));
 
@@ -64,11 +81,13 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView img;
         TextView title;
+        CheckBox checkBox;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             img = itemView.findViewById(R.id.item_img);
             title = itemView.findViewById(R.id.item_title);
+            checkBox = itemView.findViewById(R.id.checkBox);
         }
     }
 }

@@ -227,7 +227,7 @@ public class ShowSubCategory extends AppCompatActivity implements CateogryInterf
         productDialog.setCancelable(false);
         productDialog.show();
 
-        productLaytoutBinding.backBtn.setOnClickListener(view -> topBrandLayoutDialog.dismiss());
+        productLaytoutBinding.backBtn.setOnClickListener(view -> productDialog.dismiss());
         productLaytoutBinding.logo.setOnClickListener(view -> {
             launcher.launch("image/*");
             logo = true;
