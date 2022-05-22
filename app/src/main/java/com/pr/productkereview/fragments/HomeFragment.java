@@ -1,65 +1,129 @@
 package com.pr.productkereview.fragments;
 
+import android.annotation.SuppressLint;
+import android.app.Dialog;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
+import androidx.room.Room;
 
 import com.denzcoskun.imageslider.ImageSlider;
 import com.denzcoskun.imageslider.constants.ScaleTypes;
 import com.denzcoskun.imageslider.models.SlideModel;
+import com.pr.productkereview.activities.ItemDetailsActivity;
+import com.pr.productkereview.activities.ShowAllItemsActivity;
+import com.pr.productkereview.activities.TopBrandDetailsActivity;
 import com.pr.productkereview.adapters.BestProductAdapter;
 import com.pr.productkereview.adapters.BestProductClickInterface;
 import com.pr.productkereview.adapters.BuyingGuidesAdapter;
 import com.pr.productkereview.adapters.BuyingGuidesClickInterface;
 import com.pr.productkereview.adapters.LatestProductAdapter;
 import com.pr.productkereview.adapters.LatestProductClickInterface;
-import com.pr.productkereview.adapters.TopBrandsAdapter;
-import com.pr.productkereview.adapters.TopBrandsClickInterface;
+import com.pr.productkereview.adapters.topBrands.TopBrandsAdapter;
+import com.pr.productkereview.adapters.topBrands.TopBrandsClickInterface;
 import com.pr.productkereview.databinding.FragmentHomeBinding;
-import com.pr.productkereview.models.BestProducts.BestProductModel;
+import com.pr.productkereview.db.ProductAppDatabase;
+import com.pr.productkereview.db.entity.Products;
+import com.pr.productkereview.models.AllProducts.BestProductModelFactory;
+import com.pr.productkereview.models.AllProducts.BestProductViewModel;
+import com.pr.productkereview.models.AllProducts.LatestProductModelFactory;
+import com.pr.productkereview.models.AllProducts.ProductModel;
+import com.pr.productkereview.models.AllProducts.ProductViewModel;
+import com.pr.productkereview.models.BannerImages.BannerImageModel;
 import com.pr.productkereview.models.BuyingGuides.BuyingGuidesModel;
-import com.pr.productkereview.models.LatestProduct.LatestProductModel;
-import com.pr.productkereview.models.TopBrands.TopBrandsModel;
+import com.pr.productkereview.models.TopBrands.BrandViewModel;
+import com.pr.productkereview.models.TopBrands.BrandsModel;
+import com.pr.productkereview.models.UrlsModels.UrlModel;
+import com.pr.productkereview.utils.ApiInterface;
+import com.pr.productkereview.utils.ApiWebServices;
+import com.pr.productkereview.utils.CommonMethods;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class HomeFragment extends Fragment implements LatestProductClickInterface, BestProductClickInterface, TopBrandsClickInterface, BuyingGuidesClickInterface {
     FragmentHomeBinding binding;
     ImageSlider imageSlider;
+    Dialog loading;
     List<SlideModel> slideModels = new ArrayList<>();
-    RecyclerView latestProductRV, bestProductRV, topBrandsRV, buyingGuidesRV;
+    List<BannerImageModel> bannerImageModelList = new ArrayList<>();
+    ApiInterface apiInterface;
+    String webUrl, bannerUrl;
+    ProductViewModel latestProductViewModel;
+    BestProductViewModel bestProductViewModel;
+    BrandViewModel brandViewModel;
 
-    List<LatestProductModel> latestProductModelList = new ArrayList<>();
-    List<BestProductModel> bestProductModelList = new ArrayList<>();
-    List<TopBrandsModel> topBrandsModelList = new ArrayList<>();
-    List<BuyingGuidesModel> buyingGuidesModelList = new ArrayList<>();
+    List<ProductModel> latestProductModelList = new ArrayList<>();
+    List<ProductModel> bestProductModelList = new ArrayList<>();
+    List<BrandsModel> topBrandsModelList = new ArrayList<>();
+    List<ProductModel> buyingGuidesModelList = new ArrayList<>();
 
     LatestProductAdapter latestProductAdapter;
     BestProductAdapter bestProductAdapter;
     TopBrandsAdapter topBrandsAdapter;
     BuyingGuidesAdapter buyingGuidesAdapter;
 
+    // Room Database
+    private ProductAppDatabase productAppDatabase;
 
-    public HomeFragment() {
-        // Required empty public constructor
-    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
+        apiInterface = ApiWebServices.getApiInterface();
+        brandViewModel = new ViewModelProvider(requireActivity()).get(BrandViewModel.class);
+
+        latestProductViewModel = new ViewModelProvider(requireActivity(),
+                new LatestProductModelFactory(requireActivity().getApplication(), "latest")).get(ProductViewModel.class);
+
+        bestProductViewModel = new ViewModelProvider(requireActivity(),
+                new BestProductModelFactory(requireActivity().getApplication(), "best")).get(BestProductViewModel.class);
+
+        loading = CommonMethods.getLoadingDialog(requireActivity());
+        loading.show();
         binding.latestProductLayout.setVisibility(View.VISIBLE);
         binding.bestProductLayout.setVisibility(View.VISIBLE);
         binding.topBrandProductLayout.setVisibility(View.VISIBLE);
         binding.buyingGuideLayout.setVisibility(View.VISIBLE);
+
+        binding.lottieSiteButton.setOnClickListener(v -> {
+            openWebPage(webUrl, requireActivity());
+        });
+        binding.lottieWhatsappButton.setOnClickListener(v -> {
+            try {
+                CommonMethods.whatsApp(requireActivity());
+            } catch (UnsupportedEncodingException | PackageManager.NameNotFoundException e) {
+                e.printStackTrace();
+            }
+        });
+        binding.lottieGmailButton.setOnClickListener(v -> {
+            CommonMethods.contactUs(requireActivity());
+        });
+
+        // Recyclerview
+        binding.latestProductRecyclerview.setNestedScrollingEnabled(false);
+        binding.bestProductRecyclerview.setNestedScrollingEnabled(false);
+        binding.topBrandProductRecyclerview.setNestedScrollingEnabled(false);
+        binding.buyingGuideRecyclerview.setNestedScrollingEnabled(false);
+
 
         // LayoutManager
         LinearLayoutManager layoutManager1 = new LinearLayoutManager(requireActivity());
@@ -79,9 +143,9 @@ public class HomeFragment extends Fragment implements LatestProductClickInterfac
         binding.buyingGuideRecyclerview.setLayoutManager(layoutManager4);
 
         // initializing adapter
-        latestProductAdapter = new LatestProductAdapter(requireActivity(), this);
-        bestProductAdapter = new BestProductAdapter(requireActivity(), this);
-        topBrandsAdapter = new TopBrandsAdapter(requireActivity(), this);
+        latestProductAdapter = new LatestProductAdapter(requireActivity(), this, false);
+        bestProductAdapter = new BestProductAdapter(requireActivity(), this, false);
+        topBrandsAdapter = new TopBrandsAdapter(requireActivity(), this, false);
         buyingGuidesAdapter = new BuyingGuidesAdapter(requireActivity(), this);
 
         // setting adapters
@@ -90,91 +154,196 @@ public class HomeFragment extends Fragment implements LatestProductClickInterfac
         binding.topBrandProductRecyclerview.setAdapter(topBrandsAdapter);
         binding.buyingGuideRecyclerview.setAdapter(buyingGuidesAdapter);
 
-        latestProductModelList.clear();
-        latestProductModelList.add(new LatestProductModel("id", "https://images.unsplash.com/photo-1542332213-9b5a5a3fad35?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80", "Latest Products"));
-        latestProductModelList.add(new LatestProductModel("id", "https://images.unsplash.com/photo-1542332213-9b5a5a3fad35?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80", "Latest Products"));
-        latestProductModelList.add(new LatestProductModel("id", "https://images.unsplash.com/photo-1542332213-9b5a5a3fad35?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80", "Latest Products"));
-        latestProductModelList.add(new LatestProductModel("id", "https://images.unsplash.com/photo-1542332213-9b5a5a3fad35?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80", "Latest Products"));
-        latestProductModelList.add(new LatestProductModel("id", "https://images.unsplash.com/photo-1542332213-9b5a5a3fad35?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80", "Latest Products"));
-        latestProductModelList.add(new LatestProductModel("id", "https://images.unsplash.com/photo-1542332213-9b5a5a3fad35?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80", "Latest Products"));
-        latestProductModelList.add(new LatestProductModel("id", "https://images.unsplash.com/photo-1542332213-9b5a5a3fad35?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80", "Latest Products"));
-        latestProductModelList.add(new LatestProductModel("id", "https://images.unsplash.com/photo-1542332213-9b5a5a3fad35?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80", "Latest Products"));
-        latestProductModelList.add(new LatestProductModel("id", "https://images.unsplash.com/photo-1542332213-9b5a5a3fad35?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80", "Latest Products"));
-        latestProductModelList.add(new LatestProductModel("id", "https://images.unsplash.com/photo-1542332213-9b5a5a3fad35?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80", "Latest Products"));
-        latestProductModelList.add(new LatestProductModel("id", "https://images.unsplash.com/photo-1542332213-9b5a5a3fad35?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80", "Latest Products"));
-        latestProductAdapter.updateList(latestProductModelList);
+        fetchBanners();
+        fetchTopBrands();
+        fetchUrls("site");
+        fetchLatestProducts();
+        fetchBestProducts();
+        binding.homeSwipeRefreshLayout.setOnRefreshListener(() -> {
+            fetchBanners();
+            fetchTopBrands();
+            fetchUrls("site");
+            fetchLatestProducts();
+            fetchBestProducts();
+            binding.homeSwipeRefreshLayout.setRefreshing(false);
+        });
 
-        bestProductModelList.clear();
-        bestProductModelList.add(new BestProductModel("id", "https://images.unsplash.com/photo-1519114056088-b877fe073a5e?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1033&q=80", "Best Products"));
-        bestProductModelList.add(new BestProductModel("id", "https://images.unsplash.com/photo-1519114056088-b877fe073a5e?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1033&q=80", "Best Products"));
-        bestProductModelList.add(new BestProductModel("id", "https://images.unsplash.com/photo-1519114056088-b877fe073a5e?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1033&q=80", "Best Products"));
-        bestProductModelList.add(new BestProductModel("id", "https://images.unsplash.com/photo-1519114056088-b877fe073a5e?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1033&q=80", "Best Products"));
-        bestProductModelList.add(new BestProductModel("id", "https://images.unsplash.com/photo-1519114056088-b877fe073a5e?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1033&q=80", "Best Products"));
-        bestProductModelList.add(new BestProductModel("id", "https://images.unsplash.com/photo-1519114056088-b877fe073a5e?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1033&q=80", "Best Products"));
-        bestProductModelList.add(new BestProductModel("id", "https://images.unsplash.com/photo-1519114056088-b877fe073a5e?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1033&q=80", "Best Products"));
-        bestProductAdapter.updateList(bestProductModelList);
-        if (bestProductModelList.size() > 6){
-            binding.bestViewAllBtn.setVisibility(View.VISIBLE);
-        }
-
-            topBrandsModelList.clear();
-        topBrandsModelList.add(new TopBrandsModel("id", "https://images.unsplash.com/photo-1542690969-5a2050285637?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80", "Top Brands Products"));
-        topBrandsModelList.add(new TopBrandsModel("id", "https://images.unsplash.com/photo-1542690969-5a2050285637?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80", "Top Brands Products"));
-        topBrandsModelList.add(new TopBrandsModel("id", "https://images.unsplash.com/photo-1542690969-5a2050285637?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80", "Top Brands Products"));
-        topBrandsModelList.add(new TopBrandsModel("id", "https://images.unsplash.com/photo-1542690969-5a2050285637?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80", "Top Brands Products"));
-        topBrandsModelList.add(new TopBrandsModel("id", "https://images.unsplash.com/photo-1542690969-5a2050285637?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80", "Top Brands Products"));
-        topBrandsModelList.add(new TopBrandsModel("id", "https://images.unsplash.com/photo-1542690969-5a2050285637?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80", "Top Brands Products"));
-        topBrandsModelList.add(new TopBrandsModel("id", "https://images.unsplash.com/photo-1542690969-5a2050285637?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80", "Top Brands Products"));
-        topBrandsModelList.add(new TopBrandsModel("id", "https://images.unsplash.com/photo-1542690969-5a2050285637?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80", "Top Brands Products"));
-        topBrandsModelList.add(new TopBrandsModel("id", "https://images.unsplash.com/photo-1542690969-5a2050285637?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80", "Top Brands Products"));
-        topBrandsModelList.add(new TopBrandsModel("id", "https://images.unsplash.com/photo-1542690969-5a2050285637?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80", "Top Brands Products"));
-        topBrandsModelList.add(new TopBrandsModel("id", "https://images.unsplash.com/photo-1542690969-5a2050285637?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80", "Top Brands Products"));
-        topBrandsModelList.add(new TopBrandsModel("id", "https://images.unsplash.com/photo-1542690969-5a2050285637?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80", "Top Brands Products"));
-        topBrandsModelList.add(new TopBrandsModel("id", "https://images.unsplash.com/photo-1542690969-5a2050285637?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80", "Top Brands Products"));
-        topBrandsModelList.add(new TopBrandsModel("id", "https://images.unsplash.com/photo-1542690969-5a2050285637?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80", "Top Brands Products"));
-        topBrandsModelList.add(new TopBrandsModel("id", "https://images.unsplash.com/photo-1542690969-5a2050285637?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80", "Top Brands Products"));
-        topBrandsModelList.add(new TopBrandsModel("id", "https://images.unsplash.com/photo-1542690969-5a2050285637?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80", "Top Brands Products"));
-        topBrandsAdapter.updateList(topBrandsModelList);
-
-
-        buyingGuidesModelList.clear();
-        buyingGuidesModelList.add(new BuyingGuidesModel("id", "https://images.unsplash.com/photo-1542042179-ff8ef4a8254f?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80", "Buying Guides"));
-        buyingGuidesModelList.add(new BuyingGuidesModel("id", "https://images.unsplash.com/photo-1542042179-ff8ef4a8254f?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80", "Buying Guides"));
-        buyingGuidesModelList.add(new BuyingGuidesModel("id", "https://images.unsplash.com/photo-1542042179-ff8ef4a8254f?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80", "Buying Guides"));
-        buyingGuidesModelList.add(new BuyingGuidesModel("id", "https://images.unsplash.com/photo-1542042179-ff8ef4a8254f?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80", "Buying Guides"));
         buyingGuidesAdapter.updateList(buyingGuidesModelList);
 
+        // Room Database
+        productAppDatabase = Room.databaseBuilder(
+                        requireActivity(),
+                        ProductAppDatabase.class,
+                        "ProductDB")
+                .allowMainThreadQueries()
+                .build();
 
-        imageSlider = binding.imageSlider;
-        slideModels.add(new SlideModel("https://images.unsplash.com/photo-1542332213-31f87348057f?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80", ScaleTypes.FIT));
-        slideModels.add(new SlideModel("https://images.unsplash.com/photo-1542995470-870e12e7e14f?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80", ScaleTypes.FIT));
-        slideModels.add(new SlideModel("https://images.unsplash.com/photo-1503376780353-7e6692767b70?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80", ScaleTypes.FIT));
-        slideModels.add(new SlideModel("https://images.unsplash.com/photo-1485291571150-772bcfc10da5?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=928&q=80", ScaleTypes.FIT));
-        imageSlider.setImageList(slideModels);
-
-        // RecyclerViews
-
+        buyingGuidesModelList.clear();
+       // buyingGuidesModelList.addAll(productAppDatabase.getProductDAO().getProducts());
 
         return binding.getRoot();
     }
 
-    @Override
-    public void OnLatestProductClicked(LatestProductModel latestProductModel) {
+    private void fetchLatestProducts() {
+        latestProductViewModel.getLatestProducts().observe(requireActivity(), productModels -> {
+            latestProductModelList.clear();
+            latestProductModelList.addAll(productModels);
+            latestProductAdapter.updateList(latestProductModelList);
+            loading.dismiss();
 
+            if (latestProductModelList.size() > 7) {
+                binding.latestViewAllBtn.setVisibility(View.VISIBLE);
+                binding.latestViewAllBtn.setOnClickListener(v -> {
+                    Intent intent = new Intent(requireActivity(), ShowAllItemsActivity.class);
+                    intent.putExtra("key", "latestProducts");
+                    startActivity(intent);
+                });
+            }
+        });
+    }
+
+    private void fetchBestProducts() {
+        bestProductViewModel.getBestProducts().observe(requireActivity(), productModels -> {
+            bestProductModelList.clear();
+            bestProductModelList.addAll(productModels);
+            bestProductAdapter.updateList(bestProductModelList);
+            loading.dismiss();
+
+            if (bestProductModelList.size() > 6) {
+                binding.bestViewAllBtn.setVisibility(View.VISIBLE);
+                binding.bestViewAllBtn.setOnClickListener(v -> {
+                    Intent intent = new Intent(requireActivity(), ShowAllItemsActivity.class);
+                    intent.putExtra("key", "bestProducts");
+                    startActivity(intent);
+                });
+            }
+        });
+    }
+
+    private void fetchTopBrands() {
+        brandViewModel.getBrands().observe(requireActivity(), brandsModels -> {
+            if (!brandsModels.isEmpty()) {
+                topBrandsModelList.clear();
+                topBrandsModelList.addAll(brandsModels);
+                topBrandsAdapter.updateList(topBrandsModelList);
+                loading.dismiss();
+
+                if (topBrandsModelList.size() > 7) {
+                    binding.topBrandsViewAllBtn.setVisibility(View.VISIBLE);
+                    binding.topBrandsViewAllBtn.setOnClickListener(v -> {
+                        Intent intent = new Intent(requireActivity(), ShowAllItemsActivity.class);
+                        intent.putExtra("key", "topBrands");
+                        startActivity(intent);
+                    });
+                }
+            }
+        });
+    }
+
+    public void fetchBanners() {
+        Call<List<BannerImageModel>> call = apiInterface.getBanners();
+        call.enqueue(new Callback<List<BannerImageModel>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<BannerImageModel>> call, @NonNull Response<List<BannerImageModel>> response) {
+                if (response.isSuccessful()) {
+                    imageSlider = binding.imageSlider;
+                    assert response.body() != null;
+                    bannerImageModelList.clear();
+                    slideModels.clear();
+                    bannerImageModelList.addAll(response.body());
+                    for (BannerImageModel bannerImageModel : response.body()) {
+                        Log.d("bannerImages", bannerImageModel.getImage());
+                        slideModels.add(new SlideModel(
+                                ApiWebServices.base_url + "bannerImages/" + bannerImageModel.getImage(), ScaleTypes.FIT));
+
+                    }
+                    imageSlider.setImageList(slideModels);
+                    imageSlider.setItemClickListener(i -> {
+                        bannerUrl = bannerImageModelList.get(i).getUrl();
+                        openWebPage(bannerUrl, requireActivity());
+                    });
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<BannerImageModel>> call, @NonNull Throwable t) {
+
+            }
+        });
+    }
+
+    public void fetchUrls(String tips) {
+        Call<UrlModel> call = apiInterface.getUrls(tips);
+        call.enqueue(new Callback<UrlModel>() {
+            @Override
+            public void onResponse(@NonNull Call<UrlModel> call, @NonNull Response<UrlModel> response) {
+                if (response.isSuccessful()) {
+                    assert response.body() != null;
+                    webUrl = response.body().getUrl();
+                    Log.d("urls", webUrl);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<UrlModel> call, @NonNull Throwable t) {
+
+            }
+        });
     }
 
     @Override
-    public void OnBestProductClicked(BestProductModel bestProductModel) {
+    public void OnLatestProductClicked(ProductModel latestProductModel) {
+        Intent intent = new Intent(requireActivity(), ItemDetailsActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("latest", latestProductModel);
+        intent.putExtras(bundle);
+        startActivity(intent);
 
+       // productAppDatabase.getProductDAO().addProducts((Products) latestProductModel);
     }
 
     @Override
-    public void OnTopBrandClicked(TopBrandsModel topBrandsModel) {
-
+    public void OnBestProductClicked(ProductModel bestProductModel) {
+        Intent intent = new Intent(requireActivity(), ItemDetailsActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("latest", bestProductModel);
+        intent.putExtras(bundle);
+        startActivity(intent);
+      //  productAppDatabase.getProductDAO().addProducts(bestProductModel);
     }
 
     @Override
-    public void OnBuyingGuidesClicked(BuyingGuidesModel buyingGuidesModel) {
+    public void OnTopBrandClicked(BrandsModel topBrandsModel) {
+        Intent intent = new Intent(requireActivity(), TopBrandDetailsActivity.class);
+        intent.putExtra("img", topBrandsModel.getBanner());
+        intent.putExtra("title", topBrandsModel.getTitle());
+        intent.putExtra("desc", topBrandsModel.getDesc());
+        intent.putExtra("url", topBrandsModel.getUrl());
+        startActivity(intent);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        loading.show();
+        fetchBanners();
+        fetchTopBrands();
+        fetchUrls("site");
+        fetchLatestProducts();
+        fetchBestProducts();
+    }
+
+    @SuppressLint("QueryPermissionsNeeded")
+    public void openWebPage(String url, Context context) {
+        Uri webpage = Uri.parse(url);
+        Intent intent = new Intent(Intent.ACTION_VIEW, webpage);
+        if (intent.resolveActivity(context.getPackageManager()) != null) {
+            startActivity(intent);
+        }
+    }
+
+    @Override
+    public void OnBuyingGuidesClicked(ProductModel buyingGuidesModel) {
 
     }
 }

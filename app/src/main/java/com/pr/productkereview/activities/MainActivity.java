@@ -5,11 +5,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.IntentSender;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
 
@@ -35,7 +37,6 @@ public class MainActivity extends AppCompatActivity {
     FirebaseAnalytics firebaseAnalytics;
     int REQUEST_CODE = 11;
     int count = 1;
-    IntentFilter intentFilter;
     public BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -49,12 +50,13 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
-
+    IntentFilter intentFilter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         firebaseAnalytics = FirebaseAnalytics.getInstance(this);
         inAppUpdate();
@@ -69,22 +71,35 @@ public class MainActivity extends AppCompatActivity {
             Set_Visibility_OFF();
         }
 
-        new Handler().postDelayed(() -> {
-            GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(MainActivity.this);
-            if (account != null) {
-                startActivity(new Intent(MainActivity.this, WelcomeActivity.class));
-            } else {
-                startActivity(new Intent(MainActivity.this, SignupActivity.class));
-            }
-            finish();
-        }, 400);
+
     }
 
     private void Set_Visibility_OFF() {
-
+        binding.lottieLoading.setVisibility(View.GONE);
+        binding.myText.setVisibility(View.GONE);
+        binding.lottieNoInternet.setVisibility(View.VISIBLE);
+        binding.mainContainer.setBackgroundColor(0);
+        binding.tvNotConnected.setVisibility(View.VISIBLE);
     }
 
     private void Set_Visibility_ON() {
+        binding.lottieLoading.setVisibility(View.VISIBLE);
+        binding.myText.setVisibility(View.VISIBLE);
+        binding.lottieNoInternet.setVisibility(View.GONE);
+        binding.tvNotConnected.setVisibility(View.GONE);
+        binding.mainContainer.setBackgroundColor(Color.parseColor("#001F73"));
+        if (count == 2) {
+            new Handler().postDelayed(() -> {
+//                GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(MainActivity.this);
+//                if (account != null) {
+//                    startActivity(new Intent(MainActivity.this, WelcomeActivity.class));
+//                } else {
+//                    startActivity(new Intent(MainActivity.this, SignupActivity.class));
+//                }
+                startActivity(new Intent(MainActivity.this, WelcomeActivity.class));
+                finish();
+            }, 3000);
+        }
     }
 
     @Override
@@ -126,5 +141,25 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        registerReceiver(receiver, intentFilter);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //IronSource.onResume(this);
+        registerReceiver(receiver, intentFilter);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        //IronSource.onPause(this);
+        unregisterReceiver(receiver);
     }
 }

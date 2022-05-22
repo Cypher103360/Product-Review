@@ -2,72 +2,77 @@ package com.pr.productkereview.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Toast;
+import android.os.Handler;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.pr.productkereview.R;
 import com.pr.productkereview.databinding.ActivityWelcomeBinding;
-import com.pr.productkereview.models.MessageModel;
-import com.pr.productkereview.utils.ApiInterface;
-import com.pr.productkereview.utils.ApiWebServices;
 import com.pr.productkereview.utils.CommonMethods;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class WelcomeActivity extends AppCompatActivity {
     ActivityWelcomeBinding binding;
     MaterialAlertDialogBuilder builder;
-    ApiInterface apiInterface;
-    Map<String, String> map = new HashMap<>();
+    // ApiInterface apiInterface;
+    //  Map<String, String> map = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityWelcomeBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        apiInterface = ApiWebServices.getApiInterface();
+        // apiInterface = ApiWebServices.getApiInterface();
 
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
-        if (account != null) {
-            String name = account.getDisplayName();
-            String email = account.getEmail();
-            map.put("name", name);
-            map.put("email", email);
-            uploadUserData(map);
-        }
+//        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+//        if (account != null) {
+//            String name = account.getDisplayName();
+//            String email = account.getEmail();
+//            map.put("name", name);
+//            map.put("email", email);
+//            uploadUserData(map);
+//        }
 
-        binding.getStartedBtn.setOnClickListener(v -> {
-            Intent intent = new Intent(WelcomeActivity.this, HomeActivity.class);
-            startActivity(intent);
-        });
+//        ObjectAnimator animY = ObjectAnimator.ofFloat(binding.getStartedBtn, "translationY", -100f, 0f);
+//        animY.setDuration(1000);//1sec
+//        animY.setInterpolator(new BounceInterpolator());
+//        animY.setRepeatCount(2);
+//        animY.start();
+
+        final Animation animation = AnimationUtils.loadAnimation(this, R.anim.bounce);
+        binding.getStartedBtn.setAnimation(animation);
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                binding.getStartedBtn.setOnClickListener(v -> {
+                    Intent intent = new Intent(WelcomeActivity.this, HomeActivity.class);
+                    startActivity(intent);
+                });
+            }
+        }, 3000);
+
+
     }
 
-    private void uploadUserData(Map<String, String> map) {
-        Call<MessageModel> call = apiInterface.uploadUserData(map);
-        call.enqueue(new Callback<MessageModel>() {
-            @Override
-            public void onResponse(@NonNull Call<MessageModel> call, @NonNull Response<MessageModel> response) {
-                if (response.isSuccessful()) {
-                    assert response.body() != null;
-//                    Toast.makeText(WelcomeActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<MessageModel> call, @NonNull Throwable t) {
-            }
-        });
-    }
+//    private void uploadUserData(Map<String, String> map) {
+//        Call<MessageModel> call = apiInterface.uploadUserData(map);
+//        call.enqueue(new Callback<MessageModel>() {
+//            @Override
+//            public void onResponse(@NonNull Call<MessageModel> call, @NonNull Response<MessageModel> response) {
+//                if (response.isSuccessful()) {
+//                    assert response.body() != null;
+////                    Toast.makeText(WelcomeActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(@NonNull Call<MessageModel> call, @NonNull Throwable t) {
+//            }
+//        });
+//    }
 
     @Override
     public void onBackPressed() {

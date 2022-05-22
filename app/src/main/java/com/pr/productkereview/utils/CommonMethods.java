@@ -11,6 +11,8 @@ import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;
 
+import com.facebook.shimmer.Shimmer;
+import com.facebook.shimmer.ShimmerDrawable;
 import com.pr.productkereview.BuildConfig;
 import com.pr.productkereview.R;
 
@@ -28,6 +30,21 @@ public class CommonMethods {
         loadingDialog.getWindow().setBackgroundDrawable(ContextCompat.getDrawable(context, R.drawable.item_bg));
         loadingDialog.setCancelable(false);
         return loadingDialog;
+    }
+
+    public static ShimmerDrawable setShimmer(Context context) {
+        Shimmer shimmer = new Shimmer.AlphaHighlightBuilder()// The attributes for a ShimmerDrawable is set by this builder
+                .setDuration(700) // how long the shimmering animation takes to do one full sweep
+                .setBaseAlpha(0.6f) //the alpha of the underlying children
+                .setHighlightAlpha(0.8f) // the shimmer alpha amount
+                .setDirection(Shimmer.Direction.LEFT_TO_RIGHT)
+                .setAutoStart(true)
+                .build();
+
+        // This is the placeholder for the imageView
+        ShimmerDrawable shimmerDrawable = new ShimmerDrawable();
+        shimmerDrawable.setShimmer(shimmer);
+        return shimmerDrawable;
     }
 
     public static void shareApp(Context context) {
@@ -64,7 +81,7 @@ public class CommonMethods {
         Intent i = new Intent(Intent.ACTION_SEND);
         i.setPackage("com.google.android.gm");
         i.setType("message/rfc822");
-        i.putExtra(Intent.EXTRA_EMAIL, new String[]{"easyloanguide.loantips@gmail.com"});
+        i.putExtra(Intent.EXTRA_EMAIL, new String[]{"help.productreviews@gmail.com"});
         i.putExtra(Intent.EXTRA_SUBJECT, "Hello");
         i.putExtra(Intent.EXTRA_TEXT, "I need some help regarding ");
         try {

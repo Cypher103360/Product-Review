@@ -1,7 +1,7 @@
 package com.pr.productkereview.adapters;
 
-import com.pr.productkereview.models.BestProducts.BestProductModel;
+import com.pr.productkereview.models.AllProducts.ProductModel;
 
 public interface BestProductClickInterface {
-    void OnBestProductClicked(BestProductModel bestProductModel);
+    void OnBestProductClicked(ProductModel bestProductModel);
 }
