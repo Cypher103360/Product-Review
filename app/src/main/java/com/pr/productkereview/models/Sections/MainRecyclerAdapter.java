@@ -49,7 +49,7 @@ public class MainRecyclerAdapter extends RecyclerView.Adapter<MainRecyclerAdapte
     }
 
     @Override
-    public void OnLatestProductClicked(ProductModel latestProductModel) {
+    public void OnLatestProductClicked(ProductModel latestProductModel, int position) {
 
     }
 

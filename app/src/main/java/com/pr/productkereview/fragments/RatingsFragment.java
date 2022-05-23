@@ -26,10 +26,10 @@ public class RatingsFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentRatingsBinding.inflate(inflater, container, false);
         materialButtonToggleGroup = binding.materialButtonToggleGroup;
-        Glide.with(requireActivity()).load(ApiWebServices.base_url + "all_products_images/"
-                        + productModel.getBanner())
-                .placeholder(R.drawable.banner_picture)
-                .into(binding.ratingBannerImg);
+//        Glide.with(requireActivity()).load(ApiWebServices.base_url + "all_products_images/"
+//                        + productModel.getBanner())
+//                .placeholder(R.drawable.banner_picture)
+//                .into(binding.ratingBannerImg);
         binding.ratingWebView.loadData(productModel.getRatingEnglish(), "text/html", "UTF-8");
         materialButtonToggleGroup.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
             if (isChecked){

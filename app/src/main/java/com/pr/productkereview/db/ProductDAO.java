@@ -3,6 +3,7 @@ package com.pr.productkereview.db;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
@@ -12,7 +13,8 @@ import java.util.List;
 
 @Dao
 public interface ProductDAO {
-    @Insert
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     public long addProducts(Products products);
 
     @Update
@@ -21,9 +23,17 @@ public interface ProductDAO {
     @Delete
     public void deleteProducts(Products products);
 
+    @Query("DELETE FROM products where id NOT IN (SELECT id from products ORDER BY id DESC LIMIT 3)")
+    public void deleteItemsByLimit();
+
+    @Query("DELETE FROM products where id ==:productId")
+    public void deleteDuplicateItems(int productId);
+
     @Query("select * from products")
     public List<Products> getProducts();
 
     @Query("select * from products where id ==:productId")
     public Products getProduct(long productId);
+
+
 }

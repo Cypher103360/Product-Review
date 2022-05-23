@@ -19,13 +19,14 @@ import com.pr.productkereview.R;
 import com.pr.productkereview.db.entity.Products;
 import com.pr.productkereview.models.AllProducts.ProductModel;
 import com.pr.productkereview.models.BuyingGuides.BuyingGuidesModel;
+import com.pr.productkereview.utils.ApiWebServices;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class BuyingGuidesAdapter extends RecyclerView.Adapter<BuyingGuidesAdapter.ViewHolder> {
-    List<ProductModel> buyingGuidesModelList = new ArrayList<>();
+    List<Products> buyingGuidesModelList = new ArrayList<>();
     Context context;
     BuyingGuidesClickInterface buyingGuidesClickInterface;
 
@@ -44,8 +45,8 @@ public class BuyingGuidesAdapter extends RecyclerView.Adapter<BuyingGuidesAdapte
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        ProductModel buyingGuidesModel = buyingGuidesModelList.get(position);
-        Glide.with(context).load(buyingGuidesModel.getProductImage()).into(holder.itemImage);
+        Products buyingGuidesModel = buyingGuidesModelList.get(position);
+        Glide.with(context).load(ApiWebServices.base_url + "all_products_images/"+buyingGuidesModel.getProductImage()).into(holder.itemImage);
         holder.itemTitle.setText(Html.fromHtml(buyingGuidesModel.getProductTitle(),Html.FROM_HTML_MODE_LEGACY));
         holder.itemView.setOnClickListener(v -> {
             buyingGuidesClickInterface.OnBuyingGuidesClicked(buyingGuidesModelList.get(position));
@@ -58,7 +59,7 @@ public class BuyingGuidesAdapter extends RecyclerView.Adapter<BuyingGuidesAdapte
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    public void updateList(List<ProductModel> buyingGuidesModels){
+    public void updateList(List<Products> buyingGuidesModels){
         buyingGuidesModelList.clear();
         buyingGuidesModelList.addAll(buyingGuidesModels);
         Collections.reverse(buyingGuidesModelList);

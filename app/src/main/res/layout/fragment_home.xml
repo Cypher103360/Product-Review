@@ -51,7 +51,7 @@
                         android:fitsSystemWindows="true"
                         app:iss_auto_cycle="true"
                         app:iss_delay="0"
-                        app:iss_period="1000"
+                        app:iss_period="3000"
                         app:iss_placeholder="@drawable/banner_picture" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>

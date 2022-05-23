@@ -23,7 +23,6 @@ import com.pr.productkereview.adapters.trendingProducts.TrendingProductInterface
 import com.pr.productkereview.databinding.ActivityShowAllItemsBinding;
 import com.pr.productkereview.models.AllProducts.BestProductModelFactory;
 import com.pr.productkereview.models.AllProducts.BestProductViewModel;
-import com.pr.productkereview.models.AllProducts.LatestProductModelFactory;
 import com.pr.productkereview.models.AllProducts.ProductModel;
 import com.pr.productkereview.models.AllProducts.ProductModelFactory;
 import com.pr.productkereview.models.AllProducts.ProductViewModel;
@@ -184,7 +183,7 @@ public class ShowAllItemsActivity extends AppCompatActivity implements LatestPro
     }
 
     @Override
-    public void OnLatestProductClicked(ProductModel latestProductModel) {
+    public void OnLatestProductClicked(ProductModel latestProductModel, int position) {
         Intent intent = new Intent(ShowAllItemsActivity.this, ItemDetailsActivity.class);
         Bundle bundle = new Bundle();
         bundle.putSerializable("latest",latestProductModel);

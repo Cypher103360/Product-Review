@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -87,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
         binding.myText.setVisibility(View.VISIBLE);
         binding.lottieNoInternet.setVisibility(View.GONE);
         binding.tvNotConnected.setVisibility(View.GONE);
-        binding.mainContainer.setBackgroundColor(Color.parseColor("#001F73"));
+        binding.mainContainer.setBackgroundColor(ContextCompat.getColor(this,R.color.bg_color));
         if (count == 2) {
             new Handler().postDelayed(() -> {
 //                GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(MainActivity.this);
@@ -98,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
 //                }
                 startActivity(new Intent(MainActivity.this, WelcomeActivity.class));
                 finish();
-            }, 3000);
+            }, 2400);
         }
     }
 

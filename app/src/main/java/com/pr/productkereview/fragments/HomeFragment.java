@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -42,7 +43,6 @@ import com.pr.productkereview.models.AllProducts.LatestProductModelFactory;
 import com.pr.productkereview.models.AllProducts.ProductModel;
 import com.pr.productkereview.models.AllProducts.ProductViewModel;
 import com.pr.productkereview.models.BannerImages.BannerImageModel;
-import com.pr.productkereview.models.BuyingGuides.BuyingGuidesModel;
 import com.pr.productkereview.models.TopBrands.BrandViewModel;
 import com.pr.productkereview.models.TopBrands.BrandsModel;
 import com.pr.productkereview.models.UrlsModels.UrlModel;
@@ -73,7 +73,7 @@ public class HomeFragment extends Fragment implements LatestProductClickInterfac
     List<ProductModel> latestProductModelList = new ArrayList<>();
     List<ProductModel> bestProductModelList = new ArrayList<>();
     List<BrandsModel> topBrandsModelList = new ArrayList<>();
-    List<ProductModel> buyingGuidesModelList = new ArrayList<>();
+    List<Products> buyingGuidesModelList = new ArrayList<>();
 
     LatestProductAdapter latestProductAdapter;
     BestProductAdapter bestProductAdapter;
@@ -89,6 +89,7 @@ public class HomeFragment extends Fragment implements LatestProductClickInterfac
                              Bundle savedInstanceState) {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         apiInterface = ApiWebServices.getApiInterface();
+
         brandViewModel = new ViewModelProvider(requireActivity()).get(BrandViewModel.class);
 
         latestProductViewModel = new ViewModelProvider(requireActivity(),
@@ -159,17 +160,22 @@ public class HomeFragment extends Fragment implements LatestProductClickInterfac
         fetchUrls("site");
         fetchLatestProducts();
         fetchBestProducts();
+        fetchUserClickedProducts();
+
         binding.homeSwipeRefreshLayout.setOnRefreshListener(() -> {
             fetchBanners();
             fetchTopBrands();
             fetchUrls("site");
             fetchLatestProducts();
             fetchBestProducts();
+            fetchUserClickedProducts();
             binding.homeSwipeRefreshLayout.setRefreshing(false);
         });
 
-        buyingGuidesAdapter.updateList(buyingGuidesModelList);
+        return binding.getRoot();
+    }
 
+    private void fetchUserClickedProducts() {
         // Room Database
         productAppDatabase = Room.databaseBuilder(
                         requireActivity(),
@@ -178,10 +184,10 @@ public class HomeFragment extends Fragment implements LatestProductClickInterfac
                 .allowMainThreadQueries()
                 .build();
 
+        productAppDatabase.getProductDAO().deleteItemsByLimit();
         buyingGuidesModelList.clear();
-       // buyingGuidesModelList.addAll(productAppDatabase.getProductDAO().getProducts());
-
-        return binding.getRoot();
+        buyingGuidesModelList.addAll(productAppDatabase.getProductDAO().getProducts());
+        buyingGuidesAdapter.updateList(buyingGuidesModelList);
     }
 
     private void fetchLatestProducts() {
@@ -292,14 +298,42 @@ public class HomeFragment extends Fragment implements LatestProductClickInterfac
     }
 
     @Override
-    public void OnLatestProductClicked(ProductModel latestProductModel) {
+    public void OnLatestProductClicked(ProductModel latestProductModel, int position) {
         Intent intent = new Intent(requireActivity(), ItemDetailsActivity.class);
         Bundle bundle = new Bundle();
         bundle.putSerializable("latest", latestProductModel);
         intent.putExtras(bundle);
         startActivity(intent);
 
-       // productAppDatabase.getProductDAO().addProducts((Products) latestProductModel);
+        fetchUserClickedProducts();
+
+        // Room Database
+        productAppDatabase = Room.databaseBuilder(requireActivity(), ProductAppDatabase.class, "ProductDB").allowMainThreadQueries()
+                .build();
+
+        productAppDatabase.getProductDAO().addProducts(new Products(0, latestProductModel.getCategoryId(), latestProductModel.getProductImage()
+                , latestProductModel.getBanner(), latestProductModel.getProductTitle(), latestProductModel.getBuingGuideHindi(),
+                latestProductModel.getBuingGuideEnglish(), latestProductModel.getRatingHindi(), latestProductModel.getRatingEnglish()
+                , latestProductModel.getLatestProduct(), latestProductModel.getBestProduct(), latestProductModel.getTrendingProduct()));
+
+        productAppDatabase.getProductDAO().deleteDuplicateItems(Integer.parseInt(latestProductModel.getId()));
+
+
+//        List<Products> productsList = productAppDatabase.getProductDAO().getProducts();
+//        for (Products products : productsList) {
+//            if (!products.getProductTitle().equals(latestProductModel.getProductTitle()) || products.getProductTitle() == null) {
+//                Log.d("gggggg", products.getProductTitle() + " " + latestProductModel.getProductTitle());
+//
+//                productAppDatabase.getProductDAO().addProducts(new Products(0, latestProductModel.getCategoryId(), latestProductModel.getProductImage()
+//                        , latestProductModel.getBanner(), latestProductModel.getProductTitle(), latestProductModel.getBuingGuideHindi(),
+//                        latestProductModel.getBuingGuideEnglish(), latestProductModel.getRatingHindi(), latestProductModel.getRatingEnglish()
+//                        , latestProductModel.getLatestProduct(), latestProductModel.getBestProduct(), latestProductModel.getTrendingProduct()));
+//
+//
+//            } else {
+//                Toast.makeText(requireActivity(), "Title matched", Toast.LENGTH_SHORT).show();
+//            }
+//        }
     }
 
     @Override
@@ -309,7 +343,36 @@ public class HomeFragment extends Fragment implements LatestProductClickInterfac
         bundle.putSerializable("latest", bestProductModel);
         intent.putExtras(bundle);
         startActivity(intent);
-      //  productAppDatabase.getProductDAO().addProducts(bestProductModel);
+
+        fetchUserClickedProducts();
+
+        // Room Database
+        productAppDatabase = Room.databaseBuilder(requireActivity(), ProductAppDatabase.class, "ProductDB").allowMainThreadQueries()
+                .build();
+        productAppDatabase.getProductDAO().addProducts(new Products(0, bestProductModel.getCategoryId(), bestProductModel.getProductImage()
+                , bestProductModel.getBanner(), bestProductModel.getProductTitle(), bestProductModel.getBuingGuideHindi(),
+                bestProductModel.getBuingGuideEnglish(), bestProductModel.getRatingHindi(), bestProductModel.getRatingEnglish()
+                , bestProductModel.getLatestProduct(), bestProductModel.getBestProduct(), bestProductModel.getTrendingProduct()));
+
+        productAppDatabase.getProductDAO().deleteDuplicateItems(Integer.parseInt(bestProductModel.getId()));
+
+
+//        List<Products> productsList = productAppDatabase.getProductDAO().getProducts();
+//        for (Products products : productsList) {
+//
+//            if (!products.getProductTitle().equals(bestProductModel.getProductTitle())) {
+//
+//                productAppDatabase.getProductDAO().addProducts(new Products(0, bestProductModel.getCategoryId(), bestProductModel.getProductImage()
+//                        , bestProductModel.getBanner(), bestProductModel.getProductTitle(), bestProductModel.getBuingGuideHindi(),
+//                        bestProductModel.getBuingGuideEnglish(), bestProductModel.getRatingHindi(), bestProductModel.getRatingEnglish()
+//                        , bestProductModel.getLatestProduct(), bestProductModel.getBestProduct(), bestProductModel.getTrendingProduct()));
+//
+//
+//            } else {
+//                Toast.makeText(requireActivity(), "Title matched", Toast.LENGTH_SHORT).show();
+//            }
+//        }
+
     }
 
     @Override
@@ -331,6 +394,7 @@ public class HomeFragment extends Fragment implements LatestProductClickInterfac
         fetchUrls("site");
         fetchLatestProducts();
         fetchBestProducts();
+        fetchUserClickedProducts();
     }
 
     @SuppressLint("QueryPermissionsNeeded")
@@ -343,7 +407,19 @@ public class HomeFragment extends Fragment implements LatestProductClickInterfac
     }
 
     @Override
-    public void OnBuyingGuidesClicked(ProductModel buyingGuidesModel) {
+    public void OnBuyingGuidesClicked(Products buyingGuidesModel) {
+        // Room Database
+        productAppDatabase = Room.databaseBuilder(requireActivity(), ProductAppDatabase.class, "ProductDB").allowMainThreadQueries()
+                .build();
+        productAppDatabase.getProductDAO().deleteProducts(buyingGuidesModel);
+//        Intent intent = new Intent(requireActivity(), ItemDetailsActivity.class);
+//        Bundle bundle = new Bundle();
+//        bundle.putSerializable("latest", new Products(buyingGuidesModel.getId(), buyingGuidesModel.getCategoryId(), buyingGuidesModel.getProductImage()
+//                , buyingGuidesModel.getBanner(), buyingGuidesModel.getProductTitle(), buyingGuidesModel.getBuyingGuideHindi(),
+//                buyingGuidesModel.getBuyingGuideEnglish(), buyingGuidesModel.getRatingHindi(), buyingGuidesModel.getRatingEnglish()
+//                , buyingGuidesModel.getLatestProduct(), buyingGuidesModel.getBestProduct(), buyingGuidesModel.getTrendingProduct()));
+//        intent.putExtras(bundle);
+//        startActivity(intent);
 
     }
 }

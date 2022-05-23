@@ -60,7 +60,7 @@ public class LatestProductAdapter extends RecyclerView.Adapter<LatestProductAdap
                 .into(holder.itemImage);
         holder.itemTitle.setText(Html.fromHtml(latestProductModel.getProductTitle(),Html.FROM_HTML_MODE_LEGACY));
         holder.itemView.setOnClickListener(v -> {
-            latestProductClickInterface.OnLatestProductClicked(latestProductModelList.get(position));
+            latestProductClickInterface.OnLatestProductClicked(latestProductModelList.get(position),position);
         });
     }
 

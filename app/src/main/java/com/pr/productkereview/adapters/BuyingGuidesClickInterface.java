@@ -1,7 +1,7 @@
 package com.pr.productkereview.adapters;
 
-import com.pr.productkereview.models.AllProducts.ProductModel;
+import com.pr.productkereview.db.entity.Products;
 
 public interface BuyingGuidesClickInterface {
-    void OnBuyingGuidesClicked(ProductModel buyingGuidesModel);
+    void OnBuyingGuidesClicked(Products buyingGuidesModel);
 }

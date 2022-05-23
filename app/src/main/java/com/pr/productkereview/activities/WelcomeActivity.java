@@ -1,10 +1,14 @@
 package com.pr.productkereview.activities;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -12,6 +16,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.pr.productkereview.R;
 import com.pr.productkereview.databinding.ActivityWelcomeBinding;
 import com.pr.productkereview.utils.CommonMethods;
+
+import org.w3c.dom.Text;
 
 public class WelcomeActivity extends AppCompatActivity {
     ActivityWelcomeBinding binding;
@@ -76,24 +82,57 @@ public class WelcomeActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        builder = new MaterialAlertDialogBuilder(this);
-        builder.setTitle(R.string.app_name)
-                .setIcon(R.mipmap.ic_launcher)
-                .setMessage("Do You Really Want To Exit?\nAlso give us your rating")
-                .setNeutralButton("CANCEL", (dialog, which) -> {
-                });
 
+        ShowExitDialog();
 
-        builder.setNegativeButton("RATE APP", (dialog, which) -> CommonMethods.rateApp(getApplicationContext()))
-                .setPositiveButton("OK!!", (dialog, which) -> {
-                    Intent intent = new Intent(Intent.ACTION_MAIN);
-                    intent.addCategory(Intent.CATEGORY_HOME);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_TASK_ON_HOME | Intent.FLAG_ACTIVITY_NO_HISTORY);
-                    startActivity(intent);
-                    moveTaskToBack(true);
-                    System.exit(0);
+//        builder = new MaterialAlertDialogBuilder(this);
+//        builder.setTitle(R.string.app_name)
+//                .setIcon(R.mipmap.ic_launcher)
+//                .setMessage("Do You Really Want To Exit?\nAlso give us your rating")
+//                .setNeutralButton("CANCEL", (dialog, which) -> {
+//                });
+//
+//
+//        builder.setNegativeButton("RATE APP", (dialog, which) -> CommonMethods.rateApp(getApplicationContext()))
+//                .setPositiveButton("OK!!", (dialog, which) -> {
+//                    Intent intent = new Intent(Intent.ACTION_MAIN);
+//                    intent.addCategory(Intent.CATEGORY_HOME);
+//                    intent.setFlags(Intent.FLAG_ACTIVITY_TASK_ON_HOME | Intent.FLAG_ACTIVITY_NO_HISTORY);
+//                    startActivity(intent);
+//                    moveTaskToBack(true);
+//                    System.exit(0);
+//
+//                });
+//        builder.show();
+    }
 
-                });
-        builder.show();
+    private void ShowExitDialog() {
+        Dialog exitDialog = new Dialog(WelcomeActivity.this);
+        exitDialog.setContentView(R.layout.exit_dialog_layout);
+        exitDialog.getWindow().setLayout(600,ViewGroup.LayoutParams.WRAP_CONTENT);
+        exitDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        exitDialog.setCancelable(false);
+        exitDialog.show();
+
+        TextView rateNow = exitDialog.findViewById(R.id.rate_now);
+        TextView okBtn = exitDialog.findViewById(R.id.ok);
+        ImageView cancelBtn = exitDialog.findViewById(R.id.dismiss_btn);
+
+        cancelBtn.setOnClickListener(v -> {
+            exitDialog.dismiss();
+        });
+        okBtn.setOnClickListener(v -> {
+            Intent intent = new Intent(Intent.ACTION_MAIN);
+            intent.addCategory(Intent.CATEGORY_HOME);
+            intent.setFlags(Intent.FLAG_ACTIVITY_TASK_ON_HOME | Intent.FLAG_ACTIVITY_NO_HISTORY);
+            startActivity(intent);
+            moveTaskToBack(true);
+            System.exit(0);
+        });
+
+        rateNow.setOnClickListener(v -> {
+            CommonMethods.rateApp(getApplicationContext());
+        });
+
     }
 }

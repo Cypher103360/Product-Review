@@ -52,11 +52,13 @@ public class CommonMethods {
             Intent shareIntent = new Intent(Intent.ACTION_SEND);
             shareIntent.setType("text/plain");
             shareIntent.putExtra(Intent.EXTRA_SUBJECT, R.string.app_name);
-            String shareMessage = "Hey there," +
-                    "\n\nI got Genuine Advice Regards Loans while I was facing Financial issues that's Why\n" +
-                    "I am recommending you this Guide App\n" +
-                    "Install Now!" +
-                    "\n\n";
+            String shareMessage = "Hii, \n" +
+                    "Hope You R Enjoying\uD83E\uDD73\n" +
+                    "If Not,\n" +
+                    "\n" +
+                    "Let Me Share Something....\n" +
+                    "It's Really Good!\n" +
+                    "\n";
             shareMessage = shareMessage + "https://play.google.com/store/apps/details?id=" + BuildConfig.APPLICATION_ID + "\n\n";
             shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             shareIntent.putExtra(Intent.EXTRA_TEXT, shareMessage);
@@ -83,7 +85,14 @@ public class CommonMethods {
         i.setType("message/rfc822");
         i.putExtra(Intent.EXTRA_EMAIL, new String[]{"help.productreviews@gmail.com"});
         i.putExtra(Intent.EXTRA_SUBJECT, "Hello");
-        i.putExtra(Intent.EXTRA_TEXT, "I need some help regarding ");
+        i.putExtra(Intent.EXTRA_TEXT, "Hi Team PR,\n" +
+                "Its So Glad to Connect...\n" +
+                "\n" +
+                "This is \"Your Name\"\uD83D\uDE0A\n" +
+                "\n" +
+                "And I need Help Regards\n" +
+                "\n" +
+                "World's Best Product With Unbiased Review..... ");
         try {
             context.startActivity(Intent.createChooser(i, "Send mail..."));
         } catch (ActivityNotFoundException ex) {
@@ -94,7 +103,11 @@ public class CommonMethods {
 
     public static void whatsApp(Context context) throws UnsupportedEncodingException, PackageManager.NameNotFoundException {
         String contact = "+91 6396869782"; // use country code with your phone number
-        String url = "https://api.whatsapp.com/send?phone=" + contact + "&text=" + URLEncoder.encode("Hello, I need some help regarding ", "UTF-8");
+        String url = "https://api.whatsapp.com/send?phone=" + contact + "&text=" + URLEncoder.encode("Hi Team PR,\n" +
+                "This is \"Your Name\"\uD83D\uDE0A\n" +
+                "\n" +
+                "And I need Help Regards\n" +
+                "World's Best Unbiased Product Reviews.....", "UTF-8");
         try {
             PackageManager pm = context.getPackageManager();
             pm.getPackageInfo("com.whatsapp", PackageManager.GET_ACTIVITIES);

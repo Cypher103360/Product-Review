@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Product Review</string>
+    <string name="app_name">Product Reviews</string>
     <string name="title_activity_home">HomeActivity</string>
     <string name="tab_text_1">Tab 1</string>
     <string name="tab_text_2">Tab 2</string>
@@ -7,7 +7,7 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="todo">todo</string>
     <string name="home">Home</string>
-    <string name="expert_tips">Expert Tips</string>
+    <string name="expert_tips">Best Products</string>
     <string name="most_selling">Most Selling</string>
     <string name="share_it">Share me</string>
     <string name="rate_us">Rate us</string>
