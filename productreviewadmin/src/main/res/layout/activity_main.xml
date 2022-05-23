@@ -52,6 +52,22 @@
             android:textSize="20sp" />
 
         <Button
+            android:id="@+id/update_share_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="15dp"
+            android:text="Update Share Text"
+            android:textSize="20sp" />
+
+        <Button
+            android:id="@+id/update_whatsapp_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="15dp"
+            android:text="Update Whatsapp Text"
+            android:textSize="20sp" />
+
+        <Button
             android:id="@+id/show_category"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
