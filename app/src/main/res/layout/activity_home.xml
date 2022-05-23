@@ -9,14 +9,12 @@
 
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/navigation"
-        android:layout_width="match_parent"
+        android:layout_width="250dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:background="@color/bg_color"
+        android:background="@color/white"
         app:headerLayout="@layout/header"
         app:itemIconPadding="14dp"
-        app:itemIconTint="@color/drawable_item"
-        app:itemTextColor="@color/drawable_item"
         app:menu="@menu/menu">
 
         <TextView
@@ -48,7 +46,7 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="56dp">
+                android:layout_height="40dp">
 
                 <ImageView
                     android:id="@+id/nav_menu"
@@ -57,7 +55,7 @@
                     android:layout_marginStart="16dp"
                     android:contentDescription="@string/todo"
                     android:minHeight="?actionBarSize"
-                    android:src="@drawable/ic_baseline_menu_24"
+                    android:src="@drawable/menu_icon"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
@@ -77,8 +75,8 @@
 
                 <com.airbnb.lottie.LottieAnimationView
                     android:id="@+id/lottie_contact"
-                    android:layout_width="45dp"
-                    android:layout_height="45dp"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
                     android:layout_marginEnd="16dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -93,8 +91,10 @@
                 android:id="@+id/tabs"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:backgroundTint="@color/purple_500"
                 app:tabIndicatorColor="@color/btn_color"
-                app:tabGravity="start" />
+                app:tabSelectedTextColor="@color/white"
+                app:tabTextColor="#C5C5C5" />
         </com.google.android.material.appbar.AppBarLayout>
 
         <androidx.viewpager.widget.ViewPager

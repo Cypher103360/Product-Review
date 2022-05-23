@@ -1,7 +1,5 @@
 package com.pr.productkereview.models.BestProducts;
 
-import com.pr.productkereview.models.LatestProduct.LatestProductModel;
-
 import java.util.List;
 
 public class BestProductModelList {

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Product Review</string>
+    <string name="app_name">Product Reviews</string>
     <string name="title_activity_home">HomeActivity</string>
     <string name="tab_text_1">Tab 1</string>
     <string name="tab_text_2">Tab 2</string>
@@ -7,15 +7,21 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="todo">todo</string>
     <string name="home">Home</string>
-    <string name="expert_tips">Expert Tips</string>
+    <string name="expert_tips">Best Products</string>
     <string name="most_selling">Most Selling</string>
-    <string name="share_it">Share It</string>
+    <string name="share_it">Share me</string>
     <string name="rate_us">Rate us</string>
     <string name="contact_us">Contact us</string>
     <string name="privacy_policy">Privacy Policy</string>
     <string name="disclaimer">Disclaimer</string>
     <string name="sign_out">Sign Out</string>
     <string name="version">Version: %1$s</string>
+    <string name="disclaimer_text">All the Pictures available in this app come from Various sources of the Internet Including Public Domain.
+No Copyright Infringement is Intended, and a request to remove any of the Picture is Always Welcome.</string>
     <string name="no_connection">No Connection</string>
     <string name="item_name">Item name</string>
+    <string name="navigation_drawer_open">Open</string>
+    <string name="navigation_drawer_close">Close</string>
+    <string name="eng">Eng</string>
+    <string name="hin">Hin</string>
 </resources>

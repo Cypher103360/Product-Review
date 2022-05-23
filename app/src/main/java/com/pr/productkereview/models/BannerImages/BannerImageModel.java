@@ -1,12 +1,12 @@
 package com.pr.productkereview.models.BannerImages;
 
 public class BannerImageModel {
-    String id,Image,ImageUrl;
+    String id,image,url;
 
-    public BannerImageModel(String id, String image, String imageUrl) {
+    public BannerImageModel(String id, String image, String url) {
         this.id = id;
-        Image = image;
-        ImageUrl = imageUrl;
+        this.image = image;
+        this.url = url;
     }
 
     public String getId() {
@@ -14,10 +14,10 @@ public class BannerImageModel {
     }
 
     public String getImage() {
-        return Image;
+        return image;
     }
 
-    public String getImageUrl() {
-        return ImageUrl;
+    public String getUrl() {
+        return url;
     }
 }
