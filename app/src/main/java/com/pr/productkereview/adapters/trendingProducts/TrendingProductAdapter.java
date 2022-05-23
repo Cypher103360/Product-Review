@@ -63,7 +63,7 @@ public class TrendingProductAdapter extends RecyclerView.Adapter<TrendingProduct
 
         ConstraintLayout.LayoutParams params = new ConstraintLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
-                280
+                250
         );
         params.setMargins(10, 10, 10, 10);
         holder.rectangleLayoutCard.setLayoutParams(params);

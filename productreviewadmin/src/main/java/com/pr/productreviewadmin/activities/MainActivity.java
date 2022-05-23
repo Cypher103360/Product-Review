@@ -45,6 +45,8 @@ import com.pr.productreviewadmin.utils.Utils;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -104,6 +106,9 @@ public class MainActivity extends AppCompatActivity implements BannerInterface {
         binding.uploadTopBrands.setOnClickListener(view -> uploadTopBrandsDialog("brands"));
         binding.uploadExpertTipsUrl.setOnClickListener(view -> showUploadBannerDialog("tips", null));
         binding.uploadWebsiteUrl.setOnClickListener(view -> showUploadBannerDialog("site", null));
+        binding.updateShareText.setOnClickListener(v -> showUploadBannerDialog("share", null));
+        binding.updateWhatsappText.setOnClickListener(v -> showUploadBannerDialog("whatsapp", null));
+
         binding.showCategory.setOnClickListener(view -> {
             intent = new Intent(this, ShowCategoryActivity.class);
             intent.putExtra("key", "cat");
@@ -510,63 +515,34 @@ public class MainActivity extends AppCompatActivity implements BannerInterface {
         uploadBannerDialog.setCancelable(false);
         uploadBannerDialog.show();
 
-        switch (key) {
-            case "banner":
-                uploadBannerLayoutBinding.selectImage.setVisibility(View.VISIBLE);
-                break;
-            case "tips": {
-                Call<UrlModel> callUrl = apiInterface.fetchUrls("tips");
-                callUrl.enqueue(new Callback<UrlModel>() {
-                    @Override
-                    public void onResponse(@NonNull Call<UrlModel> call, @NonNull Response<UrlModel> response) {
+        if ("banner".equals(key)) {
+            uploadBannerLayoutBinding.selectImage.setVisibility(View.VISIBLE);
+        } else if ("tips".equals(key) || "site".equals(key) || "share".equals(key) || "whatsapp".equals(key)) {
+            Call<UrlModel> callUrl = apiInterface.fetchUrls(key);
+            callUrl.enqueue(new Callback<UrlModel>() {
+                @Override
+                public void onResponse(@NonNull Call<UrlModel> call, @NonNull Response<UrlModel> response) {
 
-                        if (response.isSuccessful()) {
-                            urlId = Objects.requireNonNull(response.body()).getId();
-                            urls = response.body().getUrl();
-                            uploadBannerLayoutBinding.url.setText(urls);
-
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(@NonNull Call<UrlModel> call, @NonNull Throwable t) {
+                    if (response.isSuccessful()) {
+                        urlId = Objects.requireNonNull(response.body()).getId();
+                        urls = response.body().getUrl();
+                        uploadBannerLayoutBinding.url.setText(urls);
 
                     }
-                });
+                }
 
-                uploadBannerLayoutBinding.selectImage.setVisibility(View.GONE);
-                break;
-            }
-            case "site": {
-                Call<UrlModel> callUrl = apiInterface.fetchUrls("site");
-                callUrl.enqueue(new Callback<UrlModel>() {
-                    @Override
-                    public void onResponse(@NonNull Call<UrlModel> call, @NonNull Response<UrlModel> response) {
+                @Override
+                public void onFailure(@NonNull Call<UrlModel> call, @NonNull Throwable t) {
 
-                        if (response.isSuccessful()) {
-                            urlId = Objects.requireNonNull(response.body()).getId();
-                            urls = response.body().getUrl();
-                            uploadBannerLayoutBinding.url.setText(urls);
-                        }
-                    }
+                }
+            });
 
-                    @Override
-                    public void onFailure(@NonNull Call<UrlModel> call, @NonNull Throwable t) {
-
-                    }
-                });
-
-                uploadBannerLayoutBinding.selectImage.setVisibility(View.GONE);
-                break;
-            }
-            case "update": {
-                encodedImage2 = bannerModel.getImage();
-                encodedImage = bannerModel.getImage();
-                Glide.with(this).load(ApiWebServices.base_url + "bannerImages/" + bannerModel.getImage()).into(uploadBannerLayoutBinding.selectImage);
-                uploadBannerLayoutBinding.url.setText(bannerModel.getUrl());
-                break;
-            }
-
+            uploadBannerLayoutBinding.selectImage.setVisibility(View.GONE);
+        } else if ("update".equals(key)) {
+            encodedImage2 = bannerModel.getImage();
+            encodedImage = bannerModel.getImage();
+            Glide.with(this).load(ApiWebServices.base_url + "bannerImages/" + bannerModel.getImage()).into(uploadBannerLayoutBinding.selectImage);
+            uploadBannerLayoutBinding.url.setText(bannerModel.getUrl());
         }
 
         uploadBannerLayoutBinding.backBtn.setOnClickListener(view -> uploadBannerDialog.dismiss());
@@ -595,6 +571,8 @@ public class MainActivity extends AppCompatActivity implements BannerInterface {
                     break;
                 case "tips":
                 case "site":
+                case "share":
+                case "whatsapp":
 
                     if (TextUtils.isEmpty(url)) {
                         uploadBannerLayoutBinding.url.setError("Url Required");
@@ -602,7 +580,11 @@ public class MainActivity extends AppCompatActivity implements BannerInterface {
                         loadingDialog.dismiss();
                     } else {
                         map.put("id", urlId);
-                        map.put("url", url);
+                        try {
+                            map.put("url", URLEncoder.encode(url,"UTF-8"));
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
+                        }
                         call = apiInterface.updateUrls(map);
                         uploadBanners(call, uploadBannerDialog);
 

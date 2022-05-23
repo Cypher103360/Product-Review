@@ -9,18 +9,25 @@ import android.net.Uri;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
 import com.facebook.shimmer.Shimmer;
 import com.facebook.shimmer.ShimmerDrawable;
 import com.pr.productkereview.BuildConfig;
 import com.pr.productkereview.R;
+import com.pr.productkereview.models.UrlsModels.UrlModel;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-public class CommonMethods {
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
+public class CommonMethods {
+    static ApiInterface apiInterface = ApiWebServices.getApiInterface();
+    static String shareText;
 
     public static Dialog getLoadingDialog(Context context) {
         Dialog loadingDialog;
@@ -47,7 +54,7 @@ public class CommonMethods {
         return shimmerDrawable;
     }
 
-    public static void shareApp(Context context) {
+    public static void shareApp(Context context, String share) {
         try {
             Intent shareIntent = new Intent(Intent.ACTION_SEND);
             shareIntent.setType("text/plain");
@@ -58,7 +65,7 @@ public class CommonMethods {
                     "\n" +
                     "Let Me Share Something....\n" +
                     "It's Really Good!\n" +
-                    "\n";
+                    "\n" + share + "\n";
             shareMessage = shareMessage + "https://play.google.com/store/apps/details?id=" + BuildConfig.APPLICATION_ID + "\n\n";
             shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             shareIntent.putExtra(Intent.EXTRA_TEXT, shareMessage);
@@ -66,6 +73,27 @@ public class CommonMethods {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static String fetchUrls(String tips) {
+        Call<UrlModel> call = apiInterface.getUrls(tips);
+        call.enqueue(new Callback<UrlModel>() {
+            @Override
+            public void onResponse(@NonNull Call<UrlModel> call, @NonNull Response<UrlModel> response) {
+                if (response.isSuccessful()) {
+                    assert response.body() != null;
+//                    webUrlId = response.body().getId();
+                    shareText = response.body().getUrl();
+                    //Log.d("urls",weburl);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<UrlModel> call, @NonNull Throwable t) {
+
+            }
+        });
+        return shareText;
     }
 
     public static void rateApp(Context context) {

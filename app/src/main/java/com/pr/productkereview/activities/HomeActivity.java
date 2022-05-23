@@ -15,6 +15,7 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -64,7 +65,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     ConstraintLayout categoryContainer;
     GoogleSignInOptions gso;
     GoogleSignInClient gsc;
-    String weburl, webUrlId;
+    String weburl, webUrlId,shareText;
     SectionsPagerAdapter sectionsPagerAdapter;
     ActivityHomeBinding binding;
     ApiInterface apiInterface;
@@ -94,6 +95,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         binding.tabs.setVisibility(View.VISIBLE);
         enableNavItems();
         fetchUrls("tips");
+        fetchShareText("share");
         if (count == 2) {
             ViewPager viewPager = binding.viewPager;
             viewPager.setAdapter(sectionsPagerAdapter);
@@ -163,7 +165,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         sectionsPagerAdapter.addFragments(new CategoryFragment(), "Category");
         sectionsPagerAdapter.addFragments(new TrendingProductFragment(), "Trending");
 
-
     }
 
     public void fetchUrls(String tips) {
@@ -175,6 +176,25 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                     assert response.body() != null;
                     webUrlId = response.body().getId();
                     weburl = response.body().getUrl();
+                    //Log.d("urls",weburl);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<UrlModel> call, @NonNull Throwable t) {
+
+            }
+        });
+    }
+
+    public void fetchShareText(String share) {
+        Call<UrlModel> call = apiInterface.getUrls(share);
+        call.enqueue(new Callback<UrlModel>() {
+            @Override
+            public void onResponse(@NonNull Call<UrlModel> call, @NonNull Response<UrlModel> response) {
+                if (response.isSuccessful()) {
+                    assert response.body() != null;
+                    shareText = response.body().getUrl();
                     //Log.d("urls",weburl);
                 }
             }
@@ -334,7 +354,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             case R.id.nav_share:
                 bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "Share Menu");
                 mFirebaseAnalytics.logEvent("Clicked_On_Share_Menu", bundle);
-                CommonMethods.shareApp(HomeActivity.this);
+                CommonMethods.shareApp(HomeActivity.this,shareText);
                 break;
 
             case R.id.nav_rate:
