@@ -9,7 +9,9 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
+import androidx.room.Room;
 
+import com.pr.productkereview.R;
 import com.pr.productkereview.adapters.BestProductAdapter;
 import com.pr.productkereview.adapters.BestProductClickInterface;
 import com.pr.productkereview.adapters.LatestProductAdapter;
@@ -21,6 +23,8 @@ import com.pr.productkereview.adapters.topBrands.TopBrandsClickInterface;
 import com.pr.productkereview.adapters.trendingProducts.TrendingProductAdapter;
 import com.pr.productkereview.adapters.trendingProducts.TrendingProductInterface;
 import com.pr.productkereview.databinding.ActivityShowAllItemsBinding;
+import com.pr.productkereview.db.ProductAppDatabase;
+import com.pr.productkereview.db.entity.Products;
 import com.pr.productkereview.models.AllProducts.BestProductModelFactory;
 import com.pr.productkereview.models.AllProducts.BestProductViewModel;
 import com.pr.productkereview.models.AllProducts.ProductModel;
@@ -31,6 +35,7 @@ import com.pr.productkereview.models.AllProducts.TrendingProductViewModel;
 import com.pr.productkereview.models.TopBrands.BrandViewModel;
 import com.pr.productkereview.models.TopBrands.BrandsModel;
 import com.pr.productkereview.utils.CommonMethods;
+import com.pr.productkereview.utils.ShowAds;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,6 +59,10 @@ public class ShowAllItemsActivity extends AppCompatActivity implements LatestPro
     TrendingProductViewModel trendingProductViewModel;
     String key, productId;
     Dialog loading;
+    ShowAds showAds;
+    // Room Database
+    private ProductAppDatabase productAppDatabase;
+
 
     // List<Section> sectionList = new ArrayList<>();
     // MainRecyclerAdapter mainRecyclerAdapter;
@@ -69,11 +78,15 @@ public class ShowAllItemsActivity extends AppCompatActivity implements LatestPro
         binding.backIcon.setOnClickListener(v -> onBackPressed());
         loading = CommonMethods.getLoadingDialog(ShowAllItemsActivity.this);
         loading.show();
-
+        showAds = new ShowAds();
+        getLifecycle().addObserver(showAds);
+        showAds.showBottomBanner(this, findViewById(R.id.adView_bottom));
+        showAds.showTopBanner(this, findViewById(R.id.adView_top));
+        productAppDatabase = Room.databaseBuilder(this, ProductAppDatabase.class, "ProductDB").allowMainThreadQueries()
+                .build();
         StaggeredGridLayoutManager gridLayoutManager =
                 new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
         binding.allItemsRecyclerview.setLayoutManager(gridLayoutManager);
-        binding.allItemsRecyclerview.setHasFixedSize(true);
         binding.allItemsRecyclerview.setNestedScrollingEnabled(false);
 
 
@@ -184,24 +197,47 @@ public class ShowAllItemsActivity extends AppCompatActivity implements LatestPro
 
     @Override
     public void OnLatestProductClicked(ProductModel latestProductModel, int position) {
+        boolean checkProductExistence = productAppDatabase.getProductDAO().getProductByTitle(latestProductModel.getProductTitle());
+        if (!checkProductExistence) {
+            productAppDatabase.getProductDAO().addProducts(new Products(0, latestProductModel.getCategoryId(), latestProductModel.getProductImage()
+                    , latestProductModel.getBanner(), latestProductModel.getProductTitle(), latestProductModel.getBuingGuideHindi(),
+                    latestProductModel.getBuingGuideEnglish(), latestProductModel.getRatingHindi(), latestProductModel.getRatingEnglish()
+                    , latestProductModel.getLatestProduct(), latestProductModel.getBestProduct(), latestProductModel.getTrendingProduct()));
+
+        }
+        showAds.destroyBanner();
+        showAds.showInterstitialAds(this);
         Intent intent = new Intent(ShowAllItemsActivity.this, ItemDetailsActivity.class);
         Bundle bundle = new Bundle();
-        bundle.putSerializable("latest",latestProductModel);
+        bundle.putSerializable("latest", latestProductModel);
         intent.putExtras(bundle);
         startActivity(intent);
     }
 
     @Override
     public void OnBestProductClicked(ProductModel bestProductModel) {
+        boolean checkProductExistence = productAppDatabase.getProductDAO().getProductByTitle(bestProductModel.getProductTitle());
+        if (!checkProductExistence) {
+            productAppDatabase.getProductDAO().addProducts(new Products(0, bestProductModel.getCategoryId(), bestProductModel.getProductImage()
+                    , bestProductModel.getBanner(), bestProductModel.getProductTitle(), bestProductModel.getBuingGuideHindi(),
+                    bestProductModel.getBuingGuideEnglish(), bestProductModel.getRatingHindi(), bestProductModel.getRatingEnglish()
+                    , bestProductModel.getLatestProduct(), bestProductModel.getBestProduct(), bestProductModel.getTrendingProduct()));
+
+        }
+        showAds.destroyBanner();
+        showAds.showInterstitialAds(this);
         Intent intent = new Intent(ShowAllItemsActivity.this, ItemDetailsActivity.class);
         Bundle bundle = new Bundle();
-        bundle.putSerializable("latest",bestProductModel);
+        bundle.putSerializable("latest", bestProductModel);
         intent.putExtras(bundle);
         startActivity(intent);
     }
 
     @Override
     public void OnTopBrandClicked(BrandsModel topBrandsModel) {
+
+        showAds.destroyBanner();
+        showAds.showInterstitialAds(this);
         Intent intent = new Intent(ShowAllItemsActivity.this, TopBrandDetailsActivity.class);
         intent.putExtra("img", topBrandsModel.getBanner());
         intent.putExtra("title", topBrandsModel.getTitle());
@@ -214,22 +250,44 @@ public class ShowAllItemsActivity extends AppCompatActivity implements LatestPro
     public void onBackPressed() {
         super.onBackPressed();
         finish();
+        showAds.destroyBanner();
     }
 
     @Override
     public void OnProductClicked(ProductModel productModel) {
+        boolean checkProductExistence = productAppDatabase.getProductDAO().getProductByTitle(productModel.getProductTitle());
+        if (!checkProductExistence) {
+            productAppDatabase.getProductDAO().addProducts(new Products(0, productModel.getCategoryId(), productModel.getProductImage()
+                    , productModel.getBanner(), productModel.getProductTitle(), productModel.getBuingGuideHindi(),
+                    productModel.getBuingGuideEnglish(), productModel.getRatingHindi(), productModel.getRatingEnglish()
+                    , productModel.getLatestProduct(), productModel.getBestProduct(), productModel.getTrendingProduct()));
+
+        }
+        showAds.destroyBanner();
+        showAds.showInterstitialAds(this);
         Intent intent = new Intent(ShowAllItemsActivity.this, ItemDetailsActivity.class);
         Bundle bundle = new Bundle();
-        bundle.putSerializable("latest",productModel);
+        bundle.putSerializable("latest", productModel);
         intent.putExtras(bundle);
         startActivity(intent);
     }
 
     @Override
     public void OnTrendingProductClicked(ProductModel productModel) {
+        showAds.destroyBanner();
+        showAds.showInterstitialAds(this);
+
+        boolean checkProductExistence = productAppDatabase.getProductDAO().getProductByTitle(productModel.getProductTitle());
+        if (!checkProductExistence) {
+            productAppDatabase.getProductDAO().addProducts(new Products(0, productModel.getCategoryId(), productModel.getProductImage()
+                    , productModel.getBanner(), productModel.getProductTitle(), productModel.getBuingGuideHindi(),
+                    productModel.getBuingGuideEnglish(), productModel.getRatingHindi(), productModel.getRatingEnglish()
+                    , productModel.getLatestProduct(), productModel.getBestProduct(), productModel.getTrendingProduct()));
+
+        }
         Intent intent = new Intent(ShowAllItemsActivity.this, ItemDetailsActivity.class);
         Bundle bundle = new Bundle();
-        bundle.putSerializable("latest",productModel);
+        bundle.putSerializable("latest", productModel);
         intent.putExtras(bundle);
         startActivity(intent);
     }

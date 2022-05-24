@@ -26,4 +26,10 @@ The App is not liable for any errors or omissions or any kind of results obtaine
     <string name="navigation_drawer_close">Close</string>
     <string name="eng">Eng</string>
     <string name="hin">Hin</string>
+    <string name="ad_attribution">AD</string>
+    <string name="app_id">ca-app-pub-1247850544347178~2799712755</string>
+    <string name="get_started">Get Started</string>
+    <string name="get_the_best_buying_advisory">Get the Best Buying Advisory!</string>
+    <string name="welcome_to_nproduct_reviews">Welcome To\nProduct Reviews</string>
+
 </resources>

@@ -42,6 +42,21 @@ public class ProductModel implements Serializable {
     @Expose
     private String trendingProduct;
 
+    public ProductModel(String banner, String id, String categoryId, String productImage, String productTitle, String buingGuideHindi, String buingGuideEnglish, String ratingHindi, String ratingEnglish, String latestProduct, String bestProduct, String trendingProduct) {
+        this.banner = banner;
+        this.id = id;
+        this.categoryId = categoryId;
+        this.productImage = productImage;
+        this.productTitle = productTitle;
+        this.buingGuideHindi = buingGuideHindi;
+        this.buingGuideEnglish = buingGuideEnglish;
+        this.ratingHindi = ratingHindi;
+        this.ratingEnglish = ratingEnglish;
+        this.latestProduct = latestProduct;
+        this.bestProduct = bestProduct;
+        this.trendingProduct = trendingProduct;
+    }
+
     public String getId() {
         return id;
     }

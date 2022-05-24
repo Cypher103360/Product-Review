@@ -33,7 +33,10 @@ public interface ProductDAO {
     public List<Products> getProducts();
 
     @Query("select * from products where id ==:productId")
-    public Products getProduct(long productId);
+     Products getProduct(long productId);
+
+    @Query("SELECT EXISTS(select * from products where productTitle ==:title)")
+     boolean getProductByTitle(String title);
 
 
 }

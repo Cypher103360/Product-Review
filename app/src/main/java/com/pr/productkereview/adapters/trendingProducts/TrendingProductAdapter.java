@@ -17,23 +17,35 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.facebook.shimmer.Shimmer;
+import com.facebook.shimmer.ShimmerDrawable;
 import com.google.android.material.card.MaterialCardView;
 import com.pr.productkereview.R;
-import com.pr.productkereview.adapters.categories.CategoryInterface;
+import com.pr.productkereview.adapters.topBrands.TopBrandsAdapter;
+import com.pr.productkereview.databinding.AdLayoutBinding;
 import com.pr.productkereview.models.AllProducts.ProductModel;
-import com.pr.productkereview.models.categories.CatModel;
+import com.pr.productkereview.models.TopBrands.BrandsModel;
 import com.pr.productkereview.utils.ApiWebServices;
 import com.pr.productkereview.utils.CommonMethods;
+import com.pr.productkereview.utils.Prevalent;
+import com.pr.productkereview.utils.ShowAds;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
-public class TrendingProductAdapter extends RecyclerView.Adapter<TrendingProductAdapter.ViewHolder> {
+import io.paperdb.Paper;
 
+public class TrendingProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
+    private static final int ITEM_VIEW = 0;
+    private static final int AD_VIEW = 1;
+    private static final int ITEM_FEED_COUNT = 3;
     List<ProductModel> trendingProductModelList = new ArrayList<>();
     Activity context;
     TrendingProductInterface trendingProductInterface;
+    ShowAds showAds = new ShowAds();
 
     public TrendingProductAdapter(Activity context, TrendingProductInterface trendingProductInterface) {
         this.context = context;
@@ -42,13 +54,27 @@ public class TrendingProductAdapter extends RecyclerView.Adapter<TrendingProduct
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new ViewHolder(LayoutInflater.from(context).inflate(R.layout.item_rectangular_layout, parent, false));
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        if (viewType == ITEM_VIEW) {
+            return new ViewHolder(LayoutInflater.from(context).inflate(R.layout.item_rectangular_layout, parent, false));
+
+        } else if (viewType == AD_VIEW) {
+            View view = LayoutInflater.from(context).inflate(R.layout.ad_layout, parent, false);
+            return new AdViewHolder(view);
+        } else return null;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        if ((position + 1) % ITEM_FEED_COUNT == 0) {
+            return AD_VIEW;
+        }
+        return ITEM_VIEW;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int pos) {
         /*
         Glide 3.x & 4.x: DiskCacheStrategy.NONE caches nothing, as discussed
         Glide 4.x: DiskCacheStrategy.DATA, Glide 3.x: DiskCacheStrategy.SOURCE caches only the original
@@ -59,29 +85,43 @@ public class TrendingProductAdapter extends RecyclerView.Adapter<TrendingProduct
                     resource (default behavior of Glide 4.x)
         Glide 3.x & 4.x: DiskCacheStrategy.ALL caches all versions of the image
 
-        */
+      */
 
-        ConstraintLayout.LayoutParams params = new ConstraintLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                250
-        );
-        params.setMargins(10, 10, 10, 10);
-        holder.rectangleLayoutCard.setLayoutParams(params);
+        if (holder.getItemViewType() == ITEM_VIEW) {
+            int position = pos - Math.round(pos / ITEM_FEED_COUNT);
+            ConstraintLayout.LayoutParams params = new ConstraintLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    250
+            );
+            params.setMargins(10, 10, 10, 10);
+            ((ViewHolder) holder).rectangleLayoutCard.setLayoutParams(params);
 
-        holder.itemTitle.setText(Html.fromHtml(trendingProductModelList.get(position).getProductTitle(),Html.FROM_HTML_MODE_LEGACY));
-        Glide.with(context).load(ApiWebServices.base_url + "all_products_images/"+
-                        trendingProductModelList.get(position).getProductImage())
-                .placeholder(CommonMethods.setShimmer(holder.itemView.getContext()))
-                .diskCacheStrategy(DiskCacheStrategy.DATA)
-                .into(holder.itemImg);
-        holder.itemView.setOnClickListener(view ->
-                trendingProductInterface.OnTrendingProductClicked(trendingProductModelList.get(position)));
+            ((ViewHolder) holder).itemTitle.setText(Html.fromHtml(trendingProductModelList.get(position).getProductTitle(), Html.FROM_HTML_MODE_LEGACY));
+            Glide.with(context).load(ApiWebServices.base_url + "all_products_images/" +
+                            trendingProductModelList.get(position).getProductImage())
+                    .placeholder(CommonMethods.setShimmer(holder.itemView.getContext()))
+                    .diskCacheStrategy(DiskCacheStrategy.DATA)
+                    .into(((ViewHolder) holder).itemImg);
+            holder.itemView.setOnClickListener(view ->
+                    trendingProductInterface.OnTrendingProductClicked(trendingProductModelList.get(position)));
+
+        } else if (holder.getItemViewType() == AD_VIEW) {
+
+                ((AdViewHolder) holder).bindAdData();
+        }
+
     }
+
 
     @Override
     public int getItemCount() {
-        return trendingProductModelList.size();
+        if (trendingProductModelList.size() > 0) {
+            return trendingProductModelList.size() + Math.round(trendingProductModelList.size() / ITEM_FEED_COUNT);
+        }
+        return 0;
     }
+
+
 
     @SuppressLint("NotifyDataSetChanged")
     public void updateTrendingList(List<ProductModel> productModels) {
@@ -103,4 +143,25 @@ public class TrendingProductAdapter extends RecyclerView.Adapter<TrendingProduct
             rectangleLayoutCard = itemView.findViewById(R.id.rectangle_layout_card);
         }
     }
+
+    public class AdViewHolder extends RecyclerView.ViewHolder {
+        AdLayoutBinding binding;
+
+        public AdViewHolder(@NonNull View itemAdView2) {
+            super(itemAdView2);
+            binding = AdLayoutBinding.bind(itemAdView2);
+        }
+
+        private void bindAdData() {
+            if (Objects.equals(Paper.book().read(Prevalent.nativeAdsType), "Native")) {
+                showAds.showNativeAds(context, binding.adLayout);
+            } else if (Objects.equals(Paper.book().read(Prevalent.nativeAdsType), "MREC")) {
+                showAds.showMrec(context, binding.adLayout);
+            }
+
+        }
+
+
+    }
+
 }
