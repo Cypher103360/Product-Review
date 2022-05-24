@@ -24,9 +24,13 @@ import com.pr.productkereview.models.categories.CatViewModel;
 import com.pr.productkereview.utils.ApiInterface;
 import com.pr.productkereview.utils.ApiWebServices;
 import com.pr.productkereview.utils.CommonMethods;
+import com.pr.productkereview.utils.Prevalent;
+import com.pr.productkereview.utils.ShowAds;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import io.paperdb.Paper;
 
 public class CategoryFragment extends Fragment implements CategoryInterface {
     FragmentCategoryBinding binding;
@@ -37,6 +41,7 @@ public class CategoryFragment extends Fragment implements CategoryInterface {
     CatViewModel catViewModel;
     List<CatModel> catModelList = new ArrayList<>();
 
+    ShowAds showAds = new ShowAds();
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -46,6 +51,8 @@ public class CategoryFragment extends Fragment implements CategoryInterface {
         loading = CommonMethods.getLoadingDialog(requireActivity());
         loading.show();
 
+
+        getLifecycle().addObserver(showAds);
         catViewModel = new ViewModelProvider(requireActivity(),
                 new CatModelFactory(requireActivity().getApplication(), "0")).get(CatViewModel.class);
 
@@ -73,13 +80,26 @@ public class CategoryFragment extends Fragment implements CategoryInterface {
                 catModelList.addAll(catModels);
                 categoryAdapter.updateCategoryList(catModelList);
                 loading.dismiss();
+                if (Paper.book().read(Prevalent.bannerTopNetworkName).equals("IronSourceWithMeta")) {
+                    binding.adViewTop.setVisibility(View.GONE);
+                    showAds.showBottomBanner(requireActivity(), binding.adViewBottom);
 
+                } else if (Paper.book().read(Prevalent.bannerBottomNetworkName).equals("IronSourceWithMeta")) {
+                    binding.adViewBottom.setVisibility(View.GONE);
+                    showAds.showTopBanner(requireActivity(), binding.adViewTop);
+
+                } else {
+                    showAds.showTopBanner(requireActivity(), binding.adViewTop);
+                    showAds.showBottomBanner(requireActivity(), binding.adViewBottom);
+                }
             }
         });
     }
 
     @Override
     public void onCategoryClicked(CatModel catModel) {
+        showAds.destroyBanner();
+        showAds.showInterstitialAds(requireActivity());
         if (catModel.getSubCat().equals("true")) {
             Intent intent = new Intent(requireActivity(), SubCategoryActivity.class);
             intent.putExtra("id", catModel.getId());

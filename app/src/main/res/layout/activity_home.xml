@@ -92,7 +92,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/purple_500"
-                app:tabIndicatorColor="@color/btn_color"
+                app:tabIndicatorColor="@color/white"
                 app:tabSelectedTextColor="@color/white"
                 app:tabTextColor="#C5C5C5" />
         </com.google.android.material.appbar.AppBarLayout>
@@ -146,7 +146,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/appBarLayout" />
 
-
         <RelativeLayout
             android:id="@+id/adView_bottom"
             android:layout_width="match_parent"
@@ -157,5 +156,6 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.drawerlayout.widget.DrawerLayout>

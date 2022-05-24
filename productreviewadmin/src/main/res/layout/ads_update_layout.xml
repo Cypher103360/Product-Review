@@ -227,7 +227,7 @@
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="rewardAdsNetworkName"
+                android:hint="@string/appopen_network_name"
                 app:boxStrokeColor="@color/black"
                 app:endIconMode="dropdown_menu"
                 app:layout_constraintTop_toBottomOf="@+id/textView">
@@ -244,7 +244,7 @@
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Reward Ads"
+                android:hint="@string/appopen_ads"
                 app:boxStrokeColor="@color/black"
                 app:endIconMode="clear_text"
                 app:layout_constraintTop_toBottomOf="@+id/textView">

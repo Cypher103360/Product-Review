@@ -16,14 +16,15 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.pr.productkereview.R;
 import com.pr.productkereview.databinding.ActivityWelcomeBinding;
 import com.pr.productkereview.utils.CommonMethods;
-
-import org.w3c.dom.Text;
+import com.pr.productkereview.utils.ShowAds;
 
 public class WelcomeActivity extends AppCompatActivity {
     ActivityWelcomeBinding binding;
     MaterialAlertDialogBuilder builder;
     // ApiInterface apiInterface;
     //  Map<String, String> map = new HashMap<>();
+
+    ShowAds showAds = new ShowAds();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,15 +50,18 @@ public class WelcomeActivity extends AppCompatActivity {
 
         final Animation animation = AnimationUtils.loadAnimation(this, R.anim.bounce);
         binding.getStartedBtn.setAnimation(animation);
+        showAds = new ShowAds();
+        getLifecycle().addObserver(showAds);
+        showAds.showBottomBanner(this, findViewById(R.id.adView_bottom));
+        showAds.showTopBanner(this, findViewById(R.id.adView_top));
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                binding.getStartedBtn.setOnClickListener(v -> {
-                    Intent intent = new Intent(WelcomeActivity.this, HomeActivity.class);
-                    startActivity(intent);
-                });
-            }
+        new Handler().postDelayed(() -> {
+            showAds.destroyBanner();
+            showAds.showInterstitialAds(WelcomeActivity.this);
+            binding.getStartedBtn.setOnClickListener(v -> {
+                Intent intent = new Intent(WelcomeActivity.this, HomeActivity.class);
+                startActivity(intent);
+            });
         }, 3000);
 
 
@@ -84,32 +88,12 @@ public class WelcomeActivity extends AppCompatActivity {
     public void onBackPressed() {
 
         ShowExitDialog();
-
-//        builder = new MaterialAlertDialogBuilder(this);
-//        builder.setTitle(R.string.app_name)
-//                .setIcon(R.mipmap.ic_launcher)
-//                .setMessage("Do You Really Want To Exit?\nAlso give us your rating")
-//                .setNeutralButton("CANCEL", (dialog, which) -> {
-//                });
-//
-//
-//        builder.setNegativeButton("RATE APP", (dialog, which) -> CommonMethods.rateApp(getApplicationContext()))
-//                .setPositiveButton("OK!!", (dialog, which) -> {
-//                    Intent intent = new Intent(Intent.ACTION_MAIN);
-//                    intent.addCategory(Intent.CATEGORY_HOME);
-//                    intent.setFlags(Intent.FLAG_ACTIVITY_TASK_ON_HOME | Intent.FLAG_ACTIVITY_NO_HISTORY);
-//                    startActivity(intent);
-//                    moveTaskToBack(true);
-//                    System.exit(0);
-//
-//                });
-//        builder.show();
     }
 
     private void ShowExitDialog() {
         Dialog exitDialog = new Dialog(WelcomeActivity.this);
         exitDialog.setContentView(R.layout.exit_dialog_layout);
-        exitDialog.getWindow().setLayout(600,ViewGroup.LayoutParams.WRAP_CONTENT);
+        exitDialog.getWindow().setLayout(600, ViewGroup.LayoutParams.WRAP_CONTENT);
         exitDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         exitDialog.setCancelable(false);
         exitDialog.show();

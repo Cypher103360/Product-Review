@@ -1,5 +1,6 @@
 package com.pr.productkereview.utils;
 
+import com.pr.productkereview.models.AdsModel;
 import com.pr.productkereview.models.AllProducts.ProductModel;
 import com.pr.productkereview.models.BannerImages.BannerImageModel;
 import com.pr.productkereview.models.MessageModel;
@@ -21,6 +22,9 @@ public interface ApiInterface {
     @FormUrlEncoded
     @POST("upload_user_data.php")
     Call<MessageModel> uploadUserData(@FieldMap Map<String, String> map);
+    @FormUrlEncoded
+    @POST("ads_fetch.php")
+    Call<List<AdsModel>> fetchAds(@Field("id") String id);
 
     @FormUrlEncoded
     @POST("fetch_urls.php")

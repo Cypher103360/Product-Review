@@ -18,13 +18,19 @@ import com.pr.productkereview.fragments.BuyingGuideFragment;
 import com.pr.productkereview.fragments.RatingsFragment;
 import com.pr.productkereview.models.AllProducts.ProductModel;
 import com.pr.productkereview.utils.CommonMethods;
+import com.pr.productkereview.utils.Prevalent;
+import com.pr.productkereview.utils.ShowAds;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Objects;
+
+import io.paperdb.Paper;
 
 public class ItemDetailsActivity extends AppCompatActivity {
     public static ProductModel productModel;
     ActivityItemDetailsBinding binding;
     BuyingRatingPagerAdapter pagerAdapter;
+    ShowAds showAds = new ShowAds();
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
@@ -34,9 +40,10 @@ public class ItemDetailsActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         binding.backIcon.setOnClickListener(v -> onBackPressed());
 
+        getLifecycle().addObserver(showAds);
         Bundle bundle = getIntent().getExtras();
         productModel = (ProductModel) bundle.getSerializable("latest");
-        binding.activityTitle.setText(Html.fromHtml(productModel.getProductTitle(),Html.FROM_HTML_MODE_LEGACY));
+        binding.activityTitle.setText(Html.fromHtml(productModel.getProductTitle(), Html.FROM_HTML_MODE_LEGACY));
 
         binding.lottieContact.setOnClickListener(v -> {
             try {
@@ -62,5 +69,19 @@ public class ItemDetailsActivity extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         finish();
+        showAds.destroyBanner();
+    }
+
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (Objects.requireNonNull(Paper.book().read(Prevalent.bannerTopNetworkName)).equals("IronSourceWithMeta")) {
+            showAds.showTopBanner(this, binding.adViewTop);
+
+        } else if (Objects.requireNonNull(Paper.book().read(Prevalent.bannerBottomNetworkName)).equals("IronSourceWithMeta")) {
+            showAds.showBottomBanner(this, binding.adViewBottom);
+        }
+
     }
 }

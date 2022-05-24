@@ -1,7 +1,7 @@
 package com.pr.productkereview.adapters.Products;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
+import android.app.Activity;
 import android.os.Build;
 import android.text.Html;
 import android.view.LayoutInflater;
@@ -18,60 +18,97 @@ import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.pr.productkereview.R;
+import com.pr.productkereview.databinding.AdLayoutBinding;
 import com.pr.productkereview.models.AllProducts.ProductModel;
 import com.pr.productkereview.utils.ApiWebServices;
+import com.pr.productkereview.utils.Prevalent;
+import com.pr.productkereview.utils.ShowAds;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
-public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.ViewHolder> {
+import io.paperdb.Paper;
+
+public class ProductsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    private static final int ITEM_VIEW = 0;
+    private static final int AD_VIEW = 1;
+    private static final int ITEM_FEED_COUNT = 3;
     private final boolean shouldShowAllItems;
     List<ProductModel> productModelList = new ArrayList<>();
-    Context context;
+    Activity context;
     ProductsClickInterface productsClickInterface;
+    ShowAds showAds = new ShowAds();
 
-    public ProductsAdapter(Context context, ProductsClickInterface productsClickInterface, boolean shouldShowAllItems) {
+    public ProductsAdapter(Activity context, ProductsClickInterface productsClickInterface, boolean shouldShowAllItems) {
         this.context = context;
         this.productsClickInterface = productsClickInterface;
         this.shouldShowAllItems = shouldShowAllItems;
     }
 
+    @Override
+    public int getItemViewType(int position) {
+        if ((position + 1) % ITEM_FEED_COUNT == 0) {
+            return AD_VIEW;
+        }
+        return ITEM_VIEW;
+    }
+
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.sub_cat_layout, parent, false);
-        return new ViewHolder(view);
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+
+        if (viewType == ITEM_VIEW) {
+            View view = LayoutInflater.from(context).inflate(R.layout.sub_cat_layout, parent, false);
+            return new ViewHolder(view);
+
+        } else if (viewType == AD_VIEW) {
+            View view = LayoutInflater.from(context).inflate(R.layout.ad_layout, parent, false);
+            return new AdViewHolder(view);
+        } else return null;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        CircularProgressDrawable circularProgressDrawable = new CircularProgressDrawable(holder.itemView.getContext());
-        circularProgressDrawable.setStrokeWidth(5f);
-        circularProgressDrawable.setCenterRadius(30f);
-        circularProgressDrawable.start();
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int pos) {
 
-        ProductModel productModel = productModelList.get(position);
-        Glide.with(context).load(ApiWebServices.base_url + "all_products_images/" + productModel.getProductImage())
-                .placeholder(circularProgressDrawable)
-                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
-                .into(holder.itemImage);
-        holder.itemTitle.setText(Html.fromHtml(productModel.getProductTitle(),Html.FROM_HTML_MODE_LEGACY));
-        holder.itemView.setOnClickListener(v -> {
-            productsClickInterface.OnProductClicked(productModelList.get(position));
-        });
+        if (holder.getItemViewType() == ITEM_VIEW) {
+            int position = pos - Math.round(pos / ITEM_FEED_COUNT);
+            CircularProgressDrawable circularProgressDrawable = new CircularProgressDrawable(holder.itemView.getContext());
+            circularProgressDrawable.setStrokeWidth(5f);
+            circularProgressDrawable.setCenterRadius(30f);
+            circularProgressDrawable.start();
+
+            ProductModel productModel = productModelList.get(position);
+            Glide.with(context).load(ApiWebServices.base_url + "all_products_images/" + productModel.getProductImage())
+                    .placeholder(circularProgressDrawable)
+                    .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                    .into(((ViewHolder) holder).itemImage);
+            ((ViewHolder) holder).itemTitle.setText(Html.fromHtml(productModel.getProductTitle(), Html.FROM_HTML_MODE_LEGACY));
+            holder.itemView.setOnClickListener(v -> {
+                productsClickInterface.OnProductClicked(productModelList.get(position));
+            });
+        } else if (holder.getItemViewType() == AD_VIEW) {
+            ((AdViewHolder) holder).bindAdData();
+        }
+
     }
-
 
     @Override
     public int getItemCount() {
         if (shouldShowAllItems) {
-            return productModelList.size();
+            if (productModelList.size() > 0) {
+                return productModelList.size() + Math.round(productModelList.size() / ITEM_FEED_COUNT);
+            }
+
         } else {
             int limit = 7;
-            return Math.min(productModelList.size(), limit);
+
+            return Math.min(productModelList.size() + Math.round(productModelList.size() / ITEM_FEED_COUNT), limit);
         }
+
+        return 0;
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -92,4 +129,26 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.ViewHo
             itemTitle = itemView.findViewById(R.id.cat_title);
         }
     }
+
+    public class AdViewHolder extends RecyclerView.ViewHolder {
+        AdLayoutBinding binding;
+
+        public AdViewHolder(@NonNull View itemAdView2) {
+            super(itemAdView2);
+            binding = AdLayoutBinding.bind(itemAdView2);
+        }
+
+        private void bindAdData() {
+            if (Objects.equals(Paper.book().read(Prevalent.nativeAdsType), "Native")) {
+                showAds.showNativeAds(context, binding.adLayout);
+            } else if (Objects.equals(Paper.book().read(Prevalent.nativeAdsType), "MREC")) {
+                showAds.showMrec(context, binding.adLayout);
+            }
+
+
+        }
+
+
+    }
+
 }

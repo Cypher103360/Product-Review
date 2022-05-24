@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.pr.productkereview.R;
 import com.pr.productkereview.adapters.SubCatAdapter.SubCategoryAdapter;
 import com.pr.productkereview.adapters.SubCatAdapter.SubCategoryInterface;
 import com.pr.productkereview.databinding.ActivitySubCategoryBinding;
@@ -19,6 +20,7 @@ import com.pr.productkereview.models.categories.CatViewModel;
 import com.pr.productkereview.utils.ApiInterface;
 import com.pr.productkereview.utils.ApiWebServices;
 import com.pr.productkereview.utils.CommonMethods;
+import com.pr.productkereview.utils.ShowAds;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +34,7 @@ public class SubCategoryActivity extends AppCompatActivity implements SubCategor
     CatViewModel catViewModel;
     String id, title;
 
+    ShowAds showAds;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +45,11 @@ public class SubCategoryActivity extends AppCompatActivity implements SubCategor
         apiInterface = ApiWebServices.getApiInterface();
         id = getIntent().getStringExtra("id");
         title = getIntent().getStringExtra("title");
+
+        showAds = new ShowAds();
+        getLifecycle().addObserver(showAds);
+        showAds.showBottomBanner(this, findViewById(R.id.adView_bottom));
+        showAds.showTopBanner(this, findViewById(R.id.adView_top));
 
         catViewModel = new ViewModelProvider(SubCategoryActivity.this,
                 new CatModelFactory(this.getApplication(), id)).get(CatViewModel.class);
@@ -75,6 +83,9 @@ public class SubCategoryActivity extends AppCompatActivity implements SubCategor
 
     @Override
     public void onSubCategoryClicked(CatModel catModel) {
+
+        showAds.destroyBanner();
+        showAds.showInterstitialAds(this);
         if (catModel.getSubCat().equals("true")) {
             Intent intent = new Intent(SubCategoryActivity.this, SubCategoryActivity.class);
             intent.putExtra("title", catModel.getTitle());
@@ -101,5 +112,6 @@ public class SubCategoryActivity extends AppCompatActivity implements SubCategor
     public void onBackPressed() {
         super.onBackPressed();
         finish();
+        showAds.destroyBanner();
     }
 }

@@ -15,7 +15,6 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -31,7 +30,6 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.material.navigation.NavigationView;
@@ -48,9 +46,13 @@ import com.pr.productkereview.utils.ApiInterface;
 import com.pr.productkereview.utils.ApiWebServices;
 import com.pr.productkereview.utils.CommonMethods;
 import com.pr.productkereview.utils.MyReceiver;
+import com.pr.productkereview.utils.Prevalent;
+import com.pr.productkereview.utils.ShowAds;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Objects;
 
+import io.paperdb.Paper;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -65,7 +67,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     ConstraintLayout categoryContainer;
     GoogleSignInOptions gso;
     GoogleSignInClient gsc;
-    String weburl, webUrlId,shareText;
+    String weburl, webUrlId, shareText;
     SectionsPagerAdapter sectionsPagerAdapter;
     ActivityHomeBinding binding;
     ApiInterface apiInterface;
@@ -83,6 +85,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             }
         }
     };
+    ShowAds showAds = new ShowAds();
     Bundle bundle;
     Dialog loading;
     FirebaseAnalytics mFirebaseAnalytics;
@@ -128,6 +131,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         bundle = new Bundle();
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
+        getLifecycle().addObserver(showAds);
 
         // Setting Version Code
         try {
@@ -342,19 +346,19 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 break;
 
             case R.id.nav_expert_tips:
-                openWebPage(weburl,HomeActivity.this);
+                openWebPage(weburl, HomeActivity.this);
                 break;
 
             case R.id.nav_most_selling:
-                Intent mostSellingIntent = new Intent(HomeActivity.this,ShowAllItemsActivity.class);
-                mostSellingIntent.putExtra("key","mostSelling");
+                Intent mostSellingIntent = new Intent(HomeActivity.this, ShowAllItemsActivity.class);
+                mostSellingIntent.putExtra("key", "mostSelling");
                 startActivity(mostSellingIntent);
                 break;
 
             case R.id.nav_share:
                 bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "Share Menu");
                 mFirebaseAnalytics.logEvent("Clicked_On_Share_Menu", bundle);
-                CommonMethods.shareApp(HomeActivity.this,shareText);
+                CommonMethods.shareApp(HomeActivity.this, shareText);
                 break;
 
             case R.id.nav_rate:
@@ -452,7 +456,28 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         } else {
             startActivity(new Intent(HomeActivity.this, WelcomeActivity.class));
             super.onBackPressed();
-            // ads.destroyBanner();
+            showAds.destroyBanner();
+            if (Objects.equals(Paper.book().read(Prevalent.interstitialNetwork), "AdmobWithMeta"))
+                showAds.showInterstitialAds(this);
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        showAds.destroyBanner();
+    }
+
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (Objects.requireNonNull(Paper.book().read(Prevalent.bannerTopNetworkName)).equals("IronSourceWithMeta")) {
+            showAds.showTopBanner(this, binding.adViewTop);
+
+        } else if (Objects.requireNonNull(Paper.book().read(Prevalent.bannerBottomNetworkName)).equals("IronSourceWithMeta")) {
+            showAds.showBottomBanner(this, binding.adViewBottom);
+        }
+
     }
 }

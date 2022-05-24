@@ -18,6 +18,7 @@ import java.util.List;
 public class MainRecyclerAdapter extends RecyclerView.Adapter<MainRecyclerAdapter.ViewHolder> implements LatestProductClickInterface {
     List<Section> sectionList;
 
+
     public MainRecyclerAdapter(List<Section> sectionList) {
         this.sectionList = sectionList;
     }
@@ -35,11 +36,11 @@ public class MainRecyclerAdapter extends RecyclerView.Adapter<MainRecyclerAdapte
         String sectionName = section.getSectionName();
         List<ProductModel> items = section.getLatestProductModelList();
 
-        holder.sectionName.setText(sectionName);
-        LatestProductAdapter latestProductAdapter = new LatestProductAdapter(
-                holder.itemView.getContext(), this,true);
-        latestProductAdapter.updateList(items);
-        holder.childRecyclerView.setAdapter(latestProductAdapter);
+//        holder.sectionName.setText(sectionName);
+//        LatestProductAdapter latestProductAdapter = new LatestProductAdapter(
+//                holder.itemView.getContext(), this,true);
+//        latestProductAdapter.updateList(items);
+//        holder.childRecyclerView.setAdapter(latestProductAdapter);
 
     }
 

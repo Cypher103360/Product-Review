@@ -12,21 +12,25 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.room.Room;
 
 import com.pr.productkereview.activities.ItemDetailsActivity;
-import com.pr.productkereview.adapters.Products.ProductsAdapter;
-import com.pr.productkereview.adapters.Products.ProductsClickInterface;
 import com.pr.productkereview.adapters.trendingProducts.TrendingProductAdapter;
 import com.pr.productkereview.adapters.trendingProducts.TrendingProductInterface;
 import com.pr.productkereview.databinding.FragmentTrendingProductBinding;
+import com.pr.productkereview.db.ProductAppDatabase;
+import com.pr.productkereview.db.entity.Products;
 import com.pr.productkereview.models.AllProducts.ProductModel;
 import com.pr.productkereview.models.AllProducts.TrendingProductModelFactory;
 import com.pr.productkereview.models.AllProducts.TrendingProductViewModel;
 import com.pr.productkereview.utils.CommonMethods;
+import com.pr.productkereview.utils.Prevalent;
+import com.pr.productkereview.utils.ShowAds;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import io.paperdb.Paper;
 
 public class TrendingProductFragment extends Fragment implements TrendingProductInterface {
     FragmentTrendingProductBinding binding;
@@ -35,6 +39,9 @@ public class TrendingProductFragment extends Fragment implements TrendingProduct
     List<ProductModel> trendingModelList = new ArrayList<>();
     TrendingProductAdapter trendingProductAdapter;
 
+    ShowAds showAds = new ShowAds();
+    // Room Database
+    private ProductAppDatabase productAppDatabase;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -59,6 +66,7 @@ public class TrendingProductFragment extends Fragment implements TrendingProduct
     }
 
     private void fetchTrendingProducts() {
+        setShowAds();
         trendingProductViewModel.getTrendingProducts().observe(requireActivity(), productModels -> {
             trendingModelList.clear();
             trendingModelList.addAll(productModels);
@@ -69,10 +77,39 @@ public class TrendingProductFragment extends Fragment implements TrendingProduct
 
     @Override
     public void OnTrendingProductClicked(ProductModel productModel) {
+        showAds.destroyBanner();
+        showAds.showInterstitialAds(requireActivity());
+        productAppDatabase = Room.databaseBuilder(requireActivity(), ProductAppDatabase.class, "ProductDB").allowMainThreadQueries()
+                .build();
+        boolean checkProductExistence = productAppDatabase.getProductDAO().getProductByTitle(productModel.getProductTitle());
+        if (!checkProductExistence) {
+            productAppDatabase.getProductDAO().addProducts(new Products(0, productModel.getCategoryId(), productModel.getProductImage()
+                    , productModel.getBanner(), productModel.getProductTitle(), productModel.getBuingGuideHindi(),
+                    productModel.getBuingGuideEnglish(), productModel.getRatingHindi(), productModel.getRatingEnglish()
+                    , productModel.getLatestProduct(), productModel.getBestProduct(), productModel.getTrendingProduct()));
+
+        }
         Intent intent = new Intent(requireActivity(), ItemDetailsActivity.class);
         Bundle bundle = new Bundle();
-        bundle.putSerializable("latest",productModel);
+        bundle.putSerializable("latest", productModel);
         intent.putExtras(bundle);
         startActivity(intent);
     }
+
+    void setShowAds() {
+        getLifecycle().addObserver(showAds);
+        if (Paper.book().read(Prevalent.bannerTopNetworkName).equals("IronSourceWithMeta")) {
+            binding.adViewTop.setVisibility(View.GONE);
+            showAds.showBottomBanner(requireActivity(), binding.adViewBottom);
+
+        } else if (Paper.book().read(Prevalent.bannerBottomNetworkName).equals("IronSourceWithMeta")) {
+            binding.adViewBottom.setVisibility(View.GONE);
+            showAds.showTopBanner(requireActivity(), binding.adViewTop);
+
+        } else {
+            showAds.showTopBanner(requireActivity(), binding.adViewTop);
+            showAds.showBottomBanner(requireActivity(), binding.adViewBottom);
+        }
+    }
+
 }
