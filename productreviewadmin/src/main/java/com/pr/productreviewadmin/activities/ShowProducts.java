@@ -14,6 +14,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.text.HtmlCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
@@ -236,32 +237,32 @@ public class ShowProducts extends AppCompatActivity implements ProductInterface 
         if (Objects.equals(id, "latest") || Objects.equals(id, "best") || Objects.equals(id, "trending")) {
             MaterialAlertDialogBuilder builders = new MaterialAlertDialogBuilder(this);
 
-                builders.setTitle("Delete Product")
-                        .setMessage("Would you like to delete this banner?")
-                        .setNegativeButton("Cancel", (dialogInterface, i) -> {
-                        })
-                        .setPositiveButton("Ok", (dialogInterface, i) -> {
-                            loadingDialog.show();
-                            if (Objects.equals(id, "latest")) {
-                                map.put("id", productModel.getId());
-                                map.put("key", "latest");
-                                call = apiInterface.removeProduct(map);
-                                deleteData(call);
-                            } else if (Objects.equals(id, "best")) {
-                                map.put("id", productModel.getId());
-                                map.put("key", "best");
-                                call = apiInterface.removeProduct(map);
-                                deleteData(call);
-                            } else if (Objects.equals(id, "trending")) {
-                                map.put("id", productModel.getId());
-                                map.put("key", "trending");
-                                call = apiInterface.removeProduct(map);
-                                deleteData(call);
+            builders.setTitle("Delete Product")
+                    .setMessage("Would you like to delete this banner?")
+                    .setNegativeButton("Cancel", (dialogInterface, i) -> {
+                    })
+                    .setPositiveButton("Ok", (dialogInterface, i) -> {
+                        loadingDialog.show();
+                        if (Objects.equals(id, "latest")) {
+                            map.put("id", productModel.getId());
+                            map.put("key", "latest");
+                            call = apiInterface.removeProduct(map);
+                            deleteData(call);
+                        } else if (Objects.equals(id, "best")) {
+                            map.put("id", productModel.getId());
+                            map.put("key", "best");
+                            call = apiInterface.removeProduct(map);
+                            deleteData(call);
+                        } else if (Objects.equals(id, "trending")) {
+                            map.put("id", productModel.getId());
+                            map.put("key", "trending");
+                            call = apiInterface.removeProduct(map);
+                            deleteData(call);
 
-                            }
+                        }
 
 
-                        }).show();
+                    }).show();
 
         } else {
             String[] items = new String[]{"Update Product", "Delete Product"};
@@ -284,31 +285,32 @@ public class ShowProducts extends AppCompatActivity implements ProductInterface 
 
 
     private void deleteData(Call<MessageModel> call) {
-                    call.enqueue(new Callback<MessageModel>() {
-                        @Override
-                        public void onResponse(@NonNull Call<MessageModel> call, @NonNull Response<MessageModel> response) {
-                            if (response.isSuccessful()) {
-                                Toast.makeText(ShowProducts.this, Objects.requireNonNull(response.body()).getMessage(), Toast.LENGTH_SHORT).show();
-                                if (key != null) {
-                                    fetchProducts(key);
-                                } else if (id != null) {
-                                    fetchProducts(id);
+        call.enqueue(new Callback<MessageModel>() {
+            @Override
+            public void onResponse(@NonNull Call<MessageModel> call, @NonNull Response<MessageModel> response) {
+                if (response.isSuccessful()) {
+                    Toast.makeText(ShowProducts.this, Objects.requireNonNull(response.body()).getMessage(), Toast.LENGTH_SHORT).show();
+                    if (key != null) {
+                        fetchProducts(key);
+                    } else if (id != null) {
+                        fetchProducts(id);
 
-                                }
-                            } else {
-                                Toast.makeText(ShowProducts.this, Objects.requireNonNull(response.body()).getError(), Toast.LENGTH_SHORT).show();
-                            }
-                            loadingDialog.dismiss();
-                        }
-
-
-                        @Override
-                        public void onFailure(@NonNull Call<MessageModel> call, @NonNull Throwable t) {
-                            loadingDialog.dismiss();
-
-                        }
-                    });
+                    }
+                } else {
+                    Toast.makeText(ShowProducts.this, Objects.requireNonNull(response.body()).getError(), Toast.LENGTH_SHORT).show();
                 }
+                loadingDialog.dismiss();
+            }
+
+
+            @Override
+            public void onFailure(@NonNull Call<MessageModel> call, @NonNull Throwable t) {
+                loadingDialog.dismiss();
+
+            }
+        });
+    }
+
     private void deleteProducts(ProductModel productModel, String deleteS) {
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this);
         if (deleteS.equals("deleteS")) {
@@ -384,13 +386,14 @@ public class ShowProducts extends AppCompatActivity implements ProductInterface 
         productLaytoutBinding.treandingProduct.setChecked(Boolean.parseBoolean(productModel.getTrendingProduct()));
         productLaytoutBinding.bestProduct.setChecked(Boolean.parseBoolean(productModel.getBestProduct()));
         productLaytoutBinding.latestProduct.setChecked(Boolean.parseBoolean(productModel.getLatestProduct()));
-        productLaytoutBinding.titleTv.setText(productModel.getProductTitle());
+
+        productLaytoutBinding.titleTv.setText(HtmlCompat.fromHtml(productModel.getProductTitle(), HtmlCompat.FROM_HTML_MODE_LEGACY));
         Glide.with(this).load(ApiWebServices.base_url + "all_products_images/" + productModel.getProductImage()).into(productLaytoutBinding.logo);
         Glide.with(this).load(ApiWebServices.base_url + "all_products_images/" + productModel.getBanner()).into(productLaytoutBinding.banner);
-        productLaytoutBinding.buyingGuideHindi.setText(productModel.getBuingGuideHindi());
-        productLaytoutBinding.buyingGuideEnglish.setText(productModel.getBuingGuideEnglish());
-        productLaytoutBinding.enterRatingInHindi.setText(productModel.getRatingHindi());
-        productLaytoutBinding.enterRatingInEnglish.setText(productModel.getRatingEnglish());
+        productLaytoutBinding.buyingGuideHindi.setText(HtmlCompat.fromHtml(productModel.getBuingGuideHindi(), HtmlCompat.FROM_HTML_MODE_LEGACY));
+        productLaytoutBinding.buyingGuideEnglish.setText(HtmlCompat.fromHtml(productModel.getBuingGuideEnglish(), HtmlCompat.FROM_HTML_MODE_LEGACY));
+        productLaytoutBinding.enterRatingInHindi.setText(HtmlCompat.fromHtml(productModel.getRatingHindi(), HtmlCompat.FROM_HTML_MODE_LEGACY));
+        productLaytoutBinding.enterRatingInEnglish.setText(HtmlCompat.fromHtml(productModel.getRatingEnglish(), HtmlCompat.FROM_HTML_MODE_LEGACY));
 
         productLaytoutBinding.okBtn.setOnClickListener(view -> {
             loadingDialog.show();

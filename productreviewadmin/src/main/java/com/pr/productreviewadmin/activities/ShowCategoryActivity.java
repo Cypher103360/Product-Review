@@ -4,9 +4,7 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Build;
 import android.os.Bundle;
-import android.text.Html;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
@@ -18,6 +16,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.text.HtmlCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -118,7 +117,7 @@ public class ShowCategoryActivity extends AppCompatActivity implements CateogryI
                     }
 
 
-                    Log.d("ContentValue", encodedImage + " @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@/n@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@/n" + encodedImage2);
+//                    Log.d("ContentValue", encodedImage + " @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@/n@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@/n" + encodedImage2);
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
@@ -330,9 +329,7 @@ public class ShowCategoryActivity extends AppCompatActivity implements CateogryI
         if (catKey.equals("update")) {
             topBrandLayoutBinding.banner.setVisibility(View.VISIBLE);
             topBrandLayoutBinding.logo.setVisibility(View.GONE);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                topBrandLayoutBinding.titleTv.setText(Html.fromHtml(catModel.getTitle(), Html.FROM_HTML_MODE_LEGACY));
-            }
+            topBrandLayoutBinding.titleTv.setText(HtmlCompat.fromHtml(catModel.getTitle(), HtmlCompat.FROM_HTML_MODE_LEGACY));
             Glide.with(this).load(ApiWebServices.base_url + "all_categories_images/" + catModel.getBanner()).into(topBrandLayoutBinding.banner);
             encodedImage2 = catModel.getBanner();
             encodedImage = encodedImage2;
