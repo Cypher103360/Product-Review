@@ -7,7 +7,6 @@
     <string name="show_best_product">Show Best Products</string>
     <string name="show_category">Show Category</string>
     <string name="update_ads_ids">Update Ads Ids</string>
-    <string name="upload_expert_tips_url">Upload Expert Tips url</string>
     <string name="upload_website_url">Upload Website Url</string>
     <string name="todo">Todo</string>
     <string name="enter_url">Enter Url</string>
@@ -31,5 +30,6 @@
     <string name="upload_banner">Upload Brands</string>
     <string name="appopen_ads">AppOpen Ads</string>
     <string name="appopen_network_name">appOpen Network Name</string>
+    <string name="update_text_and_urls">Update Text and Urls</string>
 
 </resources>

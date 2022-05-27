@@ -1,5 +1,7 @@
 package com.pr.productkereview.utils;
 
+import static com.pr.productkereview.activities.HomeActivity.decodeEmoji;
+
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -11,6 +13,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 
 import com.facebook.shimmer.Shimmer;
 import com.facebook.shimmer.ShimmerDrawable;
@@ -19,6 +22,7 @@ import com.pr.productkereview.R;
 import com.pr.productkereview.models.UrlsModels.UrlModel;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 
 import retrofit2.Call;
@@ -26,8 +30,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class CommonMethods {
-    static ApiInterface apiInterface = ApiWebServices.getApiInterface();
-    static String shareText;
+    static String adsFreeText;
 
     public static Dialog getLoadingDialog(Context context) {
         Dialog loadingDialog;
@@ -59,13 +62,7 @@ public class CommonMethods {
             Intent shareIntent = new Intent(Intent.ACTION_SEND);
             shareIntent.setType("text/plain");
             shareIntent.putExtra(Intent.EXTRA_SUBJECT, R.string.app_name);
-            String shareMessage = "Hii, \n" +
-                    "Hope You R Enjoying\uD83E\uDD73\n" +
-                    "If Not,\n" +
-                    "\n" +
-                    "Let Me Share Something....\n" +
-                    "It's Really Good!\n" +
-                    "\n" + share + "\n";
+            String shareMessage = share+"\n\n";
             shareMessage = shareMessage + "https://play.google.com/store/apps/details?id=" + BuildConfig.APPLICATION_ID + "\n\n";
             shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             shareIntent.putExtra(Intent.EXTRA_TEXT, shareMessage);
@@ -73,27 +70,6 @@ public class CommonMethods {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    public static String fetchUrls(String tips) {
-        Call<UrlModel> call = apiInterface.getUrls(tips);
-        call.enqueue(new Callback<UrlModel>() {
-            @Override
-            public void onResponse(@NonNull Call<UrlModel> call, @NonNull Response<UrlModel> response) {
-                if (response.isSuccessful()) {
-                    assert response.body() != null;
-//                    webUrlId = response.body().getId();
-                    shareText = response.body().getUrl();
-                    //Log.d("urls",weburl);
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<UrlModel> call, @NonNull Throwable t) {
-
-            }
-        });
-        return shareText;
     }
 
     public static void rateApp(Context context) {
@@ -112,7 +88,7 @@ public class CommonMethods {
         i.setPackage("com.google.android.gm");
         i.setType("message/rfc822");
         i.putExtra(Intent.EXTRA_EMAIL, new String[]{"help.productreviews@gmail.com"});
-        i.putExtra(Intent.EXTRA_SUBJECT, "Hello");
+        i.putExtra(Intent.EXTRA_SUBJECT, "Regards Best Product Reviews!");
         i.putExtra(Intent.EXTRA_TEXT, "Hi Team PR,\n" +
                 "Its So Glad to Connect...\n" +
                 "\n" +
@@ -129,13 +105,18 @@ public class CommonMethods {
 
     }
 
-    public static void whatsApp(Context context) throws UnsupportedEncodingException, PackageManager.NameNotFoundException {
+    public static CircularProgressDrawable CircularDrawable(Context context){
+        CircularProgressDrawable circularProgressDrawable = new CircularProgressDrawable(context);
+        circularProgressDrawable.setStrokeWidth(5f);
+        circularProgressDrawable.setCenterRadius(30f);
+        circularProgressDrawable.start();
+        return circularProgressDrawable;
+    }
+
+    public static void whatsApp(Context context,String whatsapp) throws UnsupportedEncodingException, PackageManager.NameNotFoundException {
         String contact = "+91 6396869782"; // use country code with your phone number
-        String url = "https://api.whatsapp.com/send?phone=" + contact + "&text=" + URLEncoder.encode("Hi Team PR,\n" +
-                "This is \"Your Name\"\uD83D\uDE0A\n" +
-                "\n" +
-                "And I need Help Regards\n" +
-                "World's Best Unbiased Product Reviews.....", "UTF-8");
+        String url = "https://api.whatsapp.com/send?phone=" + contact + "&text=" +
+                whatsapp ;
         try {
             PackageManager pm = context.getPackageManager();
             pm.getPackageInfo("com.whatsapp", PackageManager.GET_ACTIVITIES);
@@ -163,4 +144,5 @@ public class CommonMethods {
 
 
     }
+
 }

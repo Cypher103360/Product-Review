@@ -19,6 +19,8 @@ public class PrivacyPolicy extends AppCompatActivity {
         binding = ActivityPrivacyPolicyBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        key = getIntent().getStringExtra("key");
+
         if (key.equals("policy")) {
             binding.webView.loadUrl("file:///android_asset/privacy_policy.html");
         }

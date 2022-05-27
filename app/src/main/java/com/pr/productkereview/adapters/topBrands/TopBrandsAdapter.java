@@ -2,6 +2,7 @@ package com.pr.productkereview.adapters.topBrands;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Build;
 import android.text.Html;
 import android.view.LayoutInflater;
@@ -18,13 +19,14 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.facebook.shimmer.Shimmer;
-import com.facebook.shimmer.ShimmerDrawable;
 import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.pr.productkereview.R;
+import com.pr.productkereview.activities.ShowAllItemsActivity;
 import com.pr.productkereview.databinding.AdLayoutBinding;
 import com.pr.productkereview.models.TopBrands.BrandsModel;
 import com.pr.productkereview.utils.ApiWebServices;
+import com.pr.productkereview.utils.CommonMethods;
 import com.pr.productkereview.utils.Prevalent;
 import com.pr.productkereview.utils.ShowAds;
 
@@ -37,8 +39,13 @@ import io.paperdb.Paper;
 
 public class TopBrandsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int ITEM_VIEW = 0;
+
     private static final int AD_VIEW = 1;
     private static final int ITEM_FEED_COUNT = 4;
+
+    private static final int BUTTON_VIEW_ALL = 1;
+    private static final int BUTTON_COUNT = 8;
+
     private final boolean shouldShowAllItems;
     ShowAds showAds = new ShowAds();
     List<BrandsModel> topBrandsModelList = new ArrayList<>();
@@ -57,9 +64,12 @@ public class TopBrandsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             if ((position + 1) % ITEM_FEED_COUNT == 0) {
                 return AD_VIEW;
             }
-            return ITEM_VIEW;
+        } else {
+            if ((position+1) % BUTTON_COUNT == 0) {
+                return BUTTON_VIEW_ALL;
+            }
         }
-        return 0;
+        return ITEM_VIEW;
     }
 
     @NonNull
@@ -80,33 +90,28 @@ public class TopBrandsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 return new AdViewHolder(view);
             } else return null;
         } else {
-            View view = LayoutInflater.from(context).inflate(R.layout.top_brands_layout, parent, false);
-            return new ViewHolder(view);
+            if (viewType == ITEM_VIEW) {
+                View view = LayoutInflater.from(context).inflate(R.layout.top_brands_layout, parent, false);
+                return new ViewHolder(view);
+            } else if (viewType == BUTTON_VIEW_ALL) {
+                View view = LayoutInflater.from(context).inflate(R.layout.view_all_item_layout, parent, false);
+                return new ButtonViewHolder(view);
+            }
         }
-
+        return null;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int pos) {
 
+
         if (shouldShowAllItems) {
             if (holder.getItemViewType() == ITEM_VIEW) {
                 int position = pos - Math.round(pos / ITEM_FEED_COUNT);
-                Shimmer shimmer = new Shimmer.AlphaHighlightBuilder()// The attributes for a ShimmerDrawable is set by this builder
-                        .setDuration(1000) // how long the shimmering animation takes to do one full sweep
-                        .setBaseAlpha(0.6f) //the alpha of the underlying children
-                        .setHighlightAlpha(0.8f) // the shimmer alpha amount
-                        .setDirection(Shimmer.Direction.LEFT_TO_RIGHT)
-                        .setAutoStart(true)
-                        .build();
-
-                // This is the placeholder for the imageView
-                ShimmerDrawable shimmerDrawable = new ShimmerDrawable();
-                shimmerDrawable.setShimmer(shimmer);
 
                 BrandsModel topBrandsModel = topBrandsModelList.get(position);
-                if (shouldShowAllItems) {
+
                     // holder.imageCard.setLayoutParams(new ViewGroup.LayoutParams(210, 210));
                     ConstraintLayout.LayoutParams params = new ConstraintLayout.LayoutParams(
                             235,
@@ -114,10 +119,10 @@ public class TopBrandsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                     );
                     params.setMargins(10, 10, 10, 10);
                     ((ViewHolder) holder).imageCard.setLayoutParams(params);
-                }
+
                 Glide.with(context).load(ApiWebServices.base_url + "top_brands_images/" +
                                 topBrandsModel.getLogo())
-                        .placeholder(shimmerDrawable)
+                        .placeholder(CommonMethods.setShimmer(holder.itemView.getContext()))
                         .diskCacheStrategy(DiskCacheStrategy.DATA)
                         .into(((ViewHolder) holder).itemImage);
                 ((ViewHolder) holder).itemTitle.setText(Html.fromHtml(topBrandsModel.getTitle(), Html.FROM_HTML_MODE_LEGACY));
@@ -130,37 +135,35 @@ public class TopBrandsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             }
 
         } else {
-            Shimmer shimmer = new Shimmer.AlphaHighlightBuilder()// The attributes for a ShimmerDrawable is set by this builder
-                    .setDuration(1000) // how long the shimmering animation takes to do one full sweep
-                    .setBaseAlpha(0.6f) //the alpha of the underlying children
-                    .setHighlightAlpha(0.8f) // the shimmer alpha amount
-                    .setDirection(Shimmer.Direction.LEFT_TO_RIGHT)
-                    .setAutoStart(true)
-                    .build();
 
-            // This is the placeholder for the imageView
-            ShimmerDrawable shimmerDrawable = new ShimmerDrawable();
-            shimmerDrawable.setShimmer(shimmer);
-
-            BrandsModel topBrandsModel = topBrandsModelList.get(pos);
-            if (shouldShowAllItems) {
-                // holder.imageCard.setLayoutParams(new ViewGroup.LayoutParams(210, 210));
+            if (holder.getItemViewType() == ITEM_VIEW) {
+                int position = pos - Math.round(pos / BUTTON_COUNT);
+                BrandsModel brandsModel = topBrandsModelList.get(position);
+                Glide.with(context).load(ApiWebServices.base_url + "top_brands_images/" +
+                                brandsModel.getLogo())
+                        .placeholder(CommonMethods.setShimmer(holder.itemView.getContext()))
+                        .diskCacheStrategy(DiskCacheStrategy.DATA)
+                        .into(((ViewHolder) holder).itemImage);
+                ((ViewHolder) holder).itemTitle.setText(Html.fromHtml(brandsModel.getTitle(), Html.FROM_HTML_MODE_LEGACY));
+                holder.itemView.setOnClickListener(v -> {
+                    topBrandsClickInterface.OnTopBrandClicked(topBrandsModelList.get(position));
+                });
+            } else if (holder.getItemViewType() == BUTTON_VIEW_ALL) {
                 ConstraintLayout.LayoutParams params = new ConstraintLayout.LayoutParams(
-                        235,
-                        235
+                        160,
+                        160
                 );
-                params.setMargins(10, 10, 10, 10);
-                ((ViewHolder) holder).imageCard.setLayoutParams(params);
+                params.setMargins(15, 15, 15, 15);
+                ((ButtonViewHolder) holder).viewAllCardBtn.setLayoutParams(params);
+
+                ((ButtonViewHolder) holder).fab.setOnClickListener(v -> {
+                    showAds.destroyBanner();
+                    showAds.showInterstitialAds(context);
+                    Intent intent = new Intent(context, ShowAllItemsActivity.class);
+                    intent.putExtra("key", "topBrands");
+                    context.startActivity(intent);
+                });
             }
-            Glide.with(context).load(ApiWebServices.base_url + "top_brands_images/" +
-                            topBrandsModel.getLogo())
-                    .placeholder(shimmerDrawable)
-                    .diskCacheStrategy(DiskCacheStrategy.DATA)
-                    .into(((ViewHolder) holder).itemImage);
-            ((ViewHolder) holder).itemTitle.setText(Html.fromHtml(topBrandsModel.getTitle(), Html.FROM_HTML_MODE_LEGACY));
-            holder.itemView.setOnClickListener(v -> {
-                topBrandsClickInterface.OnTopBrandClicked(topBrandsModelList.get(pos));
-            });
 
         }
 
@@ -175,8 +178,7 @@ public class TopBrandsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             }
 
         } else {
-            int limit = 7;
-            return Math.min(topBrandsModelList.size(), limit);
+            return Math.min(topBrandsModelList.size(), BUTTON_COUNT);
         }
         return 0;
     }
@@ -200,6 +202,19 @@ public class TopBrandsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             itemImage = itemView.findViewById(R.id.item_img);
             itemTitle = itemView.findViewById(R.id.item_title);
             imageCard = itemView.findViewById(R.id.top_brand_card);
+        }
+    }
+
+    public static class ButtonViewHolder extends RecyclerView.ViewHolder {
+        MaterialCardView viewAllCardBtn;
+        ImageView fab;
+        TextView viewAllText;
+
+        public ButtonViewHolder(@NonNull View itemView) {
+            super(itemView);
+            viewAllCardBtn = itemView.findViewById(R.id.view_all_card_btn);
+            fab = itemView.findViewById(R.id.view_all_fab_btn);
+            viewAllText = itemView.findViewById(R.id.view_all_text);
         }
     }
 

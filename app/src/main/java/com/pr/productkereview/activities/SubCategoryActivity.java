@@ -2,14 +2,18 @@ package com.pr.productkereview.activities;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.text.Html;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.ironsource.mediationsdk.IronSource;
 import com.pr.productkereview.R;
 import com.pr.productkereview.adapters.SubCatAdapter.SubCategoryAdapter;
 import com.pr.productkereview.adapters.SubCatAdapter.SubCategoryInterface;
@@ -35,6 +39,8 @@ public class SubCategoryActivity extends AppCompatActivity implements SubCategor
     String id, title;
 
     ShowAds showAds;
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,14 +54,11 @@ public class SubCategoryActivity extends AppCompatActivity implements SubCategor
 
         showAds = new ShowAds();
         getLifecycle().addObserver(showAds);
-        showAds.showBottomBanner(this, findViewById(R.id.adView_bottom));
-        showAds.showTopBanner(this, findViewById(R.id.adView_top));
-
         catViewModel = new ViewModelProvider(SubCategoryActivity.this,
                 new CatModelFactory(this.getApplication(), id)).get(CatViewModel.class);
 
 
-        binding.activityTitle.setText(title);
+        binding.activityTitle.setText(Html.fromHtml(title, Html.FROM_HTML_MODE_LEGACY));
         binding.backIcon.setOnClickListener(v -> {
             onBackPressed();
         });
@@ -93,7 +96,7 @@ public class SubCategoryActivity extends AppCompatActivity implements SubCategor
             startActivity(intent);
         } else if (catModel.getProduct().equals("true")) {
             Intent intent = new Intent(SubCategoryActivity.this, ShowAllItemsActivity.class);
-            intent.putExtra("key","Products");
+            intent.putExtra("key", "Products");
             intent.putExtra("id", catModel.getId());
             startActivity(intent);
         } else {
@@ -113,5 +116,20 @@ public class SubCategoryActivity extends AppCompatActivity implements SubCategor
         super.onBackPressed();
         finish();
         showAds.destroyBanner();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        IronSource.onPause(this);
+        showAds.destroyBanner();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        IronSource.onResume(this);
+        showAds.showBottomBanner(this, findViewById(R.id.adView_bottom));
+        showAds.showTopBanner(this, findViewById(R.id.adView_top));
     }
 }

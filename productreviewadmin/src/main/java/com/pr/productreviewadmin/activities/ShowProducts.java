@@ -148,38 +148,142 @@ public class ShowProducts extends AppCompatActivity implements ProductInterface 
 
         Log.d("ContentValue", id);
 
+//        if (Objects.equals(id, "latest") || Objects.equals(id, "best") || Objects.equals(id, "trending")) {
+//            simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
+//                @Override
+//                public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+//
+//                    return false;
+//                }
+//
+//                @Override
+//                public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+//                    if (Objects.equals(id, "latest")) {
+//                        map.put("id", productModels.get(viewHolder.getAdapterPosition()).getId());
+//                        map.put("key", "latest");
+//                        call = apiInterface.removeProduct(map);
+//                        deleteData(call);
+//                        productModels.remove(viewHolder.getAdapterPosition());
+//                    } else if (Objects.equals(id, "best")) {
+//                        map.put("id", productModels.get(viewHolder.getAdapterPosition()).getId());
+//                        map.put("key", "best");
+//                        call = apiInterface.removeProduct(map);
+//                        deleteData(call);
+//                        productModels.remove(viewHolder.getAdapterPosition());
+//                    } else if (Objects.equals(id, "trending")) {
+//                        map.put("id", productModels.get(viewHolder.getAdapterPosition()).getId());
+//                        map.put("key", "trending");
+//                        call = apiInterface.removeProduct(map);
+//                        deleteData(call);
+//                        productModels.remove(viewHolder.getAdapterPosition());
+//                    }
+//                }
+//
+//                private void deleteData(Call<MessageModel> call) {
+//                    call.enqueue(new Callback<MessageModel>() {
+//                        @Override
+//                        public void onResponse(@NonNull Call<MessageModel> call, @NonNull Response<MessageModel> response) {
+//                            if (response.isSuccessful()) {
+//                                Toast.makeText(ShowProducts.this, Objects.requireNonNull(response.body()).getMessage(), Toast.LENGTH_SHORT).show();
+//                                if (key != null) {
+//                                    fetchProducts(key);
+//                                } else if (id != null) {
+//                                    fetchProducts(id);
+//
+//                                }
+//                            } else {
+//                                Toast.makeText(ShowProducts.this, Objects.requireNonNull(response.body()).getError(), Toast.LENGTH_SHORT).show();
+//                            }
+//                            loadingDialog.dismiss();
+//                        }
+//
+//
+//                        @Override
+//                        public void onFailure(@NonNull Call<MessageModel> call, @NonNull Throwable t) {
+//                            loadingDialog.dismiss();
+//
+//                        }
+//                    });
+//                }
+//
+//
+//            };
+//        } else {
+//            simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
+//                @Override
+//                public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+//
+//                    return false;
+//                }
+//
+//                @Override
+//                public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+//
+//                    deleteProducts(productModels.get(viewHolder.getAdapterPosition()), "deleteS");
+//                    productModels.remove(viewHolder.getAdapterPosition());
+//                }
+//            };
+//
+//
+//        }
+//        new ItemTouchHelper(simpleCallback).attachToRecyclerView(binding.productRV);
+    }
+
+    @Override
+    public void productClicked(ProductModel productModel) {
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this);
+
         if (Objects.equals(id, "latest") || Objects.equals(id, "best") || Objects.equals(id, "trending")) {
-            simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
-                @Override
-                public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+            MaterialAlertDialogBuilder builders = new MaterialAlertDialogBuilder(this);
 
-                    return false;
+                builders.setTitle("Delete Product")
+                        .setMessage("Would you like to delete this banner?")
+                        .setNegativeButton("Cancel", (dialogInterface, i) -> {
+                        })
+                        .setPositiveButton("Ok", (dialogInterface, i) -> {
+                            loadingDialog.show();
+                            if (Objects.equals(id, "latest")) {
+                                map.put("id", productModel.getId());
+                                map.put("key", "latest");
+                                call = apiInterface.removeProduct(map);
+                                deleteData(call);
+                            } else if (Objects.equals(id, "best")) {
+                                map.put("id", productModel.getId());
+                                map.put("key", "best");
+                                call = apiInterface.removeProduct(map);
+                                deleteData(call);
+                            } else if (Objects.equals(id, "trending")) {
+                                map.put("id", productModel.getId());
+                                map.put("key", "trending");
+                                call = apiInterface.removeProduct(map);
+                                deleteData(call);
+
+                            }
+
+
+                        }).show();
+
+        } else {
+            String[] items = new String[]{"Update Product", "Delete Product"};
+            builder.setTitle("Update OR Delete Product").setCancelable(true).setItems(items, (dialogInterface, which) -> {
+                switch (which) {
+                    case 0:
+                        updateProducts(productModel);
+                        break;
+                    case 1:
+                        deleteProducts(productModel, "deleteN");
+                        break;
+
                 }
+            });
 
-                @Override
-                public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                    if (Objects.equals(id, "latest")) {
-                        map.put("id", productModels.get(viewHolder.getAdapterPosition()).getId());
-                        map.put("key", "latest");
-                        call = apiInterface.removeProduct(map);
-                        deleteData(call);
-                        productModels.remove(viewHolder.getAdapterPosition());
-                    } else if (Objects.equals(id, "best")) {
-                        map.put("id", productModels.get(viewHolder.getAdapterPosition()).getId());
-                        map.put("key", "best");
-                        call = apiInterface.removeProduct(map);
-                        deleteData(call);
-                        productModels.remove(viewHolder.getAdapterPosition());
-                    } else if (Objects.equals(id, "trending")) {
-                        map.put("id", productModels.get(viewHolder.getAdapterPosition()).getId());
-                        map.put("key", "trending");
-                        call = apiInterface.removeProduct(map);
-                        deleteData(call);
-                        productModels.remove(viewHolder.getAdapterPosition());
-                    }
-                }
+            builder.show();
+        }
 
-                private void deleteData(Call<MessageModel> call) {
+    }
+
+
+    private void deleteData(Call<MessageModel> call) {
                     call.enqueue(new Callback<MessageModel>() {
                         @Override
                         public void onResponse(@NonNull Call<MessageModel> call, @NonNull Response<MessageModel> response) {
@@ -205,55 +309,6 @@ public class ShowProducts extends AppCompatActivity implements ProductInterface 
                         }
                     });
                 }
-
-
-            };
-        } else {
-            simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
-                @Override
-                public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
-
-                    return false;
-                }
-
-                @Override
-                public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-
-                    deleteProducts(productModels.get(viewHolder.getAdapterPosition()), "deleteS");
-                    productModels.remove(viewHolder.getAdapterPosition());
-                }
-            };
-
-
-        }
-        new ItemTouchHelper(simpleCallback).attachToRecyclerView(binding.productRV);
-    }
-
-    @Override
-    public void productClicked(ProductModel productModel) {
-        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this);
-
-        if (Objects.equals(key, "latest") || Objects.equals(key, "best") || Objects.equals(key, "trending")) {
-
-        } else {
-            String[] items = new String[]{"Update Product", "Delete Product"};
-            builder.setTitle("Update OR Delete Product").setCancelable(true).setItems(items, (dialogInterface, which) -> {
-                switch (which) {
-                    case 0:
-                        updateProducts(productModel);
-                        break;
-                    case 1:
-                        deleteProducts(productModel, "deleteN");
-                        break;
-
-                }
-            });
-
-            builder.show();
-        }
-
-    }
-
     private void deleteProducts(ProductModel productModel, String deleteS) {
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this);
         if (deleteS.equals("deleteS")) {

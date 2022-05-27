@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -17,6 +18,7 @@ import com.pr.productkereview.activities.WelcomeActivity;
 import com.pr.productkereview.models.AdsModel;
 
 import java.util.List;
+import java.util.Objects;
 
 import io.paperdb.Paper;
 import retrofit2.Call;
@@ -144,5 +146,3 @@ public class MyApp extends Application {
         }
     }
 }
-
-// jks file password:  12345

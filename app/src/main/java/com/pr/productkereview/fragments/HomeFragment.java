@@ -1,5 +1,6 @@
 package com.pr.productkereview.fragments;
 
+
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
@@ -52,6 +53,7 @@ import com.pr.productkereview.utils.Prevalent;
 import com.pr.productkereview.utils.ShowAds;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,7 +69,7 @@ public class HomeFragment extends Fragment implements LatestProductClickInterfac
     List<SlideModel> slideModels = new ArrayList<>();
     List<BannerImageModel> bannerImageModelList = new ArrayList<>();
     ApiInterface apiInterface;
-    String webUrl, bannerUrl;
+    String webUrl, bannerUrl, whatsappText;
     ProductViewModel latestProductViewModel;
     BestProductViewModel bestProductViewModel;
     BrandViewModel brandViewModel;
@@ -86,12 +88,21 @@ public class HomeFragment extends Fragment implements LatestProductClickInterfac
     // Room Database
     private ProductAppDatabase productAppDatabase;
 
+    public static String decodeEmoji(String message) {
+        try {
+            return URLDecoder.decode(
+                    message, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            return message;
+        }
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         apiInterface = ApiWebServices.getApiInterface();
+        fetchWhatsappText("whatsapp");
 
         brandViewModel = new ViewModelProvider(requireActivity()).get(BrandViewModel.class);
 
@@ -109,7 +120,7 @@ public class HomeFragment extends Fragment implements LatestProductClickInterfac
         });
         binding.lottieWhatsappButton.setOnClickListener(v -> {
             try {
-                CommonMethods.whatsApp(requireActivity());
+                CommonMethods.whatsApp(requireActivity(), whatsappText);
             } catch (UnsupportedEncodingException | PackageManager.NameNotFoundException e) {
                 e.printStackTrace();
             }
@@ -170,6 +181,8 @@ public class HomeFragment extends Fragment implements LatestProductClickInterfac
             fetchLatestProducts();
             fetchBestProducts();
             fetchUserClickedProducts();
+            fetchWhatsappText("whatsapp");
+
             binding.homeSwipeRefreshLayout.setRefreshing(false);
         });
 
@@ -201,15 +214,17 @@ public class HomeFragment extends Fragment implements LatestProductClickInterfac
             loading.dismiss();
             binding.latestProductLayout.setVisibility(View.VISIBLE);
 
-            if (latestProductModelList.size() > 7) {
-                binding.latestViewAllBtn.setVisibility(View.VISIBLE);
-                binding.latestViewAllBtn.setOnClickListener(v -> {
-                    Intent intent = new Intent(requireActivity(), ShowAllItemsActivity.class);
-                    intent.putExtra("key", "latestProducts");
-                    startActivity(intent);
-
-                });
-            }
+//            if (latestProductModelList.size() > 7) {
+//                binding.latestViewAllBtn.setVisibility(View.VISIBLE);
+//                binding.latestViewAllBtn.setOnClickListener(v -> {
+//                    showAds.destroyBanner();
+//                    showAds.showInterstitialAds(requireActivity());
+//                    Intent intent = new Intent(requireActivity(), ShowAllItemsActivity.class);
+//                    intent.putExtra("key", "latestProducts");
+//                    startActivity(intent);
+//
+//                });
+//            }
         });
     }
 
@@ -224,6 +239,8 @@ public class HomeFragment extends Fragment implements LatestProductClickInterfac
             if (bestProductModelList.size() > 6) {
                 binding.bestViewAllBtn.setVisibility(View.VISIBLE);
                 binding.bestViewAllBtn.setOnClickListener(v -> {
+                    showAds.destroyBanner();
+                    showAds.showInterstitialAds(requireActivity());
                     Intent intent = new Intent(requireActivity(), ShowAllItemsActivity.class);
                     intent.putExtra("key", "bestProducts");
                     startActivity(intent);
@@ -241,14 +258,16 @@ public class HomeFragment extends Fragment implements LatestProductClickInterfac
                 loading.dismiss();
                 binding.topBrandProductLayout.setVisibility(View.VISIBLE);
 
-                if (topBrandsModelList.size() > 7) {
-                    binding.topBrandsViewAllBtn.setVisibility(View.VISIBLE);
-                    binding.topBrandsViewAllBtn.setOnClickListener(v -> {
-                        Intent intent = new Intent(requireActivity(), ShowAllItemsActivity.class);
-                        intent.putExtra("key", "topBrands");
-                        startActivity(intent);
-                    });
-                }
+//                if (topBrandsModelList.size() > 7) {
+//                    binding.topBrandsViewAllBtn.setVisibility(View.VISIBLE);
+//                    binding.topBrandsViewAllBtn.setOnClickListener(v -> {
+//                        showAds.destroyBanner();
+//                        showAds.showInterstitialAds(requireActivity());
+//                        Intent intent = new Intent(requireActivity(), ShowAllItemsActivity.class);
+//                        intent.putExtra("key", "topBrands");
+//                        startActivity(intent);
+//                    });
+//                }
             }
         });
     }
@@ -397,6 +416,25 @@ public class HomeFragment extends Fragment implements LatestProductClickInterfac
         intent.putExtras(bundle);
         startActivity(intent);
 
+    }
+
+    public void fetchWhatsappText(String whatsapp) {
+        Call<UrlModel> call = apiInterface.getUrls(whatsapp);
+        call.enqueue(new Callback<UrlModel>() {
+            @Override
+            public void onResponse(@NonNull Call<UrlModel> call, @NonNull Response<UrlModel> response) {
+                if (response.isSuccessful()) {
+                    assert response.body() != null;
+                    whatsappText = decodeEmoji(response.body().getUrl());
+                    //Log.d("urls",weburl);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<UrlModel> call, @NonNull Throwable t) {
+
+            }
+        });
     }
 
     void setShowAds() {

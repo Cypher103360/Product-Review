@@ -13,10 +13,13 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.ironsource.mediationsdk.IronSource;
 import com.pr.productkereview.R;
 import com.pr.productkereview.databinding.ActivityWelcomeBinding;
 import com.pr.productkereview.utils.CommonMethods;
 import com.pr.productkereview.utils.ShowAds;
+
+import java.util.Calendar;
 
 public class WelcomeActivity extends AppCompatActivity {
     ActivityWelcomeBinding binding;
@@ -32,6 +35,22 @@ public class WelcomeActivity extends AppCompatActivity {
         binding = ActivityWelcomeBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         // apiInterface = ApiWebServices.getApiInterface();
+
+//        Calendar calendar = Calendar.getInstance();
+//        int hours = calendar.get(Calendar.HOUR_OF_DAY);
+//
+//        if (hours < 12) {
+//            binding.greetingText.setText("Good Morning");
+//
+//        } else if (hours < 16) {
+//            binding.greetingText.setText("Good Afternoon");
+//
+//        } else if (hours < 21) {
+//            binding.greetingText.setText("Good Evening");
+//
+//        } else {
+//            binding.greetingText.setText("Good Night");
+//        }
 
 //        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
 //        if (account != null) {
@@ -56,11 +75,13 @@ public class WelcomeActivity extends AppCompatActivity {
         showAds.showTopBanner(this, findViewById(R.id.adView_top));
 
         new Handler().postDelayed(() -> {
-            showAds.destroyBanner();
-            showAds.showInterstitialAds(WelcomeActivity.this);
+
             binding.getStartedBtn.setOnClickListener(v -> {
+                CommonMethods.getLoadingDialog(WelcomeActivity.this).show();
                 Intent intent = new Intent(WelcomeActivity.this, HomeActivity.class);
                 startActivity(intent);
+                showAds.destroyBanner();
+                showAds.showInterstitialAds(WelcomeActivity.this);
             });
         }, 3000);
 
@@ -118,5 +139,17 @@ public class WelcomeActivity extends AppCompatActivity {
             CommonMethods.rateApp(getApplicationContext());
         });
 
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        IronSource.onPause(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        IronSource.onResume(this);
     }
 }

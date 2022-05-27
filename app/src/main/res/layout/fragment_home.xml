@@ -79,7 +79,7 @@
                                 android:layout_height="match_parent"
                                 android:fitsSystemWindows="true"
                                 app:iss_auto_cycle="true"
-                                app:iss_delay="0"
+                                app:iss_delay="@integer/material_motion_duration_medium_1"
                                 app:iss_period="3000"
                                 app:iss_placeholder="@drawable/banner_picture" />
                         </LinearLayout>
@@ -113,18 +113,20 @@
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />
 
-                            <Button
-                                android:id="@+id/latest_viewAll_btn"
-                                style="?attr/materialButtonOutlinedStyle"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginEnd="10dp"
-                                android:text="View all"
-                                android:textColor="@color/btn_color"
-                                android:visibility="gone"
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintTop_toTopOf="parent" />
+<!--                            <Button-->
+<!--                                android:id="@+id/latest_viewAll_btn"-->
+<!--                                android:layout_width="wrap_content"-->
+<!--                                android:layout_height="wrap_content"-->
+<!--                                android:layout_marginEnd="10dp"-->
+<!--                                android:text="View all"-->
+<!--                                android:textStyle="bold"-->
+<!--                                android:backgroundTint="#2962FF"-->
+<!--                                android:textColor="@color/white"-->
+<!--                                android:visibility="gone"-->
+<!--                                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                                app:layout_constraintTop_toTopOf="parent" />-->
+
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
                         <androidx.recyclerview.widget.RecyclerView
@@ -163,19 +165,6 @@
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />
 
-                            <Button
-                                android:id="@+id/best_viewAll_btn"
-                                style="?attr/materialButtonOutlinedStyle"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginEnd="10dp"
-                                android:text="View all"
-                                android:textColor="@color/btn_color"
-                                android:visibility="gone"
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintTop_toTopOf="parent" />
-
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
                         <androidx.recyclerview.widget.RecyclerView
@@ -184,7 +173,17 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center" />
 
-
+                        <Button
+                            android:id="@+id/best_viewAll_btn"
+                            android:layout_width="wrap_content"
+                            android:layout_marginBottom="5dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:text="View all"
+                            android:textStyle="bold"
+                            android:backgroundTint="#2962FF"
+                            android:textColor="@color/white"
+                            android:visibility="gone"/>
                     </LinearLayout>
 
                     <LinearLayout
@@ -215,18 +214,21 @@
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />
 
-                            <Button
-                                android:id="@+id/topBrands_viewAll_btn"
-                                style="?attr/materialButtonOutlinedStyle"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginEnd="10dp"
-                                android:text="View all"
-                                android:textColor="@color/btn_color"
-                                android:visibility="gone"
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintTop_toTopOf="parent" />
+<!--                            <Button-->
+<!--                                android:id="@+id/topBrands_viewAll_btn"-->
+<!--                                style="?attr/materialButtonOutlinedStyle"-->
+<!--                                android:layout_width="wrap_content"-->
+<!--                                android:layout_height="wrap_content"-->
+<!--                                android:layout_marginEnd="10dp"-->
+<!--                                android:text="View all"-->
+<!--                                android:textStyle="bold"-->
+<!--                                android:backgroundTint="#2962FF"-->
+<!--                                android:textColor="@color/white"-->
+<!--                                android:visibility="gone"-->
+<!--                                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                                app:layout_constraintTop_toTopOf="parent" />-->
+
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
                         <androidx.recyclerview.widget.RecyclerView

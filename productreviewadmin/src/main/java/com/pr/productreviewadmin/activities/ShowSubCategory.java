@@ -422,6 +422,7 @@ public class ShowSubCategory extends AppCompatActivity implements CateogryInterf
         builder.setTitle("Delete Banner")
                 .setMessage("Would you like to delete this banner?")
                 .setNegativeButton("Cancel", (dialogInterface, i) -> {
+                    loadingDialog.dismiss();
                 })
                 .setPositiveButton("Ok", (dialogInterface, i) -> {
                     map.put("id", catModel.getId());

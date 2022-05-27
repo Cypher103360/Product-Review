@@ -102,6 +102,7 @@ dependencies {
 
     //paper db
     implementation 'io.github.pilgr:paperdb:2.7.2'
+
     // Room database
     def room_version = "2.4.2"
     implementation "androidx.room:room-runtime:$room_version"

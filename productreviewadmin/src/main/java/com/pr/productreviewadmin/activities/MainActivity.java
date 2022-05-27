@@ -46,6 +46,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -92,6 +93,23 @@ public class MainActivity extends AppCompatActivity implements BannerInterface {
     List<BannerModel> bannerModelList;
     // dialog variables
 
+    public static String encodeEmoji(String message) {
+        try {
+            return URLEncoder.encode(message,
+                    "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            return message;
+        }
+    }
+
+    public static String decodeEmoji(String message) {
+        try {
+            return URLDecoder.decode(
+                    message, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            return message;
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,10 +122,10 @@ public class MainActivity extends AppCompatActivity implements BannerInterface {
         binding.uploadBanner.setOnClickListener(view -> showUploadBannerDialog("banner", null));
         binding.uploadCat.setOnClickListener(view -> uploadTopBrandsDialog("cat"));
         binding.uploadTopBrands.setOnClickListener(view -> uploadTopBrandsDialog("brands"));
-        binding.uploadExpertTipsUrl.setOnClickListener(view -> showUploadBannerDialog("tips", null));
-        binding.uploadWebsiteUrl.setOnClickListener(view -> showUploadBannerDialog("site", null));
-        binding.updateShareText.setOnClickListener(v -> showUploadBannerDialog("share", null));
-        binding.updateWhatsappText.setOnClickListener(v -> showUploadBannerDialog("whatsapp", null));
+
+        binding.updateTextsAndUrls.setOnClickListener(view -> {
+            showUrlAndTextDialog();
+        });
 
         binding.showCategory.setOnClickListener(view -> {
             intent = new Intent(this, ShowCategoryActivity.class);
@@ -161,7 +179,7 @@ public class MainActivity extends AppCompatActivity implements BannerInterface {
                     }
 
 
-                    Log.d("ContentValue", "encodedImage:   " + encodedImage + " @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@/n@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@/n" + encodedImage2);
+//                    Log.d("ContentValue", "encodedImage:   " + encodedImage + " @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@/n@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@/n" + encodedImage2);
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
@@ -170,6 +188,41 @@ public class MainActivity extends AppCompatActivity implements BannerInterface {
 
         });
 
+    }
+
+    private void showUrlAndTextDialog() {
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(MainActivity.this,R.style.MyTheme);
+        String[] textUrlItems = new String[]{
+                "Update Best Products Url",
+                "Update Website Url",
+                "Update Share Text",
+                "Update Whatsapp Text",
+                "Update Ads Free Text"};
+        builder.setTitle("Update your texts and Urls").setCancelable(true).setItems(textUrlItems, (dialogInterface, which) -> {
+            switch (which) {
+                case 0:
+                    showUploadBannerDialog("tips", null);
+                    break;
+
+                case 1:
+                    showUploadBannerDialog("site", null);
+                    break;
+
+                case 2:
+                    showUploadBannerDialog("share", null);
+                    break;
+
+                case 3:
+                    showUploadBannerDialog("whatsapp", null);
+                    break;
+
+                case 4:
+                    showUploadBannerDialog("ads_free", null);
+                    break;
+            }
+        });
+
+        builder.show();
     }
 
     private void ShowBanners() {
@@ -195,7 +248,6 @@ public class MainActivity extends AppCompatActivity implements BannerInterface {
         fetchBanners();
 
     }
-
 
     private void fetchBanners() {
         loadingDialog.show();
@@ -506,7 +558,6 @@ public class MainActivity extends AppCompatActivity implements BannerInterface {
 
     }
 
-
     private void showUploadBannerDialog(String key, BannerModel bannerModel) {
         uploadBannerDialog = new Dialog(this);
         uploadBannerLayoutBinding = UploadBannerLayoutBinding.inflate(getLayoutInflater());
@@ -517,7 +568,7 @@ public class MainActivity extends AppCompatActivity implements BannerInterface {
 
         if ("banner".equals(key)) {
             uploadBannerLayoutBinding.selectImage.setVisibility(View.VISIBLE);
-        } else if ("tips".equals(key) || "site".equals(key) || "share".equals(key) || "whatsapp".equals(key)) {
+        } else if ("tips".equals(key) || "site".equals(key) || "share".equals(key) || "whatsapp".equals(key) || "ads_free".equals(key)) {
             Call<UrlModel> callUrl = apiInterface.fetchUrls(key);
             callUrl.enqueue(new Callback<UrlModel>() {
                 @Override
@@ -526,7 +577,7 @@ public class MainActivity extends AppCompatActivity implements BannerInterface {
                     if (response.isSuccessful()) {
                         urlId = Objects.requireNonNull(response.body()).getId();
                         urls = response.body().getUrl();
-                        uploadBannerLayoutBinding.url.setText(urls);
+                        uploadBannerLayoutBinding.urls.setText(decodeEmoji(urls));
 
                     }
                 }
@@ -542,7 +593,7 @@ public class MainActivity extends AppCompatActivity implements BannerInterface {
             encodedImage2 = bannerModel.getImage();
             encodedImage = bannerModel.getImage();
             Glide.with(this).load(ApiWebServices.base_url + "bannerImages/" + bannerModel.getImage()).into(uploadBannerLayoutBinding.selectImage);
-            uploadBannerLayoutBinding.url.setText(bannerModel.getUrl());
+            uploadBannerLayoutBinding.urls.setText(bannerModel.getUrl());
         }
 
         uploadBannerLayoutBinding.backBtn.setOnClickListener(view -> uploadBannerDialog.dismiss());
@@ -551,15 +602,15 @@ public class MainActivity extends AppCompatActivity implements BannerInterface {
 
         uploadBannerLayoutBinding.okBtn.setOnClickListener(view -> {
             loadingDialog.show();
-            String url = uploadBannerLayoutBinding.url.getText().toString().trim();
+            String url = uploadBannerLayoutBinding.urls.getText().toString().trim();
             switch (key) {
                 case "banner":
                     if (encodedImage == null) {
                         loadingDialog.dismiss();
                         Toast.makeText(MainActivity.this, "Please Select an Image", Toast.LENGTH_SHORT).show();
                     } else if (TextUtils.isEmpty(url)) {
-                        uploadBannerLayoutBinding.url.setError("Url Required");
-                        uploadBannerLayoutBinding.url.requestFocus();
+                        uploadBannerLayoutBinding.urls.setError("Url Required");
+                        uploadBannerLayoutBinding.urls.requestFocus();
                         loadingDialog.dismiss();
                     } else {
                         map.put("img", encodedImage);
@@ -573,18 +624,16 @@ public class MainActivity extends AppCompatActivity implements BannerInterface {
                 case "site":
                 case "share":
                 case "whatsapp":
+                case "ads_free":
 
                     if (TextUtils.isEmpty(url)) {
-                        uploadBannerLayoutBinding.url.setError("Url Required");
-                        uploadBannerLayoutBinding.url.requestFocus();
+                        uploadBannerLayoutBinding.urls.setError("Url Required");
+                        uploadBannerLayoutBinding.urls.requestFocus();
                         loadingDialog.dismiss();
                     } else {
                         map.put("id", urlId);
-                        try {
-                            map.put("url", URLEncoder.encode(url,"UTF-8"));
-                        } catch (UnsupportedEncodingException e) {
-                            e.printStackTrace();
-                        }
+                        map.put("url", encodeEmoji(url));
+
                         call = apiInterface.updateUrls(map);
                         uploadBanners(call, uploadBannerDialog);
 
@@ -592,8 +641,8 @@ public class MainActivity extends AppCompatActivity implements BannerInterface {
                     break;
                 case "update":
                     if (TextUtils.isEmpty(url)) {
-                        uploadBannerLayoutBinding.url.setError("Url Required");
-                        uploadBannerLayoutBinding.url.requestFocus();
+                        uploadBannerLayoutBinding.urls.setError("Url Required");
+                        uploadBannerLayoutBinding.urls.requestFocus();
                         loadingDialog.dismiss();
                     } else {
                         if (encodedImage.length() > 100) {

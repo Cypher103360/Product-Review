@@ -35,6 +35,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.ironsource.mediationsdk.IronSource;
 import com.pr.productkereview.R;
 import com.pr.productkereview.activities.ui.main.SectionsPagerAdapter;
 import com.pr.productkereview.databinding.ActivityHomeBinding;
@@ -50,6 +51,7 @@ import com.pr.productkereview.utils.Prevalent;
 import com.pr.productkereview.utils.ShowAds;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.Objects;
 
 import io.paperdb.Paper;
@@ -67,7 +69,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     ConstraintLayout categoryContainer;
     GoogleSignInOptions gso;
     GoogleSignInClient gsc;
-    String weburl, webUrlId, shareText;
+    String weburl, webUrlId, shareText, whatsappText, adsFreeText;
     SectionsPagerAdapter sectionsPagerAdapter;
     ActivityHomeBinding binding;
     ApiInterface apiInterface;
@@ -91,6 +93,15 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     FirebaseAnalytics mFirebaseAnalytics;
     private IntentFilter intentFilter;
 
+    public static String decodeEmoji(String message) {
+        try {
+            return URLDecoder.decode(
+                    message, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            return message;
+        }
+    }
+
     private void Set_Visibility_ON() {
         binding.lottieHomeNoInternet.setVisibility(View.GONE);
         binding.tvNotConnected.setVisibility(View.GONE);
@@ -99,6 +110,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         enableNavItems();
         fetchUrls("tips");
         fetchShareText("share");
+        fetchWhatsappText("whatsapp");
+        fetchAdsText("ads_free");
         if (count == 2) {
             ViewPager viewPager = binding.viewPager;
             viewPager.setAdapter(sectionsPagerAdapter);
@@ -158,7 +171,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             mFirebaseAnalytics.logEvent("Clicked_On_Contact_Home_Top", bundle);
 
             try {
-                CommonMethods.whatsApp(HomeActivity.this);
+                CommonMethods.whatsApp(HomeActivity.this, whatsappText);
             } catch (UnsupportedEncodingException | PackageManager.NameNotFoundException e) {
                 e.printStackTrace();
             }
@@ -179,7 +192,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 if (response.isSuccessful()) {
                     assert response.body() != null;
                     webUrlId = response.body().getId();
-                    weburl = response.body().getUrl();
+                    weburl = decodeEmoji(response.body().getUrl());
                     //Log.d("urls",weburl);
                 }
             }
@@ -198,7 +211,47 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             public void onResponse(@NonNull Call<UrlModel> call, @NonNull Response<UrlModel> response) {
                 if (response.isSuccessful()) {
                     assert response.body() != null;
-                    shareText = response.body().getUrl();
+                    shareText = decodeEmoji(response.body().getUrl());
+                    //Log.d("urls",weburl);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<UrlModel> call, @NonNull Throwable t) {
+
+            }
+        });
+    }
+
+    public void fetchWhatsappText(String whatsapp) {
+        Call<UrlModel> call = apiInterface.getUrls(whatsapp);
+        call.enqueue(new Callback<UrlModel>() {
+            @Override
+            public void onResponse(@NonNull Call<UrlModel> call, @NonNull Response<UrlModel> response) {
+                if (response.isSuccessful()) {
+                    assert response.body() != null;
+                    whatsappText = decodeEmoji(response.body().getUrl());
+                    //Log.d("urls",weburl);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<UrlModel> call, @NonNull Throwable t) {
+
+            }
+        });
+    }
+
+
+    public void fetchAdsText(String adsFree) {
+        ApiInterface apiInterface = ApiWebServices.getApiInterface();
+        Call<UrlModel> call = apiInterface.getUrls(adsFree);
+        call.enqueue(new Callback<UrlModel>() {
+            @Override
+            public void onResponse(@NonNull Call<UrlModel> call, @NonNull Response<UrlModel> response) {
+                if (response.isSuccessful()) {
+                    assert response.body() != null;
+                    adsFreeText = decodeEmoji(response.body().getUrl());
                     //Log.d("urls",weburl);
                 }
             }
@@ -294,8 +347,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         MenuItem nav_disclaimer = navMenu.findItem(R.id.nav_disclaimer);
         nav_disclaimer.setEnabled(false);
 
-//        MenuItem nav_signOut = navMenu.findItem(R.id.nav_signOut);
-//        nav_signOut.setEnabled(false);
+        MenuItem nav_ads_free = navMenu.findItem(R.id.nav_ads_free);
+        nav_ads_free.setEnabled(false);
     }
 
     public void enableNavItems() {
@@ -328,8 +381,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         MenuItem nav_disclaimer = navMenu.findItem(R.id.nav_disclaimer);
         nav_disclaimer.setEnabled(true);
 
-//        MenuItem nav_signOut = navMenu.findItem(R.id.nav_signOut);
-//        nav_signOut.setEnabled(true);
+        MenuItem nav_ads_free = navMenu.findItem(R.id.nav_ads_free);
+        nav_ads_free.setEnabled(true);
     }
 
     @SuppressLint("NonConstantResourceId")
@@ -350,6 +403,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 break;
 
             case R.id.nav_most_selling:
+                showAds.destroyBanner();
+                showAds.showInterstitialAds(HomeActivity.this);
                 Intent mostSellingIntent = new Intent(HomeActivity.this, ShowAllItemsActivity.class);
                 mostSellingIntent.putExtra("key", "mostSelling");
                 startActivity(mostSellingIntent);
@@ -367,6 +422,16 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 CommonMethods.rateApp(HomeActivity.this);
                 break;
 
+            case R.id.nav_ads_free:
+                bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "Ads Free");
+                mFirebaseAnalytics.logEvent("Clicked_On_ads_free", bundle);
+                try {
+                    CommonMethods.whatsApp(HomeActivity.this, adsFreeText);
+                } catch (UnsupportedEncodingException | PackageManager.NameNotFoundException e) {
+                    e.printStackTrace();
+                }
+                break;
+
             case R.id.nav_contact:
                 bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "Contact Menu");
                 mFirebaseAnalytics.logEvent("Clicked_On_Contact_Menu", bundle);
@@ -376,6 +441,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             case R.id.nav_privacy:
                 bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "Privacy Menu");
                 mFirebaseAnalytics.logEvent("Clicked_On_Privacy_Menu", bundle);
+                showAds.destroyBanner();
+                showAds.showInterstitialAds(HomeActivity.this);
                 Intent intent = new Intent(HomeActivity.this, PrivacyPolicy.class);
                 intent.putExtra("key", "policy");
                 startActivity(intent);
@@ -403,6 +470,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
+
     public void disclaimerDialog() {
         Dialog dialog = new Dialog(HomeActivity.this);
         dialog.setContentView(R.layout.disclaimer_layout);
@@ -429,15 +497,23 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onPause() {
         super.onPause();
-        // IronSource.onPause(this);
+        IronSource.onPause(this);
+        showAds.destroyBanner();
         unregisterReceiver(receiver);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        // IronSource.onResume(this);
+        IronSource.onResume(this);
         registerReceiver(receiver, intentFilter);
+
+        if (Objects.requireNonNull(Paper.book().read(Prevalent.bannerTopNetworkName)).equals("IronSourceWithMeta")) {
+            showAds.showTopBanner(this, binding.adViewTop);
+
+        } else if (Objects.requireNonNull(Paper.book().read(Prevalent.bannerBottomNetworkName)).equals("IronSourceWithMeta")) {
+            showAds.showBottomBanner(this, binding.adViewBottom);
+        }
     }
 
     @SuppressLint("QueryPermissionsNeeded")
@@ -472,12 +548,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onStart() {
         super.onStart();
-        if (Objects.requireNonNull(Paper.book().read(Prevalent.bannerTopNetworkName)).equals("IronSourceWithMeta")) {
-            showAds.showTopBanner(this, binding.adViewTop);
 
-        } else if (Objects.requireNonNull(Paper.book().read(Prevalent.bannerBottomNetworkName)).equals("IronSourceWithMeta")) {
-            showAds.showBottomBanner(this, binding.adViewBottom);
-        }
 
     }
 }

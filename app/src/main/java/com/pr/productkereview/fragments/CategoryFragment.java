@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -63,6 +64,7 @@ public class CategoryFragment extends Fragment implements CategoryInterface {
         categoryAdapter = new CategoryAdapter(requireActivity(), this);
         categoryRecyclerview.setAdapter(categoryAdapter);
         categoryRecyclerview.setNestedScrollingEnabled(false);
+
         binding.refreshLayout.setOnRefreshListener(() -> {
             setCategories();
             binding.refreshLayout.setRefreshing(false);
@@ -80,6 +82,7 @@ public class CategoryFragment extends Fragment implements CategoryInterface {
                 catModelList.addAll(catModels);
                 categoryAdapter.updateCategoryList(catModelList);
                 loading.dismiss();
+
                 if (Paper.book().read(Prevalent.bannerTopNetworkName).equals("IronSourceWithMeta")) {
                     binding.adViewTop.setVisibility(View.GONE);
                     showAds.showBottomBanner(requireActivity(), binding.adViewBottom);
@@ -110,6 +113,8 @@ public class CategoryFragment extends Fragment implements CategoryInterface {
             intent.putExtra("key", "Products");
             intent.putExtra("id", catModel.getId());
             startActivity(intent);
+        }else {
+            Toast.makeText(requireActivity(), "No Data Available", Toast.LENGTH_SHORT).show();
         }
     }
 

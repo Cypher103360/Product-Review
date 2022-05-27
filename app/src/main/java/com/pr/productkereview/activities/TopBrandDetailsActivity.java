@@ -4,11 +4,15 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.text.Html;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
+import com.ironsource.mediationsdk.IronSource;
 import com.pr.productkereview.R;
 import com.pr.productkereview.databinding.ActivityTopBrandDetailsBinding;
 import com.pr.productkereview.utils.ApiWebServices;
@@ -20,6 +24,7 @@ public class TopBrandDetailsActivity extends AppCompatActivity {
     String title, desc, bannerImg, url;
     ShowAds showAds;
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,20 +35,18 @@ public class TopBrandDetailsActivity extends AppCompatActivity {
         desc = getIntent().getStringExtra("desc");
         url = getIntent().getStringExtra("url");
         binding.backIcon.setOnClickListener(v -> onBackPressed());
-        binding.brandActivityTitle.setText(title);
+        binding.brandActivityTitle.setText(Html.fromHtml(title, Html.FROM_HTML_MODE_LEGACY));
 
         showAds = new ShowAds();
         getLifecycle().addObserver(showAds);
-        showAds.showBottomBanner(this, findViewById(R.id.adView_bottom));
-        showAds.showTopBanner(this, findViewById(R.id.adView_top));
 
         Glide.with(this).load(
                         ApiWebServices.base_url + "top_brands_images/" + bannerImg)
                 .placeholder(CommonMethods.setShimmer(TopBrandDetailsActivity.this))
                 .into(binding.brandImage);
 
-        binding.brandTitle.setText(title);
-        binding.brandDesc.setText(desc);
+        binding.brandTitle.setText(Html.fromHtml(title, Html.FROM_HTML_MODE_LEGACY));
+        binding.brandDesc.setText(Html.fromHtml(desc, Html.FROM_HTML_MODE_LEGACY));
         binding.brandImage.setOnClickListener(v -> {
             openWebPage(url, TopBrandDetailsActivity.this);
         });
@@ -64,5 +67,19 @@ public class TopBrandDetailsActivity extends AppCompatActivity {
         super.onBackPressed();
         finish();
         showAds.destroyBanner();
+    }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        IronSource.onPause(this);
+        showAds.destroyBanner();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        IronSource.onResume(this);
+        showAds.showBottomBanner(this, findViewById(R.id.adView_bottom));
+        showAds.showTopBanner(this, findViewById(R.id.adView_top));
     }
 }

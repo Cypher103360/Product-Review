@@ -34,7 +34,9 @@ public class BuyingGuideFragment extends Fragment {
         key = requireActivity().getIntent().getStringExtra("key");
         setShowAds();
 
-        binding.buyingWebView.loadData(productModel.getBuingGuideEnglish(), "text/html", "UTF-8");
+        String string = productModel.getBuingGuideEnglish().replaceAll("<.*?>", "");
+        // binding.buyingWebView.loadData(productModel.getBuingGuideEnglish(), "text/html", "UTF-8");
+        binding.buyingWebView.loadData(string, "text/html", "UTF-8");
         // materialButtonToggleGroup.check(R.id.buyingEnglishPreview);
         materialButtonToggleGroup.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
             if (isChecked) {

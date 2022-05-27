@@ -36,35 +36,11 @@
             android:textSize="20sp" />
 
         <Button
-            android:id="@+id/upload_expert_tips_url"
+            android:id="@+id/update_texts_and_urls"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="15dp"
-            android:text="@string/upload_expert_tips_url"
-            android:textSize="20sp" />
-
-        <Button
-            android:id="@+id/upload_website_url"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="15dp"
-            android:text="@string/upload_website_url"
-            android:textSize="20sp" />
-
-        <Button
-            android:id="@+id/update_share_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="15dp"
-            android:text="Update Share Text"
-            android:textSize="20sp" />
-
-        <Button
-            android:id="@+id/update_whatsapp_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="15dp"
-            android:text="Update Whatsapp Text"
+            android:text="@string/update_text_and_urls"
             android:textSize="20sp" />
 
         <Button

@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import androidx.room.Room;
 
+import com.ironsource.mediationsdk.IronSource;
 import com.pr.productkereview.R;
 import com.pr.productkereview.adapters.BestProductAdapter;
 import com.pr.productkereview.adapters.BestProductClickInterface;
@@ -35,10 +36,14 @@ import com.pr.productkereview.models.AllProducts.TrendingProductViewModel;
 import com.pr.productkereview.models.TopBrands.BrandViewModel;
 import com.pr.productkereview.models.TopBrands.BrandsModel;
 import com.pr.productkereview.utils.CommonMethods;
+import com.pr.productkereview.utils.Prevalent;
 import com.pr.productkereview.utils.ShowAds;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+
+import io.paperdb.Paper;
 
 public class ShowAllItemsActivity extends AppCompatActivity implements LatestProductClickInterface, BestProductClickInterface, TopBrandsClickInterface, ProductsClickInterface, TrendingProductInterface {
     ActivityShowAllItemsBinding binding;
@@ -80,8 +85,7 @@ public class ShowAllItemsActivity extends AppCompatActivity implements LatestPro
         loading.show();
         showAds = new ShowAds();
         getLifecycle().addObserver(showAds);
-        showAds.showBottomBanner(this, findViewById(R.id.adView_bottom));
-        showAds.showTopBanner(this, findViewById(R.id.adView_top));
+
         productAppDatabase = Room.databaseBuilder(this, ProductAppDatabase.class, "ProductDB").allowMainThreadQueries()
                 .build();
         StaggeredGridLayoutManager gridLayoutManager =
@@ -290,5 +294,20 @@ public class ShowAllItemsActivity extends AppCompatActivity implements LatestPro
         bundle.putSerializable("latest", productModel);
         intent.putExtras(bundle);
         startActivity(intent);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        IronSource.onPause(this);
+        showAds.destroyBanner();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        IronSource.onResume(this);
+        showAds.showBottomBanner(this, findViewById(R.id.adView_bottom));
+        showAds.showTopBanner(this, findViewById(R.id.adView_top));
     }
 }

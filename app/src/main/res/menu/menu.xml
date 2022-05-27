@@ -36,6 +36,13 @@
             tools:targetApi="o" />
 
         <item
+            android:id="@+id/nav_ads_free"
+            android:icon="@drawable/ads_blocked"
+            android:iconTint="#6200EA"
+            android:title="@string/get_ads_free_app"
+            tools:targetApi="o" />
+
+        <item
             android:id="@+id/nav_contact"
             android:icon="@drawable/ic_baseline_contact_support_24"
             android:iconTint="#6200EA"
