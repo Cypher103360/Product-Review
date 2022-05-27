@@ -10,6 +10,7 @@ import android.text.Html;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.text.HtmlCompat;
 
 import com.bumptech.glide.Glide;
 import com.ironsource.mediationsdk.IronSource;
@@ -24,7 +25,6 @@ public class TopBrandDetailsActivity extends AppCompatActivity {
     String title, desc, bannerImg, url;
     ShowAds showAds;
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,7 +35,7 @@ public class TopBrandDetailsActivity extends AppCompatActivity {
         desc = getIntent().getStringExtra("desc");
         url = getIntent().getStringExtra("url");
         binding.backIcon.setOnClickListener(v -> onBackPressed());
-        binding.brandActivityTitle.setText(Html.fromHtml(title, Html.FROM_HTML_MODE_LEGACY));
+        binding.brandActivityTitle.setText(HtmlCompat.fromHtml(title, HtmlCompat.FROM_HTML_MODE_LEGACY));
 
         showAds = new ShowAds();
         getLifecycle().addObserver(showAds);
@@ -45,8 +45,8 @@ public class TopBrandDetailsActivity extends AppCompatActivity {
                 .placeholder(CommonMethods.setShimmer(TopBrandDetailsActivity.this))
                 .into(binding.brandImage);
 
-        binding.brandTitle.setText(Html.fromHtml(title, Html.FROM_HTML_MODE_LEGACY));
-        binding.brandDesc.setText(Html.fromHtml(desc, Html.FROM_HTML_MODE_LEGACY));
+        binding.brandTitle.setText(HtmlCompat.fromHtml(title, HtmlCompat.FROM_HTML_MODE_LEGACY));
+        binding.brandDesc.setText(HtmlCompat.fromHtml(desc.replaceAll("<.*?>", ""), HtmlCompat.FROM_HTML_MODE_LEGACY));
         binding.brandImage.setOnClickListener(v -> {
             openWebPage(url, TopBrandDetailsActivity.this);
         });

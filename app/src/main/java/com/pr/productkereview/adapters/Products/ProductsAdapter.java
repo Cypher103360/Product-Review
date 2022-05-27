@@ -2,8 +2,6 @@ package com.pr.productkereview.adapters.Products;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.os.Build;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
+import androidx.core.text.HtmlCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 
@@ -69,7 +67,6 @@ public class ProductsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         } else return null;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int pos) {
 
@@ -85,7 +82,7 @@ public class ProductsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     .placeholder(circularProgressDrawable)
                     .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                     .into(((ViewHolder) holder).itemImage);
-            ((ViewHolder) holder).itemTitle.setText(Html.fromHtml(productModel.getProductTitle(), Html.FROM_HTML_MODE_LEGACY));
+            ((ViewHolder) holder).itemTitle.setText(HtmlCompat.fromHtml(productModel.getProductTitle(), HtmlCompat.FROM_HTML_MODE_LEGACY));
             holder.itemView.setOnClickListener(v -> {
                 productsClickInterface.OnProductClicked(productModelList.get(position));
             });

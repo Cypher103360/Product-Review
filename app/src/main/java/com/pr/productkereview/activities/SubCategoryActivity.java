@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.text.HtmlCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -40,7 +41,6 @@ public class SubCategoryActivity extends AppCompatActivity implements SubCategor
 
     ShowAds showAds;
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,7 +58,7 @@ public class SubCategoryActivity extends AppCompatActivity implements SubCategor
                 new CatModelFactory(this.getApplication(), id)).get(CatViewModel.class);
 
 
-        binding.activityTitle.setText(Html.fromHtml(title, Html.FROM_HTML_MODE_LEGACY));
+        binding.activityTitle.setText(HtmlCompat.fromHtml(title, HtmlCompat.FROM_HTML_MODE_LEGACY));
         binding.backIcon.setOnClickListener(v -> {
             onBackPressed();
         });

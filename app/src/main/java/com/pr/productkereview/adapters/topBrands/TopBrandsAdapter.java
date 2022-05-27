@@ -3,8 +3,6 @@ package com.pr.productkereview.adapters.topBrands;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Build;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,15 +10,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.text.HtmlCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.material.card.MaterialCardView;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.pr.productkereview.R;
 import com.pr.productkereview.activities.ShowAllItemsActivity;
 import com.pr.productkereview.databinding.AdLayoutBinding;
@@ -65,7 +62,7 @@ public class TopBrandsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 return AD_VIEW;
             }
         } else {
-            if ((position+1) % BUTTON_COUNT == 0) {
+            if ((position + 1) % BUTTON_COUNT == 0) {
                 return BUTTON_VIEW_ALL;
             }
         }
@@ -101,7 +98,6 @@ public class TopBrandsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         return null;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int pos) {
 
@@ -112,20 +108,20 @@ public class TopBrandsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
                 BrandsModel topBrandsModel = topBrandsModelList.get(position);
 
-                    // holder.imageCard.setLayoutParams(new ViewGroup.LayoutParams(210, 210));
-                    ConstraintLayout.LayoutParams params = new ConstraintLayout.LayoutParams(
-                            235,
-                            235
-                    );
-                    params.setMargins(10, 10, 10, 10);
-                    ((ViewHolder) holder).imageCard.setLayoutParams(params);
+                // holder.imageCard.setLayoutParams(new ViewGroup.LayoutParams(210, 210));
+                ConstraintLayout.LayoutParams params = new ConstraintLayout.LayoutParams(
+                        235,
+                        235
+                );
+                params.setMargins(10, 10, 10, 10);
+                ((ViewHolder) holder).imageCard.setLayoutParams(params);
 
                 Glide.with(context).load(ApiWebServices.base_url + "top_brands_images/" +
                                 topBrandsModel.getLogo())
                         .placeholder(CommonMethods.setShimmer(holder.itemView.getContext()))
                         .diskCacheStrategy(DiskCacheStrategy.DATA)
                         .into(((ViewHolder) holder).itemImage);
-                ((ViewHolder) holder).itemTitle.setText(Html.fromHtml(topBrandsModel.getTitle(), Html.FROM_HTML_MODE_LEGACY));
+                ((ViewHolder) holder).itemTitle.setText(HtmlCompat.fromHtml(topBrandsModel.getTitle(), HtmlCompat.FROM_HTML_MODE_LEGACY));
                 holder.itemView.setOnClickListener(v -> {
                     topBrandsClickInterface.OnTopBrandClicked(topBrandsModelList.get(position));
                 });
@@ -144,7 +140,7 @@ public class TopBrandsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                         .placeholder(CommonMethods.setShimmer(holder.itemView.getContext()))
                         .diskCacheStrategy(DiskCacheStrategy.DATA)
                         .into(((ViewHolder) holder).itemImage);
-                ((ViewHolder) holder).itemTitle.setText(Html.fromHtml(brandsModel.getTitle(), Html.FROM_HTML_MODE_LEGACY));
+                ((ViewHolder) holder).itemTitle.setText(HtmlCompat.fromHtml(brandsModel.getTitle(), HtmlCompat.FROM_HTML_MODE_LEGACY));
                 holder.itemView.setOnClickListener(v -> {
                     topBrandsClickInterface.OnTopBrandClicked(topBrandsModelList.get(position));
                 });

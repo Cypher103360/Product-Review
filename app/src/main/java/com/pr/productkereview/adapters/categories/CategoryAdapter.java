@@ -2,8 +2,6 @@ package com.pr.productkereview.adapters.categories;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.os.Build;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
+import androidx.core.text.HtmlCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -68,7 +66,6 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         } else return null;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         /*
@@ -85,7 +82,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         if (holder.getItemViewType() == ITEM_VIEW) {
             int pos = position - Math.round(position / ITEM_FEED_COUNT);
-            ((ViewHolder) holder).itemTitle.setText(Html.fromHtml(catModels.get(pos).getTitle(), Html.FROM_HTML_MODE_LEGACY));
+            ((ViewHolder) holder).itemTitle.setText(HtmlCompat.fromHtml(catModels.get(pos).getTitle(), HtmlCompat.FROM_HTML_MODE_LEGACY));
 
             Glide.with(context).load(ApiWebServices.base_url + "all_categories_images/"
                             + catModels.get(pos).getBanner())

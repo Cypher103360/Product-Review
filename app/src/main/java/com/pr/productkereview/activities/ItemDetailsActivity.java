@@ -10,6 +10,7 @@ import android.text.Html;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.text.HtmlCompat;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
@@ -56,7 +57,7 @@ public class ItemDetailsActivity extends AppCompatActivity {
         getLifecycle().addObserver(showAds);
         Bundle bundle = getIntent().getExtras();
         productModel = (ProductModel) bundle.getSerializable("latest");
-        binding.activityTitle.setText(Html.fromHtml(productModel.getProductTitle(), Html.FROM_HTML_MODE_LEGACY));
+        binding.activityTitle.setText(HtmlCompat.fromHtml(productModel.getProductTitle(), HtmlCompat.FROM_HTML_MODE_LEGACY));
 
         binding.lottieContact.setOnClickListener(v -> {
             try {

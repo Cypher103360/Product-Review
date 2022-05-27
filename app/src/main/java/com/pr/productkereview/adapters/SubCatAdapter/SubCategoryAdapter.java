@@ -1,8 +1,6 @@
 package com.pr.productkereview.adapters.SubCatAdapter;
 
 import android.app.Activity;
-import android.os.Build;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,7 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
+import androidx.core.text.HtmlCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -68,7 +66,6 @@ public class SubCategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         } else return null;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int pos) {
         /*
@@ -96,7 +93,7 @@ public class SubCategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             ShimmerDrawable shimmerDrawable = new ShimmerDrawable();
             shimmerDrawable.setShimmer(shimmer);
 
-            ((ViewHolder) holder).itemTitle.setText(Html.fromHtml(catModels.get(position).getTitle(), Html.FROM_HTML_MODE_LEGACY));
+            ((ViewHolder) holder).itemTitle.setText(HtmlCompat.fromHtml(catModels.get(position).getTitle(), HtmlCompat.FROM_HTML_MODE_LEGACY));
             Glide.with(context).load(ApiWebServices.base_url + "all_categories_images/"
                             + catModels.get(position).getBanner())
                     .placeholder(shimmerDrawable)

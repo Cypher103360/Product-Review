@@ -3,8 +3,6 @@ package com.pr.productkereview.adapters;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Build;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
+import androidx.core.text.HtmlCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
@@ -101,7 +99,7 @@ public class LatestProductAdapter extends RecyclerView.Adapter<RecyclerView.View
         return null;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
+
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int pos) {
 
@@ -119,7 +117,7 @@ public class LatestProductAdapter extends RecyclerView.Adapter<RecyclerView.View
                         .placeholder(circularProgressDrawable)
                         .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                         .into(((ViewHolder) holder).itemImage);
-                ((ViewHolder) holder).itemTitle.setText(Html.fromHtml(latestProductModel.getProductTitle(), Html.FROM_HTML_MODE_LEGACY));
+                ((ViewHolder) holder).itemTitle.setText(HtmlCompat.fromHtml(latestProductModel.getProductTitle(), HtmlCompat.FROM_HTML_MODE_LEGACY));
                 holder.itemView.setOnClickListener(v -> {
                     latestProductClickInterface.OnLatestProductClicked(latestProductModelList.get(position), position);
                 });
@@ -136,7 +134,7 @@ public class LatestProductAdapter extends RecyclerView.Adapter<RecyclerView.View
                         .placeholder(CommonMethods.CircularDrawable(context))
                         .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                         .into(((ViewHolder) holder).itemImage);
-                ((ViewHolder) holder).itemTitle.setText(Html.fromHtml(latestProductModel.getProductTitle(), Html.FROM_HTML_MODE_LEGACY));
+                ((ViewHolder) holder).itemTitle.setText(HtmlCompat.fromHtml(latestProductModel.getProductTitle(), HtmlCompat.FROM_HTML_MODE_LEGACY));
                 holder.itemView.setOnClickListener(v -> {
                     latestProductClickInterface.OnLatestProductClicked(latestProductModelList.get(pos), pos);
                 });

@@ -2,8 +2,6 @@ package com.pr.productkereview.adapters;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.os.Build;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
+import androidx.core.text.HtmlCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
@@ -82,30 +80,30 @@ public class BestProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
+
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int pos) {
 
-        if (shouldShowAllItems){
+        if (shouldShowAllItems) {
             if (holder.getItemViewType() == ITEM_VIEW) {
                 int position = pos - Math.round(pos / ITEM_FEED_COUNT);
                 ProductModel bestProductModel = bestProductModelList.get(position);
                 Glide.with(context).load(ApiWebServices.base_url + "all_products_images/"
                         + bestProductModel.getProductImage()).into(((ViewHolder) holder).itemImage);
-                ((ViewHolder) holder).itemTitle.setText(Html.fromHtml(bestProductModel.getProductTitle(), Html.FROM_HTML_MODE_LEGACY));
+                ((ViewHolder) holder).itemTitle.setText(HtmlCompat.fromHtml(bestProductModel.getProductTitle(), HtmlCompat.FROM_HTML_MODE_LEGACY));
                 holder.itemView.setOnClickListener(v -> {
                     bestProductClickInterface.OnBestProductClicked(bestProductModelList.get(position));
                 });
             } else if (holder.getItemViewType() == AD_VIEW) {
-                    ((AdViewHolder) holder).bindAdData();
+                ((AdViewHolder) holder).bindAdData();
 
             }
 
-        }else {
+        } else {
             ProductModel bestProductModel = bestProductModelList.get(pos);
             Glide.with(context).load(ApiWebServices.base_url + "all_products_images/"
                     + bestProductModel.getProductImage()).into(((ViewHolder) holder).itemImage);
-            ((ViewHolder) holder).itemTitle.setText(Html.fromHtml(bestProductModel.getProductTitle(), Html.FROM_HTML_MODE_LEGACY));
+            ((ViewHolder) holder).itemTitle.setText(HtmlCompat.fromHtml(bestProductModel.getProductTitle(), HtmlCompat.FROM_HTML_MODE_LEGACY));
             holder.itemView.setOnClickListener(v -> {
                 bestProductClickInterface.OnBestProductClicked(bestProductModelList.get(pos));
             });

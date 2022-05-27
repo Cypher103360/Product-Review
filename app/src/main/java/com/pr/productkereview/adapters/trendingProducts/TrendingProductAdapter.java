@@ -2,8 +2,6 @@ package com.pr.productkereview.adapters.trendingProducts;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.os.Build;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,20 +9,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.text.HtmlCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.facebook.shimmer.Shimmer;
-import com.facebook.shimmer.ShimmerDrawable;
 import com.google.android.material.card.MaterialCardView;
 import com.pr.productkereview.R;
-import com.pr.productkereview.adapters.topBrands.TopBrandsAdapter;
 import com.pr.productkereview.databinding.AdLayoutBinding;
 import com.pr.productkereview.models.AllProducts.ProductModel;
-import com.pr.productkereview.models.TopBrands.BrandsModel;
 import com.pr.productkereview.utils.ApiWebServices;
 import com.pr.productkereview.utils.CommonMethods;
 import com.pr.productkereview.utils.Prevalent;
@@ -72,7 +66,6 @@ public class TrendingProductAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         return ITEM_VIEW;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int pos) {
         /*
@@ -96,7 +89,7 @@ public class TrendingProductAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             params.setMargins(10, 10, 10, 10);
             ((ViewHolder) holder).rectangleLayoutCard.setLayoutParams(params);
 
-            ((ViewHolder) holder).itemTitle.setText(Html.fromHtml(trendingProductModelList.get(position).getProductTitle(), Html.FROM_HTML_MODE_LEGACY));
+            ((ViewHolder) holder).itemTitle.setText(HtmlCompat.fromHtml(trendingProductModelList.get(position).getProductTitle(), HtmlCompat.FROM_HTML_MODE_LEGACY));
             Glide.with(context).load(ApiWebServices.base_url + "all_products_images/" +
                             trendingProductModelList.get(position).getProductImage())
                     .placeholder(CommonMethods.setShimmer(holder.itemView.getContext()))
@@ -107,7 +100,7 @@ public class TrendingProductAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
         } else if (holder.getItemViewType() == AD_VIEW) {
 
-                ((AdViewHolder) holder).bindAdData();
+            ((AdViewHolder) holder).bindAdData();
         }
 
     }
@@ -120,7 +113,6 @@ public class TrendingProductAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         }
         return 0;
     }
-
 
 
     @SuppressLint("NotifyDataSetChanged")
