@@ -15,6 +15,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.text.HtmlCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
@@ -257,8 +258,9 @@ public class ShowBrandsActivity extends AppCompatActivity implements BrandsInter
         topBrandLayoutBinding.desc.setVisibility(View.VISIBLE);
         topBrandLayoutBinding.url.setVisibility(View.VISIBLE);
 
-        topBrandLayoutBinding.titleTv.setText(brandsModel.getTitle());
-        topBrandLayoutBinding.desc.setText(brandsModel.getDesc());
+
+        topBrandLayoutBinding.titleTv.setText(HtmlCompat.fromHtml(brandsModel.getTitle(), HtmlCompat.FROM_HTML_MODE_LEGACY));
+        topBrandLayoutBinding.desc.setText(HtmlCompat.fromHtml(brandsModel.getDesc(), HtmlCompat.FROM_HTML_MODE_LEGACY));
         topBrandLayoutBinding.url.setText(brandsModel.getUrl());
         Glide.with(this).load(ApiWebServices.base_url + "top_brands_images/" + brandsModel.getLogo()).into(topBrandLayoutBinding.logo);
         Glide.with(this).load(ApiWebServices.base_url + "top_brands_images/" + brandsModel.getBanner()).into(topBrandLayoutBinding.banner);

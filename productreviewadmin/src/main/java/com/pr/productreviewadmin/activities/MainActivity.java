@@ -191,7 +191,7 @@ public class MainActivity extends AppCompatActivity implements BannerInterface {
     }
 
     private void showUrlAndTextDialog() {
-        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(MainActivity.this,R.style.MyTheme);
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(MainActivity.this, R.style.MyTheme);
         String[] textUrlItems = new String[]{
                 "Update Best Products Url",
                 "Update Website Url",

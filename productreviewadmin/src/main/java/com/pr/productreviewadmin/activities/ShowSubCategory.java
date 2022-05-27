@@ -16,6 +16,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.text.HtmlCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -111,7 +112,7 @@ public class ShowSubCategory extends AppCompatActivity implements CateogryInterf
                     }
 
 
-                    Log.d("ContentValue", encodedImage + " @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@/n@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@/n" + encodedImage2);
+//                    Log.d("ContentValue", encodedImage + " @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@/n@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@/n" + encodedImage2);
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
@@ -325,7 +326,8 @@ public class ShowSubCategory extends AppCompatActivity implements CateogryInterf
         if (catKey.equals("update")) {
             topBrandLayoutBinding.banner.setVisibility(View.GONE);
             topBrandLayoutBinding.logo.setVisibility(View.VISIBLE);
-            topBrandLayoutBinding.titleTv.setText(catModel.getTitle());
+            topBrandLayoutBinding.titleTv.setText(HtmlCompat.fromHtml(catModel.getTitle(), HtmlCompat.FROM_HTML_MODE_LEGACY));
+
             Glide.with(this).load(ApiWebServices.base_url + "all_categories_images/" + catModel.getBanner()).into(topBrandLayoutBinding.logo);
             encodedImage2 = catModel.getBanner();
             encodedImage = encodedImage2;

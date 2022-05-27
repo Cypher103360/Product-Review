@@ -3,8 +3,6 @@ package com.pr.productreviewadmin.adapters;
 import static com.pr.productreviewadmin.activities.ShowProducts.key;
 
 import android.app.Activity;
-import android.os.Build;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.text.HtmlCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -45,9 +44,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            holder.title.setText(Html.fromHtml(productModels.get(position).getProductTitle(), Html.FROM_HTML_MODE_LEGACY));
-        }
+        holder.title.setText(HtmlCompat.fromHtml(productModels.get(position).getProductTitle(), HtmlCompat.FROM_HTML_MODE_LEGACY));
 
         if (Objects.equals(key, "latest")) {
             holder.checkBox.setVisibility(View.VISIBLE);

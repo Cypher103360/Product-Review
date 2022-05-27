@@ -91,13 +91,13 @@
             android:text="@string/show_best_product"
             android:textSize="20sp" />
 
-
         <Button
             android:id="@+id/update_ads"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="15dp"
             android:text="@string/update_ads_ids"
+            android:layout_marginBottom="20sp"
             android:textSize="20sp" />
     </LinearLayout>
 </ScrollView>
