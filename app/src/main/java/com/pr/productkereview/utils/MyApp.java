@@ -51,7 +51,6 @@ public class MyApp extends Application {
     }
 
     private void fetchAds() {
-
         apiInterface = ApiWebServices.getApiInterface();
         Call<List<AdsModel>> call = apiInterface.fetchAds("Product Review");
         call.enqueue(new Callback<List<AdsModel>>() {
@@ -94,6 +93,7 @@ public class MyApp extends Application {
 
                         }
 
+                        // setting application keys of admob
                         try {
                             ApplicationInfo ai = getPackageManager().getApplicationInfo(getPackageName(), PackageManager.GET_META_DATA);
                             Bundle bundle = ai.metaData;
@@ -108,6 +108,7 @@ public class MyApp extends Application {
                             Log.e(TAG, "Failed to load meta-data, NullPointer: " + e.getMessage());
                         }
 
+                        // setting application keys of applovin
                         try {
                             ApplicationInfo ai = getPackageManager().getApplicationInfo(getPackageName(), PackageManager.GET_META_DATA);
                             Bundle bundle = ai.metaData;

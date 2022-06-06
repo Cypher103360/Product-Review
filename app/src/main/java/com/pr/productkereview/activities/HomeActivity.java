@@ -29,9 +29,6 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.viewpager.widget.ViewPager;
 
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -67,12 +64,15 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     DrawerLayout drawerLayout;
     NavigationView navigationView;
     ConstraintLayout categoryContainer;
-    GoogleSignInOptions gso;
-    GoogleSignInClient gsc;
+    //    GoogleSignInOptions gso;
+//    GoogleSignInClient gsc;
     String weburl, webUrlId, shareText, whatsappText, adsFreeText;
     SectionsPagerAdapter sectionsPagerAdapter;
     ActivityHomeBinding binding;
     ApiInterface apiInterface;
+    ShowAds showAds = new ShowAds();
+    Bundle bundle;
+    Dialog loading;
     public BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -87,9 +87,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             }
         }
     };
-    ShowAds showAds = new ShowAds();
-    Bundle bundle;
-    Dialog loading;
     FirebaseAnalytics mFirebaseAnalytics;
     private IntentFilter intentFilter;
 
@@ -127,6 +124,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         binding.viewPager.setVisibility(View.GONE);
         binding.tabs.setVisibility(View.GONE);
         disableNavItems();
+        loading.dismiss();
     }
 
     @Override
@@ -135,8 +133,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         binding = ActivityHomeBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         apiInterface = ApiWebServices.getApiInterface();
-        gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
-        gsc = GoogleSignIn.getClient(this, gso);
+//        gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
+//        gsc = GoogleSignIn.getClient(this, gso);
         loading = CommonMethods.getLoadingDialog(HomeActivity.this);
         navigationView = binding.navigation;
         navMenu = binding.navMenu;
@@ -425,11 +423,12 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             case R.id.nav_ads_free:
                 bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "Ads Free");
                 mFirebaseAnalytics.logEvent("Clicked_On_ads_free", bundle);
-                try {
-                    CommonMethods.whatsApp(HomeActivity.this, adsFreeText);
-                } catch (UnsupportedEncodingException | PackageManager.NameNotFoundException e) {
-                    e.printStackTrace();
-                }
+//                try {
+//                    CommonMethods.whatsApp(HomeActivity.this, adsFreeText);
+//                } catch (UnsupportedEncodingException | PackageManager.NameNotFoundException e) {
+//                    e.printStackTrace();
+//                }
+                openWebPage(adsFreeText, HomeActivity.this);
                 break;
 
             case R.id.nav_contact:
@@ -548,7 +547,5 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onStart() {
         super.onStart();
-
-
     }
 }

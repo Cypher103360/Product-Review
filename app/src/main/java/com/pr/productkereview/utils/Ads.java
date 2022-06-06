@@ -98,7 +98,6 @@ public class Ads implements MaxAdViewAdListener, LifecycleObserver {
     }
 
     public void showBannerAd(Activity context, RelativeLayout container, String networkName, String bannerAdId) {
-
         switch (networkName) {
             case "AdmobWithMeta":
                 MobileAds.initialize(context);
@@ -118,6 +117,7 @@ public class Ads implements MaxAdViewAdListener, LifecycleObserver {
                 IronSource.init(context, bannerAdId);
                 AudienceNetworkAds.initialize(context);
                 IronSource.setMetaData("Facebook_IS_CacheFlag", "IMAGE");
+
                 banner = IronSource.createBanner(context, ISBannerSize.BANNER);
                 container.addView(banner);
 
@@ -169,9 +169,10 @@ public class Ads implements MaxAdViewAdListener, LifecycleObserver {
 
                 break;
             case "AppLovinWithMeta":
-                AudienceNetworkAds.initialize(context);
-                AppLovinSdk.getInstance(context).setMediationProvider("max");
                 AppLovinSdk.initializeSdk(context);
+                AppLovinSdk.getInstance(context).setMediationProvider("max");
+                AudienceNetworkAds.initialize(context);
+
                 maxAdView = new MaxAdView(bannerAdId, context);
                 maxAdView.setListener(this);
                 int width = ViewGroup.LayoutParams.MATCH_PARENT;
@@ -226,7 +227,6 @@ public class Ads implements MaxAdViewAdListener, LifecycleObserver {
         AppLovinSdk.initializeSdk(context);
         AudienceNetworkAds.initialize(context);
 
-
         interstitialAd = new MaxInterstitialAd(interstitialId, context);
         interstitialAd.setListener(this);
         // Load the first ad
@@ -243,19 +243,17 @@ public class Ads implements MaxAdViewAdListener, LifecycleObserver {
         IronSource.init(context, interstitialId);
         AudienceNetworkAds.initialize(context);
 
-        IronSource.loadInterstitial();
         IronSource.setMetaData("Facebook_IS_CacheFlag", "IMAGE");
+        IronSource.loadInterstitial();
         IronSource.showInterstitial();
         IronSource.setInterstitialListener(new InterstitialListener() {
             @Override
             public void onInterstitialAdReady() {
                 IronSource.showInterstitial();
-
             }
 
             @Override
             public void onInterstitialAdLoadFailed(IronSourceError ironSourceError) {
-
                 Log.d(TAG, ironSourceError.getErrorMessage());
             }
 
@@ -265,12 +263,10 @@ public class Ads implements MaxAdViewAdListener, LifecycleObserver {
 
             @Override
             public void onInterstitialAdClosed() {
-
             }
 
             @Override
             public void onInterstitialAdShowSucceeded() {
-
             }
 
             @Override
@@ -348,8 +344,6 @@ public class Ads implements MaxAdViewAdListener, LifecycleObserver {
         AdLoader.Builder builder = new AdLoader.Builder(context, Objects.requireNonNull(Paper.book().read(Prevalent.nativeAds)));
 
         builder.forNativeAd(nativeAd -> {
-
-
             if (nativeAds != null) {
                 nativeAds.destroy();
             }
@@ -375,7 +369,7 @@ public class Ads implements MaxAdViewAdListener, LifecycleObserver {
 
             @Override
             @Deprecated
-            public void onAdFailedToLoad(LoadAdError loadAdError) {
+            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
                 super.onAdFailedToLoad(loadAdError);
             }
         }).build();
@@ -387,7 +381,6 @@ public class Ads implements MaxAdViewAdListener, LifecycleObserver {
     }
 
     private void populateUnifiedNativeAdView(NativeAd nativeAd, NativeAdView adView) {
-
 
         com.google.android.gms.ads.nativead.MediaView mediaView = adView.findViewById(R.id.ad_media);
         adView.setMediaView(mediaView);
@@ -554,6 +547,7 @@ public class Ads implements MaxAdViewAdListener, LifecycleObserver {
 
     }
 
+    // Meta NativeAds
     public void metaNativeAds(Activity context, FrameLayout container) {
         AudienceNetworkAds.initialize(context);
         String id = Objects.requireNonNull(Paper.book().read(Prevalent.nativeAds));

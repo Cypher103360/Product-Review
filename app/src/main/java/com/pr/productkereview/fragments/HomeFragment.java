@@ -251,9 +251,9 @@ public class HomeFragment extends Fragment implements LatestProductClickInterfac
 
     private void fetchTopBrands() {
         brandViewModel.getBrands().observe(requireActivity(), brandsModels -> {
-            if (!brandsModels.isEmpty()) {
+            if (!brandsModels.getData().isEmpty()) {
                 topBrandsModelList.clear();
-                topBrandsModelList.addAll(brandsModels);
+                topBrandsModelList.addAll(brandsModels.getData());
                 topBrandsAdapter.updateList(topBrandsModelList);
                 loading.dismiss();
                 binding.topBrandProductLayout.setVisibility(View.VISIBLE);
@@ -311,8 +311,8 @@ public class HomeFragment extends Fragment implements LatestProductClickInterfac
             public void onResponse(@NonNull Call<UrlModel> call, @NonNull Response<UrlModel> response) {
                 if (response.isSuccessful()) {
                     assert response.body() != null;
-                    webUrl = response.body().getUrl();
-                    Log.d("urls", webUrl);
+                    webUrl = decodeEmoji(response.body().getUrl());
+                    Log.d("webUrl", webUrl);
                 }
             }
 

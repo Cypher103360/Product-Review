@@ -502,9 +502,9 @@ public class MainActivity extends AppCompatActivity implements BannerInterface {
 
         topBrandLayoutBinding.okBtn.setOnClickListener(view -> {
             loadingDialog.show();
-            String tittle = topBrandLayoutBinding.titleTv.getText().toString().trim();
+            String tittle = topBrandLayoutBinding.titleTv.getText().toString();
             if (key.equals("brands")) {
-                String desc = topBrandLayoutBinding.desc.getText().toString().trim();
+                String desc = topBrandLayoutBinding.desc.getText().toString();
                 String imgUrl = topBrandLayoutBinding.url.getText().toString().trim();
 
                 if (encodedImage == null) {

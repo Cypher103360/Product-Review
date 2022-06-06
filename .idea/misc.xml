@@ -48,25 +48,39 @@
         <entry key="..\:/New Android Applications/ProductReview/app/src/main/res/drawable-v24/item_bg.xml" value="0.132" />
         <entry key="..\:/New Android Applications/ProductReview/app/src/main/res/drawable/ic_baseline_arrow_forward_24.xml" value="0.136" />
         <entry key="..\:/New Android Applications/ProductReview/app/src/main/res/drawable/ic_baseline_keyboard_arrow_right_24.xml" value="0.142" />
+        <entry key="..\:/New Android Applications/ProductReview/app/src/main/res/layout-land/top_brands_layout.xml" value="0.23229166666666667" />
+        <entry key="..\:/New Android Applications/ProductReview/app/src/main/res/layout-land/trending_item_layout.xml" value="0.23229166666666667" />
         <entry key="..\:/New Android Applications/ProductReview/app/src/main/res/layout/activity_home.xml" value="0.209375" />
         <entry key="..\:/New Android Applications/ProductReview/app/src/main/res/layout/activity_main.xml" value="0.209375" />
         <entry key="..\:/New Android Applications/ProductReview/app/src/main/res/layout/activity_privacy_policy.xml" value="0.209375" />
+        <entry key="..\:/New Android Applications/ProductReview/app/src/main/res/layout/activity_show_all_items.xml" value="0.22" />
         <entry key="..\:/New Android Applications/ProductReview/app/src/main/res/layout/activity_sign_up.xml" value="0.22239583333333332" />
         <entry key="..\:/New Android Applications/ProductReview/app/src/main/res/layout/activity_signup.xml" value="0.209375" />
+        <entry key="..\:/New Android Applications/ProductReview/app/src/main/res/layout/activity_top_brand_details.xml" value="0.2234375" />
         <entry key="..\:/New Android Applications/ProductReview/app/src/main/res/layout/activity_welcome.xml" value="0.209375" />
         <entry key="..\:/New Android Applications/ProductReview/app/src/main/res/layout/ad_layout.xml" value="0.2234375" />
+        <entry key="..\:/New Android Applications/ProductReview/app/src/main/res/layout/ad_unified.xml" value="0.2234375" />
         <entry key="..\:/New Android Applications/ProductReview/app/src/main/res/layout/best_product_layout.xml" value="0.5" />
+        <entry key="..\:/New Android Applications/ProductReview/app/src/main/res/layout/fb_ad_unified.xml" value="0.2234375" />
         <entry key="..\:/New Android Applications/ProductReview/app/src/main/res/layout/fragment_buying_guide.xml" value="0.2234375" />
+        <entry key="..\:/New Android Applications/ProductReview/app/src/main/res/layout/fragment_category.xml" value="0.2234375" />
         <entry key="..\:/New Android Applications/ProductReview/app/src/main/res/layout/fragment_home.xml" value="0.22" />
+        <entry key="..\:/New Android Applications/ProductReview/app/src/main/res/layout/fragment_ratings.xml" value="0.2234375" />
+        <entry key="..\:/New Android Applications/ProductReview/app/src/main/res/layout/fragment_trending_product.xml" value="0.2234375" />
         <entry key="..\:/New Android Applications/ProductReview/app/src/main/res/layout/header.xml" value="0.2234375" />
-        <entry key="..\:/New Android Applications/ProductReview/app/src/main/res/layout/item_layout.xml" value="0.22" />
-        <entry key="..\:/New Android Applications/ProductReview/app/src/main/res/layout/item_rectangular_layout.xml" value="0.33" />
+        <entry key="..\:/New Android Applications/ProductReview/app/src/main/res/layout/item_layout.xml" value="0.75" />
+        <entry key="..\:/New Android Applications/ProductReview/app/src/main/res/layout/item_rectangular_layout.xml" value="0.2234375" />
         <entry key="..\:/New Android Applications/ProductReview/app/src/main/res/layout/layout_share_icon.xml" value="0.2234375" />
         <entry key="..\:/New Android Applications/ProductReview/app/src/main/res/layout/loading.xml" value="0.2234375" />
-        <entry key="..\:/New Android Applications/ProductReview/app/src/main/res/layout/top_brands_layout.xml" value="0.2234375" />
+        <entry key="..\:/New Android Applications/ProductReview/app/src/main/res/layout/sub_cat_layout.xml" value="0.2234375" />
+        <entry key="..\:/New Android Applications/ProductReview/app/src/main/res/layout/top_brands_layout.xml" value="0.22" />
         <entry key="..\:/New Android Applications/ProductReview/app/src/main/res/layout/view_all_item_layout.xml" value="0.5" />
+        <entry key="..\:/New Android Applications/ProductReview/app/src/main/res/layout/view_all_top_brands_layout.xml" value="0.9" />
         <entry key="..\:/New Android Applications/ProductReview/app/src/main/res/menu/menu.xml" value="0.2234375" />
+        <entry key="..\:/New Android Applications/ProductReview/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.1385" />
         <entry key="..\:/New Android Applications/ProductReview/productreviewadmin/src/main/res/layout/activity_main.xml" value="0.2234375" />
+        <entry key="..\:/New Android Applications/ProductReview/productreviewadmin/src/main/res/layout/item_layout.xml" value="0.2234375" />
+        <entry key="..\:/New Android Applications/ProductReview/productreviewadmin/src/main/res/layout/top_brands_layout.xml" value="0.2234375" />
         <entry key="..\:/New Android Applications/ProductReview/productreviewadmin/src/main/res/layout/upload_banner_layout.xml" value="0.2234375" />
         <entry key="..\:/New Android Applications/ProductReview/productreviewadmin/src/main/res/layout/upload_top_brand_layout.xml" value="0.2234375" />
       </map>

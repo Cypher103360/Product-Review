@@ -330,6 +330,7 @@ public class ShowProducts extends AppCompatActivity implements ProductInterface 
     private void deleteCall(ProductModel productModel) {
         loadingDialog.show();
 
+        map.put("catId",productModel.getCategoryId());
         map.put("id", productModel.getId());
         map.put("img", productModel.getProductImage());
         map.put("banner", productModel.getBanner());

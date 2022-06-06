@@ -169,7 +169,6 @@ public class ShowSubCategory extends AppCompatActivity implements CateogryInterf
                     case 2:
                         uploadTopBrandsDialog(catModel, "update");
 
-
                         break;
                     case 3:
                         deleteCategory(catModel);
@@ -428,6 +427,7 @@ public class ShowSubCategory extends AppCompatActivity implements CateogryInterf
                 })
                 .setPositiveButton("Ok", (dialogInterface, i) -> {
                     map.put("id", catModel.getId());
+                    map.put("parentId", catModel.getParent_id());
                     map.put("img", catModel.getBanner());
                     map.put("title", catModel.getTitle());
                     call = apiInterface.deleteCategory(map);
@@ -451,5 +451,11 @@ public class ShowSubCategory extends AppCompatActivity implements CateogryInterf
                         }
                     });
                 }).show();
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        fetchCategory(key);
     }
 }

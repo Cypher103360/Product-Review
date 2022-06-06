@@ -18,7 +18,7 @@ public class BrandViewModel extends AndroidViewModel {
         repository = Repository.getInstance();
     }
 
-    public LiveData<List<BrandsModel>> getBrands(){
+    public LiveData<BrandsModelList> getBrands(){
         return repository.getBrandMutableLiveData();
     }
 }

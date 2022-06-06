@@ -89,7 +89,7 @@ public interface ApiInterface {
     Call<List<ProductModel>> fetchProducts(@Field("id") String id);
 
     @POST("fetch_brands.php")
-    Call<List<BrandsModel>> fetchBrands();
+    Call<BrandsModelList> fetchBrands();
 
     @FormUrlEncoded
     @POST("update_urls.php")

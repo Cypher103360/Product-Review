@@ -25,7 +25,7 @@
             android:padding="13dp"
             android:text="@string/version"
             android:textAlignment="center"
-            android:textColor="@color/white" />
+            android:textColor="@color/black" />
 
     </com.google.android.material.navigation.NavigationView>
 

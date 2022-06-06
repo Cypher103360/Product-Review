@@ -36,14 +36,10 @@ import com.pr.productkereview.models.AllProducts.TrendingProductViewModel;
 import com.pr.productkereview.models.TopBrands.BrandViewModel;
 import com.pr.productkereview.models.TopBrands.BrandsModel;
 import com.pr.productkereview.utils.CommonMethods;
-import com.pr.productkereview.utils.Prevalent;
 import com.pr.productkereview.utils.ShowAds;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-
-import io.paperdb.Paper;
 
 public class ShowAllItemsActivity extends AppCompatActivity implements LatestProductClickInterface, BestProductClickInterface, TopBrandsClickInterface, ProductsClickInterface, TrendingProductInterface {
     ActivityShowAllItemsBinding binding;
@@ -94,6 +90,13 @@ public class ShowAllItemsActivity extends AppCompatActivity implements LatestPro
         binding.allItemsRecyclerview.setNestedScrollingEnabled(false);
 
 
+        /*
+         * 6835
+         * 3667
+         * 3687
+         * 5291
+         * */
+
         switch (key) {
             case "latestProducts":
                 binding.activityTitle.setText("Latest Products");
@@ -136,6 +139,7 @@ public class ShowAllItemsActivity extends AppCompatActivity implements LatestPro
                 binding.allItemsRecyclerview.setAdapter(productsAdapter);
                 fetchProductsOfCategories();
                 break;
+
             case "mostSelling":
                 binding.activityTitle.setText("Most Selling Products");
                 trendingProductViewModel = new ViewModelProvider(ShowAllItemsActivity.this,
@@ -147,9 +151,7 @@ public class ShowAllItemsActivity extends AppCompatActivity implements LatestPro
                 binding.allItemsRecyclerview.setLayoutManager(layoutManager1);
                 binding.allItemsRecyclerview.setAdapter(trendingProductAdapter);
                 fetchTrendingProducts();
-
         }
-
     }
 
     private void fetchTrendingProducts() {
@@ -190,9 +192,9 @@ public class ShowAllItemsActivity extends AppCompatActivity implements LatestPro
 
     private void fetchTopBrands() {
         brandViewModel.getBrands().observe(ShowAllItemsActivity.this, brandsModels -> {
-            if (!brandsModels.isEmpty()) {
+            if (!brandsModels.getData().isEmpty()) {
                 topBrandsModelList.clear();
-                topBrandsModelList.addAll(brandsModels);
+                topBrandsModelList.addAll(brandsModels.getData());
                 topBrandsAdapter.updateList(topBrandsModelList);
                 loading.dismiss();
             }

@@ -91,7 +91,7 @@ public class TopBrandsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 View view = LayoutInflater.from(context).inflate(R.layout.top_brands_layout, parent, false);
                 return new ViewHolder(view);
             } else if (viewType == BUTTON_VIEW_ALL) {
-                View view = LayoutInflater.from(context).inflate(R.layout.view_all_item_layout, parent, false);
+                View view = LayoutInflater.from(context).inflate(R.layout.view_all_top_brands_layout, parent, false);
                 return new ButtonViewHolder(view);
             }
         }
@@ -118,7 +118,7 @@ public class TopBrandsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
                 Glide.with(context).load(ApiWebServices.base_url + "top_brands_images/" +
                                 topBrandsModel.getLogo())
-                        .placeholder(CommonMethods.setShimmer(holder.itemView.getContext()))
+                        .placeholder(CommonMethods.setShimmer(context))
                         .diskCacheStrategy(DiskCacheStrategy.DATA)
                         .into(((ViewHolder) holder).itemImage);
                 ((ViewHolder) holder).itemTitle.setText(HtmlCompat.fromHtml(topBrandsModel.getTitle(), HtmlCompat.FROM_HTML_MODE_LEGACY));
@@ -137,7 +137,7 @@ public class TopBrandsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 BrandsModel brandsModel = topBrandsModelList.get(position);
                 Glide.with(context).load(ApiWebServices.base_url + "top_brands_images/" +
                                 brandsModel.getLogo())
-                        .placeholder(CommonMethods.setShimmer(holder.itemView.getContext()))
+                        .placeholder(CommonMethods.setShimmer(context))
                         .diskCacheStrategy(DiskCacheStrategy.DATA)
                         .into(((ViewHolder) holder).itemImage);
                 ((ViewHolder) holder).itemTitle.setText(HtmlCompat.fromHtml(brandsModel.getTitle(), HtmlCompat.FROM_HTML_MODE_LEGACY));
@@ -145,14 +145,7 @@ public class TopBrandsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                     topBrandsClickInterface.OnTopBrandClicked(topBrandsModelList.get(position));
                 });
             } else if (holder.getItemViewType() == BUTTON_VIEW_ALL) {
-                ConstraintLayout.LayoutParams params = new ConstraintLayout.LayoutParams(
-                        160,
-                        160
-                );
-                params.setMargins(15, 15, 15, 15);
-                ((ButtonViewHolder) holder).viewAllCardBtn.setLayoutParams(params);
-
-                ((ButtonViewHolder) holder).fab.setOnClickListener(v -> {
+                ((ButtonViewHolder) holder).viewAllBtn.setOnClickListener(v -> {
                     showAds.destroyBanner();
                     showAds.showInterstitialAds(context);
                     Intent intent = new Intent(context, ShowAllItemsActivity.class);
@@ -202,15 +195,13 @@ public class TopBrandsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     public static class ButtonViewHolder extends RecyclerView.ViewHolder {
-        MaterialCardView viewAllCardBtn;
-        ImageView fab;
+        ImageView viewAllBtn;
         TextView viewAllText;
 
         public ButtonViewHolder(@NonNull View itemView) {
             super(itemView);
-            viewAllCardBtn = itemView.findViewById(R.id.view_all_card_btn);
-            fab = itemView.findViewById(R.id.view_all_fab_btn);
-            viewAllText = itemView.findViewById(R.id.view_all_text);
+            viewAllBtn = itemView.findViewById(R.id.view_all_imageView);
+            viewAllText = itemView.findViewById(R.id.top_view_all_text);
         }
     }
 

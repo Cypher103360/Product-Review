@@ -30,6 +30,7 @@ import com.pr.productreviewadmin.databinding.UploadTopBrandLayoutBinding;
 import com.pr.productreviewadmin.models.ApiInterface;
 import com.pr.productreviewadmin.models.ApiWebServices;
 import com.pr.productreviewadmin.models.BrandsModel;
+import com.pr.productreviewadmin.models.BrandsModelList;
 import com.pr.productreviewadmin.models.MessageModel;
 import com.pr.productreviewadmin.utils.Utils;
 
@@ -123,14 +124,14 @@ public class ShowBrandsActivity extends AppCompatActivity implements BrandsInter
 
     private void fetchBrands() {
         loadingDialog.show();
-        Call<List<BrandsModel>> call = apiInterface.fetchBrands();
-        call.enqueue(new Callback<List<BrandsModel>>() {
+        Call<BrandsModelList> call = apiInterface.fetchBrands();
+        call.enqueue(new Callback<BrandsModelList>() {
             @Override
-            public void onResponse(@NonNull Call<List<BrandsModel>> call, @NonNull Response<List<BrandsModel>> response) {
+            public void onResponse(@NonNull Call<BrandsModelList> call, @NonNull Response<BrandsModelList> response) {
                 if (response.isSuccessful()) {
                     if (response.body() != null) {
                         brandsModels.clear();
-                        brandsModels.addAll(response.body());
+                        brandsModels.addAll(response.body().getData());
                     }
                     brandsAdapter.updateCategoryList(brandsModels);
 
@@ -141,7 +142,7 @@ public class ShowBrandsActivity extends AppCompatActivity implements BrandsInter
             }
 
             @Override
-            public void onFailure(@NonNull Call<List<BrandsModel>> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<BrandsModelList> call, @NonNull Throwable t) {
                 loadingDialog.dismiss();
                 Log.d("ContentValue", t.getMessage());
 
@@ -260,7 +261,7 @@ public class ShowBrandsActivity extends AppCompatActivity implements BrandsInter
 
 
         topBrandLayoutBinding.titleTv.setText(HtmlCompat.fromHtml(brandsModel.getTitle(), HtmlCompat.FROM_HTML_MODE_LEGACY));
-        topBrandLayoutBinding.desc.setText(HtmlCompat.fromHtml(brandsModel.getDesc(), HtmlCompat.FROM_HTML_MODE_LEGACY));
+        topBrandLayoutBinding.desc.setText(brandsModel.getDesc());
         topBrandLayoutBinding.url.setText(brandsModel.getUrl());
         Glide.with(this).load(ApiWebServices.base_url + "top_brands_images/" + brandsModel.getLogo()).into(topBrandLayoutBinding.logo);
         Glide.with(this).load(ApiWebServices.base_url + "top_brands_images/" + brandsModel.getBanner()).into(topBrandLayoutBinding.banner);

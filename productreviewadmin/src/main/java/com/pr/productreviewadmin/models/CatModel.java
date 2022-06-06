@@ -7,8 +7,7 @@ public class CatModel {
     private String id;
     private String banner;
     private String title;
-    @SerializedName("parent_id")
-    private String parentId;
+    private String parent_id;
     private String subCat;
     private String product;
 
@@ -25,8 +24,8 @@ public class CatModel {
         return title;
     }
 
-    public String getParentId() {
-        return parentId;
+    public String getParent_id() {
+        return parent_id;
     }
 
     public String getSubCat() {

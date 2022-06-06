@@ -128,13 +128,13 @@ public class ShowCategoryActivity extends AppCompatActivity implements CateogryI
         key = getIntent().getStringExtra("key");
         if (key.equals("cat")) {
 
-            fetchCategory("0");
+            fetchCategory();
         }
     }
 
-    private void fetchCategory(String id) {
+    private void fetchCategory() {
         loadingDialog.show();
-        Call<List<CatModel>> call = apiInterface.fetchCategories(id);
+        Call<List<CatModel>> call = apiInterface.fetchCategories("0");
         call.enqueue(new Callback<List<CatModel>>() {
             @Override
             public void onResponse(@NonNull Call<List<CatModel>> call, @NonNull Response<List<CatModel>> response) {
@@ -398,7 +398,7 @@ public class ShowCategoryActivity extends AppCompatActivity implements CateogryI
                 if (response.isSuccessful()) {
                     Toast.makeText(ShowCategoryActivity.this, Objects.requireNonNull(response.body()).getMessage(), Toast.LENGTH_SHORT).show();
                     uploadDialog.dismiss();
-                    fetchCategory("0");
+                    fetchCategory();
 
                 } else {
                     Toast.makeText(ShowCategoryActivity.this, Objects.requireNonNull(response.body()).getError(), Toast.LENGTH_SHORT).show();
@@ -439,7 +439,7 @@ public class ShowCategoryActivity extends AppCompatActivity implements CateogryI
                         public void onResponse(@NonNull Call<MessageModel> call, @NonNull Response<MessageModel> response) {
                             if (response.isSuccessful()) {
                                 Toast.makeText(ShowCategoryActivity.this, Objects.requireNonNull(response.body()).getMessage(), Toast.LENGTH_SHORT).show();
-                                fetchCategory("0");
+                                fetchCategory();
                             } else {
                                 Toast.makeText(ShowCategoryActivity.this, Objects.requireNonNull(response.body()).getError(), Toast.LENGTH_SHORT).show();
                             }
@@ -454,5 +454,11 @@ public class ShowCategoryActivity extends AppCompatActivity implements CateogryI
                         }
                     });
                 }).show();
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        fetchCategory();
     }
 }

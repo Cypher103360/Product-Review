@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.pr.productkereview.models.AllProducts.ProductModel;
 import com.pr.productkereview.models.TopBrands.BrandsModel;
+import com.pr.productkereview.models.TopBrands.BrandsModelList;
 import com.pr.productkereview.models.categories.CatModel;
 
 import java.util.List;
@@ -18,7 +19,7 @@ public class Repository {
     ApiInterface apiInterface;
 
     MutableLiveData<List<CatModel>> catModelMutableLiveData = new MutableLiveData<>();
-    MutableLiveData<List<BrandsModel>> brandMutableLiveData = new MutableLiveData<>();
+    MutableLiveData<BrandsModelList> brandMutableLiveData = new MutableLiveData<>();
     MutableLiveData<List<ProductModel>> latestProductMutableLiveData = new MutableLiveData<>();
     MutableLiveData<List<ProductModel>> bestProductMutableLiveData = new MutableLiveData<>();
     MutableLiveData<List<ProductModel>> trendingProductMutableLiveData = new MutableLiveData<>();
@@ -53,18 +54,18 @@ public class Repository {
         return catModelMutableLiveData;
     }
 
-    public MutableLiveData<List<BrandsModel>> getBrandMutableLiveData() {
-        Call<List<BrandsModel>> call = apiInterface.fetchBrands();
-        call.enqueue(new Callback<List<BrandsModel>>() {
+    public MutableLiveData<BrandsModelList> getBrandMutableLiveData() {
+        Call<BrandsModelList> call = apiInterface.fetchBrands();
+        call.enqueue(new Callback<BrandsModelList>() {
             @Override
-            public void onResponse(@NonNull Call<List<BrandsModel>> call, @NonNull Response<List<BrandsModel>> response) {
+            public void onResponse(@NonNull Call<BrandsModelList> call, @NonNull Response<BrandsModelList> response) {
                 if (response.isSuccessful()) {
                     brandMutableLiveData.setValue(response.body());
                 }
             }
 
             @Override
-            public void onFailure(@NonNull Call<List<BrandsModel>> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<BrandsModelList> call, @NonNull Throwable t) {
 
             }
         });

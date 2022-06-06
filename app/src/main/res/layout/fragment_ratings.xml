@@ -58,14 +58,16 @@
                     style="@style/Widget.App.Button.OutlinedButton.IconOnly"
                     android:layout_width="80dp"
                     android:layout_height="30dp"
-                    android:text="@string/eng" />
+                    android:text="@string/eng"
+                    tools:ignore="TouchTargetSizeCheck" />
 
                 <Button
                     android:id="@+id/ratingHindiPreview"
                     style="@style/Widget.App.Button.OutlinedButton.IconOnly"
                     android:layout_width="80dp"
                     android:layout_height="30dp"
-                    android:text="@string/hin" />
+                    android:text="@string/hin"
+                    tools:ignore="TouchTargetSizeCheck" />
 
             </com.google.android.material.button.MaterialButtonToggleGroup>
 

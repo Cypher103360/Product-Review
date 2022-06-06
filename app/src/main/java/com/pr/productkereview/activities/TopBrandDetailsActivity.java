@@ -4,11 +4,11 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.text.Html;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.AbsoluteSizeSpan;
 
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.text.HtmlCompat;
 
@@ -19,6 +19,9 @@ import com.pr.productkereview.databinding.ActivityTopBrandDetailsBinding;
 import com.pr.productkereview.utils.ApiWebServices;
 import com.pr.productkereview.utils.CommonMethods;
 import com.pr.productkereview.utils.ShowAds;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class TopBrandDetailsActivity extends AppCompatActivity {
     ActivityTopBrandDetailsBinding binding;
@@ -32,6 +35,7 @@ public class TopBrandDetailsActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         bannerImg = getIntent().getStringExtra("img");
         title = getIntent().getStringExtra("title");
+
         desc = getIntent().getStringExtra("desc");
         url = getIntent().getStringExtra("url");
         binding.backIcon.setOnClickListener(v -> onBackPressed());
@@ -46,12 +50,17 @@ public class TopBrandDetailsActivity extends AppCompatActivity {
                 .into(binding.brandImage);
 
         binding.brandTitle.setText(HtmlCompat.fromHtml(title, HtmlCompat.FROM_HTML_MODE_LEGACY));
-        binding.brandDesc.setText(HtmlCompat.fromHtml(desc.replaceAll("<.*?>", ""), HtmlCompat.FROM_HTML_MODE_LEGACY));
+
+       // String descData = String.valueOf(HtmlCompat.fromHtml(desc, HtmlCompat.FROM_HTML_MODE_LEGACY));
+
+       binding.brandDesc.loadData(desc,"text/html", "UTF-8");
+
         binding.brandImage.setOnClickListener(v -> {
             openWebPage(url, TopBrandDetailsActivity.this);
         });
 
     }
+
 
     @SuppressLint("QueryPermissionsNeeded")
     public void openWebPage(String url, Context context) {
@@ -68,6 +77,7 @@ public class TopBrandDetailsActivity extends AppCompatActivity {
         finish();
         showAds.destroyBanner();
     }
+
     @Override
     protected void onPause() {
         super.onPause();

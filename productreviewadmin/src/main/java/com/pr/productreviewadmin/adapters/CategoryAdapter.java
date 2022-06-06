@@ -1,5 +1,6 @@
 package com.pr.productreviewadmin.adapters;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -51,6 +52,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
         return catModels.size();
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     public void updateCategoryList(List<CatModel> catModelList) {
         catModels.clear();
         catModels.addAll(catModelList);

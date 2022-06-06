@@ -132,7 +132,8 @@
                         <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/latest_product_recyclerview"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
+                            android:layout_height="wrap_content"
+                            android:nestedScrollingEnabled="false"/>
 
                     </LinearLayout>
 
@@ -234,7 +235,8 @@
                         <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/topBrand_product_recyclerview"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
+                            android:layout_height="wrap_content"
+                            android:nestedScrollingEnabled="false"/>
 
                     </LinearLayout>
 
@@ -314,7 +316,8 @@
                             android:src="@drawable/world_wide_web"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toStartOf="parent" />
+                            app:layout_constraintStart_toStartOf="parent"
+                            android:contentDescription="@string/todo" />
 
 
                     </LinearLayout>

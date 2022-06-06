@@ -18,6 +18,7 @@ import com.pr.productkereview.R;
 import com.pr.productkereview.databinding.AdLayoutBinding;
 import com.pr.productkereview.models.AllProducts.ProductModel;
 import com.pr.productkereview.utils.ApiWebServices;
+import com.pr.productkereview.utils.CommonMethods;
 import com.pr.productkereview.utils.Prevalent;
 import com.pr.productkereview.utils.ShowAds;
 
@@ -89,7 +90,9 @@ public class BestProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 int position = pos - Math.round(pos / ITEM_FEED_COUNT);
                 ProductModel bestProductModel = bestProductModelList.get(position);
                 Glide.with(context).load(ApiWebServices.base_url + "all_products_images/"
-                        + bestProductModel.getProductImage()).into(((ViewHolder) holder).itemImage);
+                        + bestProductModel.getProductImage())
+                        .placeholder(CommonMethods.setShimmer(context))
+                        .into(((ViewHolder) holder).itemImage);
                 ((ViewHolder) holder).itemTitle.setText(HtmlCompat.fromHtml(bestProductModel.getProductTitle(), HtmlCompat.FROM_HTML_MODE_LEGACY));
                 holder.itemView.setOnClickListener(v -> {
                     bestProductClickInterface.OnBestProductClicked(bestProductModelList.get(position));
@@ -102,7 +105,9 @@ public class BestProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         } else {
             ProductModel bestProductModel = bestProductModelList.get(pos);
             Glide.with(context).load(ApiWebServices.base_url + "all_products_images/"
-                    + bestProductModel.getProductImage()).into(((ViewHolder) holder).itemImage);
+                    + bestProductModel.getProductImage())
+                    .placeholder(CommonMethods.setShimmer(context))
+                    .into(((ViewHolder) holder).itemImage);
             ((ViewHolder) holder).itemTitle.setText(HtmlCompat.fromHtml(bestProductModel.getProductTitle(), HtmlCompat.FROM_HTML_MODE_LEGACY));
             holder.itemView.setOnClickListener(v -> {
                 bestProductClickInterface.OnBestProductClicked(bestProductModelList.get(pos));

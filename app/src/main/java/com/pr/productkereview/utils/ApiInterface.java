@@ -5,6 +5,7 @@ import com.pr.productkereview.models.AllProducts.ProductModel;
 import com.pr.productkereview.models.BannerImages.BannerImageModel;
 import com.pr.productkereview.models.MessageModel;
 import com.pr.productkereview.models.TopBrands.BrandsModel;
+import com.pr.productkereview.models.TopBrands.BrandsModelList;
 import com.pr.productkereview.models.UrlsModels.UrlModel;
 import com.pr.productkereview.models.categories.CatModel;
 
@@ -38,7 +39,7 @@ public interface ApiInterface {
     Call<List<CatModel>> getCategories(@Field("id") String id);
 
     @POST("fetch_brands.php")
-    Call<List<BrandsModel>> fetchBrands();
+    Call<BrandsModelList> fetchBrands();
 
     @FormUrlEncoded
     @POST("fetch_products.php")
@@ -47,5 +48,7 @@ public interface ApiInterface {
     @FormUrlEncoded
     @POST("fetch_products.php")
     Call<List<ProductModel>> fetchBestProducts(@Field("id") String id);
+
+ //   @POST("https://gedgetsworld.in/Product_Review/giphy.gif")
 }
 
