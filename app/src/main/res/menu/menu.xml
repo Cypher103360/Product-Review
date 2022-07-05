@@ -28,6 +28,7 @@
             android:iconTint="#6200EA"
             android:title="@string/share_it"
             tools:targetApi="o" />
+
         <item
             android:id="@+id/nav_rate"
             android:icon="@drawable/ic_baseline_star_rate_24"

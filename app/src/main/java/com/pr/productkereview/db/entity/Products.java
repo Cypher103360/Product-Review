@@ -46,7 +46,9 @@ public class Products implements Serializable {
     @ColumnInfo(name = "trendingProduct")
     private String trendingProduct;
 
-    public Products(int id, String categoryId, String productImage, String banner, String productTitle, String buyingGuideHindi, String buyingGuideEnglish, String ratingHindi, String ratingEnglish, String latestProduct, String bestProduct, String trendingProduct) {
+    private String url;
+
+    public Products(int id, String categoryId, String productImage, String banner, String productTitle, String buyingGuideHindi, String buyingGuideEnglish, String ratingHindi, String ratingEnglish, String latestProduct, String bestProduct, String trendingProduct,String url) {
         this.id = id;
         this.categoryId = categoryId;
         this.productImage = productImage;
@@ -59,6 +61,7 @@ public class Products implements Serializable {
         this.latestProduct = latestProduct;
         this.bestProduct = bestProduct;
         this.trendingProduct = trendingProduct;
+        this.url = url;
     }
 
     public int getId() {
@@ -107,5 +110,9 @@ public class Products implements Serializable {
 
     public String getTrendingProduct() {
         return trendingProduct;
+    }
+
+    public String getUrl() {
+        return url;
     }
 }

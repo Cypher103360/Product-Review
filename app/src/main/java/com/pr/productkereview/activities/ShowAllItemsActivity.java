@@ -89,14 +89,6 @@ public class ShowAllItemsActivity extends AppCompatActivity implements LatestPro
         binding.allItemsRecyclerview.setLayoutManager(gridLayoutManager);
         binding.allItemsRecyclerview.setNestedScrollingEnabled(false);
 
-
-        /*
-         * 6835
-         * 3667
-         * 3687
-         * 5291
-         * */
-
         switch (key) {
             case "latestProducts":
                 binding.activityTitle.setText("Latest Products");
@@ -208,7 +200,7 @@ public class ShowAllItemsActivity extends AppCompatActivity implements LatestPro
             productAppDatabase.getProductDAO().addProducts(new Products(0, latestProductModel.getCategoryId(), latestProductModel.getProductImage()
                     , latestProductModel.getBanner(), latestProductModel.getProductTitle(), latestProductModel.getBuingGuideHindi(),
                     latestProductModel.getBuingGuideEnglish(), latestProductModel.getRatingHindi(), latestProductModel.getRatingEnglish()
-                    , latestProductModel.getLatestProduct(), latestProductModel.getBestProduct(), latestProductModel.getTrendingProduct()));
+                    , latestProductModel.getLatestProduct(), latestProductModel.getBestProduct(), latestProductModel.getTrendingProduct(),latestProductModel.getUrl()));
 
         }
         showAds.destroyBanner();
@@ -227,7 +219,7 @@ public class ShowAllItemsActivity extends AppCompatActivity implements LatestPro
             productAppDatabase.getProductDAO().addProducts(new Products(0, bestProductModel.getCategoryId(), bestProductModel.getProductImage()
                     , bestProductModel.getBanner(), bestProductModel.getProductTitle(), bestProductModel.getBuingGuideHindi(),
                     bestProductModel.getBuingGuideEnglish(), bestProductModel.getRatingHindi(), bestProductModel.getRatingEnglish()
-                    , bestProductModel.getLatestProduct(), bestProductModel.getBestProduct(), bestProductModel.getTrendingProduct()));
+                    , bestProductModel.getLatestProduct(), bestProductModel.getBestProduct(), bestProductModel.getTrendingProduct(),bestProductModel.getUrl()));
 
         }
         showAds.destroyBanner();
@@ -266,7 +258,7 @@ public class ShowAllItemsActivity extends AppCompatActivity implements LatestPro
             productAppDatabase.getProductDAO().addProducts(new Products(0, productModel.getCategoryId(), productModel.getProductImage()
                     , productModel.getBanner(), productModel.getProductTitle(), productModel.getBuingGuideHindi(),
                     productModel.getBuingGuideEnglish(), productModel.getRatingHindi(), productModel.getRatingEnglish()
-                    , productModel.getLatestProduct(), productModel.getBestProduct(), productModel.getTrendingProduct()));
+                    , productModel.getLatestProduct(), productModel.getBestProduct(), productModel.getTrendingProduct(),productModel.getUrl()));
 
         }
         showAds.destroyBanner();
@@ -288,7 +280,7 @@ public class ShowAllItemsActivity extends AppCompatActivity implements LatestPro
             productAppDatabase.getProductDAO().addProducts(new Products(0, productModel.getCategoryId(), productModel.getProductImage()
                     , productModel.getBanner(), productModel.getProductTitle(), productModel.getBuingGuideHindi(),
                     productModel.getBuingGuideEnglish(), productModel.getRatingHindi(), productModel.getRatingEnglish()
-                    , productModel.getLatestProduct(), productModel.getBestProduct(), productModel.getTrendingProduct()));
+                    , productModel.getLatestProduct(), productModel.getBestProduct(), productModel.getTrendingProduct(),productModel.getUrl()));
 
         }
         Intent intent = new Intent(ShowAllItemsActivity.this, ItemDetailsActivity.class);

@@ -42,7 +42,7 @@ public class ProductModel implements Serializable {
     @Expose
     private String trendingProduct;
 
-    public ProductModel(String banner, String id, String categoryId, String productImage, String productTitle, String buingGuideHindi, String buingGuideEnglish, String ratingHindi, String ratingEnglish, String latestProduct, String bestProduct, String trendingProduct) {
+    public ProductModel(String banner, String id, String categoryId, String productImage, String productTitle, String buingGuideHindi, String buingGuideEnglish, String ratingHindi, String ratingEnglish, String latestProduct, String bestProduct, String trendingProduct, String url) {
         this.banner = banner;
         this.id = id;
         this.categoryId = categoryId;
@@ -55,7 +55,10 @@ public class ProductModel implements Serializable {
         this.latestProduct = latestProduct;
         this.bestProduct = bestProduct;
         this.trendingProduct = trendingProduct;
+        this.url = url;
     }
+
+    private String url;
 
     public String getId() {
         return id;
@@ -147,5 +150,8 @@ public class ProductModel implements Serializable {
 
     public void setTrendingProduct(String trendingProduct) {
         this.trendingProduct = trendingProduct;
+    }
+    public String getUrl() {
+        return url;
     }
 }

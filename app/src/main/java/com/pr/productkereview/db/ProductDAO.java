@@ -15,7 +15,7 @@ import java.util.List;
 public interface ProductDAO {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    public long addProducts(Products products);
+    public void addProducts(Products products);
 
     @Update
     public void updateProducts(Products products);

@@ -113,7 +113,7 @@ public class CategoryFragment extends Fragment implements CategoryInterface {
             intent.putExtra("key", "Products");
             intent.putExtra("id", catModel.getId());
             startActivity(intent);
-        }else {
+        } else {
             Toast.makeText(requireActivity(), "No Data Available", Toast.LENGTH_SHORT).show();
         }
     }

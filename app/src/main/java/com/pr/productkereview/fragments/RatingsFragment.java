@@ -44,6 +44,7 @@ public class RatingsFragment extends Fragment {
         TextUtils.getChars(spanned, 0, spanned.length(), chars, 0);
         plainText = new String(chars);
 
+
         binding.ratingWebView.loadData(plainText, "text/html", "UTF-8");
         materialButtonToggleGroup.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
             if (isChecked) {

@@ -19,6 +19,8 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import androidx.room.Room;
+import androidx.room.migration.Migration;
+import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import com.denzcoskun.imageslider.ImageSlider;
 import com.denzcoskun.imageslider.constants.ScaleTypes;
@@ -96,7 +98,14 @@ public class HomeFragment extends Fragment implements LatestProductClickInterfac
             return message;
         }
     }
-
+    static final Migration MIGRATION_1_2 = new Migration(1, 2) {
+        @Override
+        public void migrate(SupportSQLiteDatabase database) {
+            // Your migration strategy here
+            database.execSQL("ALTER TABLE products ADD COLUMN url TEXT");
+        }
+    };
+// 7817056405
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -196,6 +205,7 @@ public class HomeFragment extends Fragment implements LatestProductClickInterfac
                         ProductAppDatabase.class,
                         "ProductDB")
                 .allowMainThreadQueries()
+                .addMigrations(MIGRATION_1_2)
                 .build();
 
         productAppDatabase.getProductDAO().deleteItemsByLimit();
@@ -338,7 +348,7 @@ public class HomeFragment extends Fragment implements LatestProductClickInterfac
             productAppDatabase.getProductDAO().addProducts(new Products(0, latestProductModel.getCategoryId(), latestProductModel.getProductImage()
                     , latestProductModel.getBanner(), latestProductModel.getProductTitle(), latestProductModel.getBuingGuideHindi(),
                     latestProductModel.getBuingGuideEnglish(), latestProductModel.getRatingHindi(), latestProductModel.getRatingEnglish()
-                    , latestProductModel.getLatestProduct(), latestProductModel.getBestProduct(), latestProductModel.getTrendingProduct()));
+                    , latestProductModel.getLatestProduct(), latestProductModel.getBestProduct(), latestProductModel.getTrendingProduct(),latestProductModel.getUrl()));
 
         }
     }
@@ -357,13 +367,14 @@ public class HomeFragment extends Fragment implements LatestProductClickInterfac
 
 //         Room Database
         productAppDatabase = Room.databaseBuilder(requireActivity(), ProductAppDatabase.class, "ProductDB").allowMainThreadQueries()
+                .addMigrations(MIGRATION_1_2)
                 .build();
         boolean checkProductExistence = productAppDatabase.getProductDAO().getProductByTitle(bestProductModel.getProductTitle());
         if (!checkProductExistence) {
             productAppDatabase.getProductDAO().addProducts(new Products(0, bestProductModel.getCategoryId(), bestProductModel.getProductImage()
                     , bestProductModel.getBanner(), bestProductModel.getProductTitle(), bestProductModel.getBuingGuideHindi(),
                     bestProductModel.getBuingGuideEnglish(), bestProductModel.getRatingHindi(), bestProductModel.getRatingEnglish()
-                    , bestProductModel.getLatestProduct(), bestProductModel.getBestProduct(), bestProductModel.getTrendingProduct()));
+                    , bestProductModel.getLatestProduct(), bestProductModel.getBestProduct(), bestProductModel.getTrendingProduct(),bestProductModel.getUrl()));
 
         }
 
@@ -409,10 +420,20 @@ public class HomeFragment extends Fragment implements LatestProductClickInterfac
         // Room Database
         Intent intent = new Intent(requireActivity(), ItemDetailsActivity.class);
         Bundle bundle = new Bundle();
-        bundle.putSerializable("latest", new ProductModel(String.valueOf(buyingGuidesModel.getId()), buyingGuidesModel.getCategoryId(), buyingGuidesModel.getProductImage()
-                , buyingGuidesModel.getBanner(), buyingGuidesModel.getProductTitle(), buyingGuidesModel.getBuyingGuideHindi(),
-                buyingGuidesModel.getBuyingGuideEnglish(), buyingGuidesModel.getRatingHindi(), buyingGuidesModel.getRatingEnglish()
-                , buyingGuidesModel.getLatestProduct(), buyingGuidesModel.getBestProduct(), buyingGuidesModel.getTrendingProduct()));
+        bundle.putSerializable("latest", new ProductModel(
+                buyingGuidesModel.getBanner(),
+                String.valueOf(buyingGuidesModel.getId()),
+                buyingGuidesModel.getCategoryId(),
+                buyingGuidesModel.getProductImage(),
+                buyingGuidesModel.getProductTitle(),
+                buyingGuidesModel.getBuyingGuideHindi(),
+                buyingGuidesModel.getBuyingGuideEnglish(),
+                buyingGuidesModel.getRatingHindi(),
+                buyingGuidesModel.getRatingEnglish(),
+                buyingGuidesModel.getLatestProduct(),
+                buyingGuidesModel.getBestProduct(),
+                buyingGuidesModel.getTrendingProduct(),
+                buyingGuidesModel.getUrl()));
         intent.putExtras(bundle);
         startActivity(intent);
 

@@ -86,7 +86,7 @@ public class TrendingProductFragment extends Fragment implements TrendingProduct
             productAppDatabase.getProductDAO().addProducts(new Products(0, productModel.getCategoryId(), productModel.getProductImage()
                     , productModel.getBanner(), productModel.getProductTitle(), productModel.getBuingGuideHindi(),
                     productModel.getBuingGuideEnglish(), productModel.getRatingHindi(), productModel.getRatingEnglish()
-                    , productModel.getLatestProduct(), productModel.getBestProduct(), productModel.getTrendingProduct()));
+                    , productModel.getLatestProduct(), productModel.getBestProduct(), productModel.getTrendingProduct(),productModel.getUrl()));
 
         }
         Intent intent = new Intent(requireActivity(), ItemDetailsActivity.class);

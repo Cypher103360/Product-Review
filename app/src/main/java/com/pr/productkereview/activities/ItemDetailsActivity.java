@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Html;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -57,26 +58,27 @@ public class ItemDetailsActivity extends AppCompatActivity {
         getLifecycle().addObserver(showAds);
         Bundle bundle = getIntent().getExtras();
         productModel = (ProductModel) bundle.getSerializable("latest");
-        binding.activityTitle.setText(HtmlCompat.fromHtml(productModel.getProductTitle(), HtmlCompat.FROM_HTML_MODE_LEGACY));
+       // binding.activityTitle.setText(HtmlCompat.fromHtml(productModel.getProductTitle(), HtmlCompat.FROM_HTML_MODE_LEGACY));
 
-        binding.lottieContact.setOnClickListener(v -> {
-            try {
-                CommonMethods.whatsApp(ItemDetailsActivity.this,whatsappText);
-            } catch (UnsupportedEncodingException | PackageManager.NameNotFoundException e) {
-                e.printStackTrace();
-            }
-        });
+//        binding.lottieContact.setOnClickListener(v -> {
+//            try {
+//                CommonMethods.whatsApp(ItemDetailsActivity.this,whatsappText);
+//            } catch (UnsupportedEncodingException | PackageManager.NameNotFoundException e) {
+//                e.printStackTrace();
+//            }
+//        });
 
 
         pagerAdapter = new BuyingRatingPagerAdapter(getSupportFragmentManager(),
                 BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
-        pagerAdapter.addFragments(new BuyingGuideFragment(), "Buying Guides");
-        pagerAdapter.addFragments(new RatingsFragment(), "Ratings & Brands");
+        pagerAdapter.addFragments(new BuyingGuideFragment(), "Reviews");
+//        pagerAdapter.addFragments(new RatingsFragment(), "Ratings & Brands");
 
         ViewPager viewPager = binding.viewPager;
         viewPager.setAdapter(pagerAdapter);
         TabLayout tabs = binding.tabs;
         tabs.setupWithViewPager(viewPager);
+        tabs.setVisibility(View.GONE);
     }
 
     @Override

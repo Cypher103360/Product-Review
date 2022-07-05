@@ -452,18 +452,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 mFirebaseAnalytics.logEvent("Clicked_On_Disclaimer_Menu", bundle);
                 disclaimerDialog();
                 break;
-
-//            case R.id.nav_signOut:
-//                loading.show();
-//                bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "SignOut Menu");
-//                mFirebaseAnalytics.logEvent("Clicked_On_SignOut_Menu", bundle);
-//                // Sign Out for google user
-//                GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
-//                if (account != null) {
-//                    googleSignOut();
-//                }
-//
-//                break;
             default:
         }
         return true;
