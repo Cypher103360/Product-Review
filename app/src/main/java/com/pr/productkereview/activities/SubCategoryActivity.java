@@ -2,12 +2,11 @@ package com.pr.productkereview.activities;
 
 import android.app.Dialog;
 import android.content.Intent;
-import android.os.Build;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.text.Html;
+import android.preference.PreferenceManager;
 import android.widget.Toast;
 
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.text.HtmlCompat;
 import androidx.lifecycle.ViewModelProvider;
@@ -34,12 +33,13 @@ public class SubCategoryActivity extends AppCompatActivity implements SubCategor
     ActivitySubCategoryBinding binding;
     SubCategoryAdapter subCategoryAdapter;
     Dialog loading;
-    List<CatModel> catModelList = new ArrayList<>();
+    List<CatModel> catModelList;
     ApiInterface apiInterface;
     CatViewModel catViewModel;
     String id, title;
 
     ShowAds showAds;
+    SharedPreferences preferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +48,8 @@ public class SubCategoryActivity extends AppCompatActivity implements SubCategor
         setContentView(binding.getRoot());
         loading = CommonMethods.getLoadingDialog(SubCategoryActivity.this);
         loading.show();
+        preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        catModelList = new ArrayList<>();
         apiInterface = ApiWebServices.getApiInterface();
         id = getIntent().getStringExtra("id");
         title = getIntent().getStringExtra("title");
@@ -113,9 +115,19 @@ public class SubCategoryActivity extends AppCompatActivity implements SubCategor
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        finish();
-        showAds.destroyBanner();
+        if (preferences.getString("action", "").equals("")) {
+            super.onBackPressed();
+            showAds.destroyBanner();
+        } else {
+            showAds.destroyBanner();
+            preferences.edit().clear().apply();
+            Intent intent = new Intent(this, HomeActivity.class);
+            startActivity(intent);
+            overridePendingTransition(0, 0);
+            finish();
+            overridePendingTransition(0, 0);
+
+        }
     }
 
     @Override

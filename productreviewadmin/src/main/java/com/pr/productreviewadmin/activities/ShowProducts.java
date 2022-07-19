@@ -109,7 +109,8 @@ public class ShowProducts extends AppCompatActivity implements ProductInterface 
                     }
 
 
-                    Log.d("ContentValue", encodedImage + " @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@/n@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@/n" + encodedImage2);
+//                    Log.d("ContentValue", encodedImage + " @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@/n@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@/n" + encodedImage2);
+
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
@@ -330,7 +331,7 @@ public class ShowProducts extends AppCompatActivity implements ProductInterface 
     private void deleteCall(ProductModel productModel) {
         loadingDialog.show();
 
-        map.put("catId",productModel.getCategoryId());
+        map.put("catId", productModel.getCategoryId());
         map.put("id", productModel.getId());
         map.put("img", productModel.getProductImage());
         map.put("banner", productModel.getBanner());
@@ -374,6 +375,7 @@ public class ShowProducts extends AppCompatActivity implements ProductInterface 
         encodedImage = productModel.getProductImage();
         encodedImage2 = productModel.getBanner();
         productLaytoutBinding.title.setText(String.format("Update %s", productModel.getProductTitle()));
+        productLaytoutBinding.url.setText(productModel.getUrl());
         productLaytoutBinding.backBtn.setOnClickListener(view -> productDialog.dismiss());
         productLaytoutBinding.logo.setOnClickListener(view -> {
             launcher.launch("image/*");
@@ -406,6 +408,7 @@ public class ShowProducts extends AppCompatActivity implements ProductInterface 
             best = productLaytoutBinding.bestProduct.isChecked();
             latest = productLaytoutBinding.latestProduct.isChecked();
             String tittle = productLaytoutBinding.titleTv.getText().toString().trim();
+            String url = productLaytoutBinding.url.getText().toString().trim();
             String buyingGuideHindi = productLaytoutBinding.buyingGuideHindi.getText().toString().trim();
             String buyingGuideEnglish = productLaytoutBinding.buyingGuideEnglish.getText().toString().trim();
             String enterRatingInHindi = productLaytoutBinding.enterRatingInHindi.getText().toString().trim();
@@ -414,6 +417,10 @@ public class ShowProducts extends AppCompatActivity implements ProductInterface 
             if (TextUtils.isEmpty(tittle)) {
                 productLaytoutBinding.titleTv.setError("Url Required");
                 productLaytoutBinding.titleTv.requestFocus();
+                loadingDialog.dismiss();
+            } else if (TextUtils.isEmpty(url)) {
+                productLaytoutBinding.url.setError("Url Required");
+                productLaytoutBinding.url.requestFocus();
                 loadingDialog.dismiss();
             } else if (TextUtils.isEmpty(buyingGuideHindi)) {
                 productLaytoutBinding.buyingGuideHindi.setError("Url Required");
@@ -439,6 +446,7 @@ public class ShowProducts extends AppCompatActivity implements ProductInterface 
                     map.put("deleteLogo", deleteLogo);
                     map.put("deleteBanner", deleteBanner);
                     map.put("title", tittle);
+                    map.put("url", url);
                     map.put("buyGuideH", buyingGuideHindi);
                     map.put("buyGuideE", buyingGuideEnglish);
                     map.put("ratingH", enterRatingInHindi);
@@ -447,6 +455,7 @@ public class ShowProducts extends AppCompatActivity implements ProductInterface 
                     map.put("bestPro", String.valueOf(best));
                     map.put("trendingPro", String.valueOf(trending));
                     map.put("key", "3");
+
                 } else if (encodedImage.length() > 100) {
                     map.put("catId", productModel.getId());
                     map.put("img", encodedImage);
@@ -454,6 +463,7 @@ public class ShowProducts extends AppCompatActivity implements ProductInterface 
                     map.put("deleteLogo", deleteLogo);
                     map.put("deleteBanner", deleteBanner);
                     map.put("title", tittle);
+                    map.put("url", url);
                     map.put("buyGuideH", buyingGuideHindi);
                     map.put("buyGuideE", buyingGuideEnglish);
                     map.put("ratingH", enterRatingInHindi);
@@ -469,6 +479,7 @@ public class ShowProducts extends AppCompatActivity implements ProductInterface 
                     map.put("deleteLogo", deleteLogo);
                     map.put("deleteBanner", deleteBanner);
                     map.put("title", tittle);
+                    map.put("url", url);
                     map.put("buyGuideH", buyingGuideHindi);
                     map.put("buyGuideE", buyingGuideEnglish);
                     map.put("ratingH", enterRatingInHindi);
@@ -484,6 +495,7 @@ public class ShowProducts extends AppCompatActivity implements ProductInterface 
                     map.put("deleteLogo", deleteLogo);
                     map.put("deleteBanner", deleteBanner);
                     map.put("title", tittle);
+                    map.put("url", url);
                     map.put("buyGuideH", buyingGuideHindi);
                     map.put("buyGuideE", buyingGuideEnglish);
                     map.put("ratingH", enterRatingInHindi);

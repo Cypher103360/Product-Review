@@ -101,6 +101,7 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
+
                     <ImageView
                         android:id="@+id/banner"
                         android:layout_width="match_parent"
@@ -170,6 +171,32 @@
 
                         <EditText
                             android:id="@+id/titleTv"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:importantForAutofill="no"
+                            android:inputType="textUri"
+                            android:textColor="@color/black"
+                            tools:ignore="LabelFor" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textInputLayout"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="8dp"
+                        android:layout_marginTop="16dp"
+                        android:hint="Enter Url"
+                        android:textColorHint="@color/black"
+                        app:boxStrokeColor="@color/black"
+                        app:endIconMode="clear_text"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/compress_Btn">
+
+                        <EditText
+                            android:id="@+id/url"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:importantForAutofill="no"

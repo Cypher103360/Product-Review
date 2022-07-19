@@ -2,6 +2,8 @@ package com.pr.productkereview.adapters.trendingProducts;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,10 +42,14 @@ public class TrendingProductAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     Activity context;
     TrendingProductInterface trendingProductInterface;
     ShowAds showAds = new ShowAds();
+    SharedPreferences preferences;
+
 
     public TrendingProductAdapter(Activity context, TrendingProductInterface trendingProductInterface) {
         this.context = context;
         this.trendingProductInterface = trendingProductInterface;
+        preferences = PreferenceManager.getDefaultSharedPreferences(context);
+
     }
 
     @NonNull
@@ -97,6 +103,12 @@ public class TrendingProductAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                     .into(((ViewHolder) holder).itemImg);
             holder.itemView.setOnClickListener(view ->
                     trendingProductInterface.OnTrendingProductClicked(trendingProductModelList.get(position)));
+            if (preferences.getString("action", "").equals("tre")) {
+                if (!preferences.getString("pos", "").equals("")) {
+                    trendingProductInterface.OnTrendingProductClicked(trendingProductModelList.get(Integer.parseInt(preferences.getString("pos", "0"))));
+//                preferences.edit().clear().apply();
+                }
+            }
 
         } else if (holder.getItemViewType() == AD_VIEW) {
 
@@ -123,7 +135,7 @@ public class TrendingProductAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         notifyDataSetChanged();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder {
         ImageView itemImg;
         TextView itemTitle;
         MaterialCardView rectangleLayoutCard;
@@ -133,6 +145,7 @@ public class TrendingProductAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             itemImg = itemView.findViewById(R.id.item_img);
             itemTitle = itemView.findViewById(R.id.item_title);
             rectangleLayoutCard = itemView.findViewById(R.id.rectangle_layout_card);
+
         }
     }
 

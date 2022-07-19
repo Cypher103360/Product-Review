@@ -3,11 +3,10 @@ package com.pr.productkereview.activities;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.style.AbsoluteSizeSpan;
+import android.preference.PreferenceManager;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.text.HtmlCompat;
@@ -20,13 +19,11 @@ import com.pr.productkereview.utils.ApiWebServices;
 import com.pr.productkereview.utils.CommonMethods;
 import com.pr.productkereview.utils.ShowAds;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 public class TopBrandDetailsActivity extends AppCompatActivity {
     ActivityTopBrandDetailsBinding binding;
     String title, desc, bannerImg, url;
     ShowAds showAds;
+    SharedPreferences preferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +32,7 @@ public class TopBrandDetailsActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         bannerImg = getIntent().getStringExtra("img");
         title = getIntent().getStringExtra("title");
+        preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         desc = getIntent().getStringExtra("desc");
         url = getIntent().getStringExtra("url");
@@ -51,9 +49,9 @@ public class TopBrandDetailsActivity extends AppCompatActivity {
 
         binding.brandTitle.setText(HtmlCompat.fromHtml(title, HtmlCompat.FROM_HTML_MODE_LEGACY));
 
-       // String descData = String.valueOf(HtmlCompat.fromHtml(desc, HtmlCompat.FROM_HTML_MODE_LEGACY));
+        // String descData = String.valueOf(HtmlCompat.fromHtml(desc, HtmlCompat.FROM_HTML_MODE_LEGACY));
 
-       binding.brandDesc.loadData(desc,"text/html", "UTF-8");
+        binding.brandDesc.loadData(desc, "text/html", "UTF-8");
 
         binding.brandImage.setOnClickListener(v -> {
             openWebPage(url, TopBrandDetailsActivity.this);
@@ -73,9 +71,19 @@ public class TopBrandDetailsActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        finish();
-        showAds.destroyBanner();
+        if (preferences.getString("action", "").equals("")) {
+            super.onBackPressed();
+            showAds.destroyBanner();
+        } else {
+            showAds.destroyBanner();
+            preferences.edit().clear().apply();
+            Intent intent = new Intent(this, HomeActivity.class);
+            startActivity(intent);
+            overridePendingTransition(0, 0);
+            finish();
+            overridePendingTransition(0, 0);
+
+        }
     }
 
     @Override

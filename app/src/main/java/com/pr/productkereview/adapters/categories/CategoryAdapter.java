@@ -2,6 +2,8 @@ package com.pr.productkereview.adapters.categories;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,10 +41,13 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     List<CatModel> catModels = new ArrayList<>();
     Activity context;
     CategoryInterface categoryInterface;
+    SharedPreferences preferences;
 
     public CategoryAdapter(Activity context, CategoryInterface categoryInterface) {
         this.context = context;
         this.categoryInterface = categoryInterface;
+        preferences = PreferenceManager.getDefaultSharedPreferences(context);
+
     }
 
 
@@ -91,6 +96,12 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     .into(((ViewHolder) holder).itemImg);
             holder.itemView.setOnClickListener(view -> categoryInterface.onCategoryClicked(catModels.get(pos)));
 
+            if (preferences.getString("action", "").equals("cat")) {
+                if (!preferences.getString("pos", "").equals("")) {
+                    categoryInterface.onCategoryClicked(catModels.get(Integer.parseInt(preferences.getString("pos", "0"))));
+//                preferences.edit().clear().apply();
+                }
+            }
         } else if (holder.getItemViewType() == AD_VIEW) {
             ((AdViewHolder) holder).bindAdData();
         }
@@ -114,7 +125,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         notifyDataSetChanged();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder {
         ImageView itemImg;
         TextView itemTitle;
 
@@ -122,6 +133,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             super(itemView);
             itemImg = itemView.findViewById(R.id.cat_image);
             itemTitle = itemView.findViewById(R.id.cat_title);
+
         }
     }
 

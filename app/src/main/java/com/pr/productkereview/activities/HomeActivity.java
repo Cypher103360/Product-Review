@@ -8,6 +8,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
@@ -15,6 +16,8 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -73,6 +76,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     ShowAds showAds = new ShowAds();
     Bundle bundle;
     Dialog loading;
+    SharedPreferences preferences;
+    String action;
+
     public BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -115,6 +121,27 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             TabLayout tabs = binding.tabs;
             tabs.setupWithViewPager(viewPager);
             navigationDrawer();
+            if (action != null) {
+                Log.d("ContentValueForPref", action);
+                switch (action) {
+                    case "home":
+                        binding.viewPager.setCurrentItem(0);
+                        action = null;
+                        break;
+                    case "cat":
+                        binding.viewPager.setCurrentItem(1);
+                        action = null;
+
+                        break;
+                    case "tre":
+                        binding.viewPager.setCurrentItem(2);
+                        action = null;
+                        break;
+                    default:
+                }
+
+            }
+
         }
     }
 
@@ -133,6 +160,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         binding = ActivityHomeBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         apiInterface = ApiWebServices.getApiInterface();
+        preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        action = getIntent().getStringExtra("action");
+
 //        gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
 //        gsc = GoogleSignIn.getClient(this, gso);
         loading = CommonMethods.getLoadingDialog(HomeActivity.this);
@@ -514,15 +544,37 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public void onBackPressed() {
-        if (drawerLayout.isDrawerVisible(GravityCompat.START)) {
-            drawerLayout.closeDrawer(GravityCompat.START);
-        } else {
-            startActivity(new Intent(HomeActivity.this, WelcomeActivity.class));
+
+        if (preferences.getString("action", "").equals("")) {
             super.onBackPressed();
-            showAds.destroyBanner();
-            if (Objects.equals(Paper.book().read(Prevalent.interstitialNetwork), "AdmobWithMeta"))
-                showAds.showInterstitialAds(this);
+            if (drawerLayout.isDrawerVisible(GravityCompat.START)) {
+                drawerLayout.closeDrawer(GravityCompat.START);
+            } else {
+                super.onBackPressed();
+                Intent intent = new Intent(HomeActivity.this, WelcomeActivity.class);
+                startActivity(intent);
+                preferences.edit().clear().apply();
+                overridePendingTransition(0, 0);
+                finish();
+                overridePendingTransition(0, 0);
+
+                showAds.destroyBanner();
+            }
+        } else {
+
+            if (drawerLayout.isDrawerVisible(GravityCompat.START)) {
+                drawerLayout.closeDrawer(GravityCompat.START);
+            } else {
+                startActivity(new Intent(HomeActivity.this, WelcomeActivity.class));
+                super.onBackPressed();
+                showAds.destroyBanner();
+                if (Objects.equals(Paper.book().read(Prevalent.interstitialNetwork), "AdmobWithMeta"))
+                    showAds.showInterstitialAds(this);
+
+            }
+
         }
+
     }
 
     @Override

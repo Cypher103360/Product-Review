@@ -3,9 +3,11 @@ package com.pr.productkereview.utils;
 import static android.content.ContentValues.TAG;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,6 +27,7 @@ import androidx.lifecycle.LifecycleObserver;
 
 import com.applovin.mediation.MaxAd;
 import com.applovin.mediation.MaxAdFormat;
+import com.applovin.mediation.MaxAdListener;
 import com.applovin.mediation.MaxAdViewAdListener;
 import com.applovin.mediation.MaxError;
 import com.applovin.mediation.ads.MaxAdView;
@@ -47,6 +50,7 @@ import com.google.android.gms.ads.AdLoader;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.FullScreenContentCallback;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.VideoOptions;
@@ -80,6 +84,7 @@ public class Ads implements MaxAdViewAdListener, LifecycleObserver {
     public NativeAd nativeAds;
     MaxAdView maxAdView;
     MaxInterstitialAd interstitialAd;
+    SharedPreferences preferences;
     private int retryAttempt;
     private com.facebook.ads.NativeAd fbNativeAd;
     private NativeAdLayout nativeAdLayout;
@@ -209,6 +214,24 @@ public class Ads implements MaxAdViewAdListener, LifecycleObserver {
                         // an ad is loaded.
                         mInterstitialAd = interstitialAd;
                         mInterstitialAd.show(context);
+                        mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
+                            @Override
+                            public void onAdClicked() {
+                                super.onAdClicked();
+                            }
+
+                            @Override
+                            public void onAdDismissedFullScreenContent() {
+                                super.onAdDismissedFullScreenContent();
+                                preferences = PreferenceManager.getDefaultSharedPreferences(context);
+                                if (preferences.getString("action", "").equals("")) {
+                                } else {
+//                                    preferences.edit().clear().apply();
+                                }
+                            }
+                        });
+
+
                         Log.i(TAG, "onAdLoaded");
                     }
 
@@ -228,7 +251,41 @@ public class Ads implements MaxAdViewAdListener, LifecycleObserver {
         AudienceNetworkAds.initialize(context);
 
         interstitialAd = new MaxInterstitialAd(interstitialId, context);
-        interstitialAd.setListener(this);
+        interstitialAd.setListener(new MaxAdListener() {
+            @Override
+            public void onAdLoaded(MaxAd ad) {
+
+            }
+
+            @Override
+            public void onAdDisplayed(MaxAd ad) {
+
+            }
+
+            @Override
+            public void onAdHidden(MaxAd ad) {
+                preferences = PreferenceManager.getDefaultSharedPreferences(context);
+                if (preferences.getString("action", "").equals("")) {
+                } else {
+//                    preferences.edit().clear().apply();
+                }
+            }
+
+            @Override
+            public void onAdClicked(MaxAd ad) {
+
+            }
+
+            @Override
+            public void onAdLoadFailed(String adUnitId, MaxError error) {
+
+            }
+
+            @Override
+            public void onAdDisplayFailed(MaxAd ad, MaxError error) {
+
+            }
+        });
         // Load the first ad
         interstitialAd.loadAd();
         if (interstitialAd.isReady()) {
@@ -263,6 +320,11 @@ public class Ads implements MaxAdViewAdListener, LifecycleObserver {
 
             @Override
             public void onInterstitialAdClosed() {
+                preferences = PreferenceManager.getDefaultSharedPreferences(context);
+                if (preferences.getString("action", "").equals("")) {
+                } else {
+//                    preferences.edit().clear().apply();
+                }
             }
 
             @Override
@@ -296,6 +358,11 @@ public class Ads implements MaxAdViewAdListener, LifecycleObserver {
             public void onInterstitialDismissed(Ad ad) {
                 // Interstitial dismissed callback
                 Log.e(TAG, "Interstitial ad dismissed.");
+                preferences = PreferenceManager.getDefaultSharedPreferences(context);
+                if (preferences.getString("action", "").equals("")) {
+                } else {
+//                    preferences.edit().clear().apply();
+                }
             }
 
             @Override
