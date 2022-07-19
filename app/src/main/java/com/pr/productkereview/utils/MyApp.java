@@ -4,21 +4,24 @@ import static android.content.ContentValues.TAG;
 
 import android.app.Application;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
 import com.onesignal.OSNotificationOpenedResult;
 import com.onesignal.OneSignal;
+import com.pr.productkereview.activities.HomeActivity;
 import com.pr.productkereview.activities.WelcomeActivity;
 import com.pr.productkereview.models.AdsModel;
 
+import org.json.JSONObject;
+
 import java.util.List;
-import java.util.Objects;
 
 import io.paperdb.Paper;
 import retrofit2.Call;
@@ -31,6 +34,8 @@ public class MyApp extends Application {
     private static final String ONESIGNAL_APP_ID = "ed0db632-e10f-4d79-9b48-df7c033aaa7a";
     public static MyApp mInstance;
     ApiInterface apiInterface;
+    SharedPreferences.Editor editor;
+
 
     public MyApp() {
         mInstance = this;
@@ -42,6 +47,7 @@ public class MyApp extends Application {
         mInstance = this;
         OneSignal.setLogLevel(OneSignal.LOG_LEVEL.VERBOSE, OneSignal.LOG_LEVEL.NONE);
         // OneSignal Initialization
+        editor = PreferenceManager.getDefaultSharedPreferences(mInstance).edit();
         Paper.init(mInstance);
         OneSignal.initWithContext(this);
         OneSignal.setNotificationOpenedHandler(new ExampleNotificationOpenedHandler());
@@ -141,9 +147,43 @@ public class MyApp extends Application {
     private class ExampleNotificationOpenedHandler implements OneSignal.OSNotificationOpenedHandler {
         @Override
         public void notificationOpened(OSNotificationOpenedResult result) {
-            Intent intent = new Intent(MyApp.this, WelcomeActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
+            JSONObject data = result.getNotification().getAdditionalData();
+            String activityToBeOpened, imgPos, cat_pos, cat_item_pos, sub_cat_item_pos;
+
+            if (data != null) {
+                activityToBeOpened = data.optString("action", null);
+                imgPos = data.optString("pos", null);
+                cat_pos = data.optString("cat_pos", null);
+                cat_item_pos = data.optString("cat_item_pos", null);
+                sub_cat_item_pos = data.optString("sub_cat_item_pos", null);
+                editor.putString("pos", imgPos);
+                editor.putString("action", activityToBeOpened);
+                editor.putString("cat_pos", cat_pos);
+                editor.putString("cat_item_pos", cat_item_pos);
+                editor.putString("sub_cat_item_pos", sub_cat_item_pos);
+                editor.apply();
+                switch (activityToBeOpened) {
+                    case "home":
+                    case "cat":
+                    case "tre":
+                    case "lat":
+                    case "best":
+                    case "top": {
+                        Intent intent = new Intent(MyApp.this, HomeActivity.class);
+                        intent.putExtra("action", activityToBeOpened);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NO_HISTORY);
+                        startActivity(intent);
+                        break;
+                    }
+
+                }
+            } else {
+                Intent intent = new Intent(MyApp.this, WelcomeActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            }
+
         }
     }
 }

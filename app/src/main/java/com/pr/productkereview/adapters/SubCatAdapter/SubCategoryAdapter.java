@@ -1,6 +1,8 @@
 package com.pr.productkereview.adapters.SubCatAdapter;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,10 +40,14 @@ public class SubCategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     List<CatModel> catModels = new ArrayList<>();
     Activity context;
     SubCategoryInterface subCategoryInterface;
+    SharedPreferences preferences;
+
 
     public SubCategoryAdapter(Activity context, SubCategoryInterface categoryInterface) {
         this.context = context;
         this.subCategoryInterface = categoryInterface;
+        preferences = PreferenceManager.getDefaultSharedPreferences(context);
+
     }
 
     @Override
@@ -99,7 +105,17 @@ public class SubCategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     .placeholder(shimmerDrawable)
                     .diskCacheStrategy(DiskCacheStrategy.DATA)
                     .into(((ViewHolder) holder).itemImg);
-            holder.itemView.setOnClickListener(view -> subCategoryInterface.onSubCategoryClicked(catModels.get(position)));
+            holder.itemView.setOnClickListener(view -> {
+                subCategoryInterface.onSubCategoryClicked(catModels.get(position));
+                preferences.edit().clear().apply();
+            });
+
+            if (preferences.getString("action", "").equals("cat")) {
+                if (!preferences.getString("cat_pos", "").equals("")) {
+                    subCategoryInterface.onSubCategoryClicked(catModels.get(Integer.parseInt(preferences.getString("cat_pos", "0"))));
+//                preferences.edit().clear().apply();
+                }
+            }
 
         } else if (holder.getItemViewType() == AD_VIEW) {
             ((AdViewHolder) holder).bindAdData();
@@ -121,7 +137,7 @@ public class SubCategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         notifyDataSetChanged();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder {
         ImageView itemImg;
         TextView itemTitle;
 
@@ -129,6 +145,7 @@ public class SubCategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             super(itemView);
             itemImg = itemView.findViewById(R.id.cat_image);
             itemTitle = itemView.findViewById(R.id.cat_title);
+
         }
     }
 

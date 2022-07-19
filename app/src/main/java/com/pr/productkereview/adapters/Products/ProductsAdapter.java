@@ -2,6 +2,8 @@ package com.pr.productkereview.adapters.Products;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,11 +40,15 @@ public class ProductsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     Activity context;
     ProductsClickInterface productsClickInterface;
     ShowAds showAds = new ShowAds();
+    SharedPreferences preferences;
+
 
     public ProductsAdapter(Activity context, ProductsClickInterface productsClickInterface, boolean shouldShowAllItems) {
         this.context = context;
         this.productsClickInterface = productsClickInterface;
         this.shouldShowAllItems = shouldShowAllItems;
+        preferences = PreferenceManager.getDefaultSharedPreferences(context);
+
     }
 
     @Override
@@ -85,7 +91,23 @@ public class ProductsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             ((ViewHolder) holder).itemTitle.setText(HtmlCompat.fromHtml(productModel.getProductTitle(), HtmlCompat.FROM_HTML_MODE_LEGACY));
             holder.itemView.setOnClickListener(v -> {
                 productsClickInterface.OnProductClicked(productModelList.get(position));
+                preferences.edit().clear().apply();
+
             });
+            if (preferences.getString("action", "").equals("cat")) {
+                if (!preferences.getString("cat_item_pos", "").equals("")) {
+                    productsClickInterface.OnProductClicked(productModelList.get(Integer.parseInt(preferences.getString("cat_item_pos", "0"))));
+//                preferences.edit().clear().apply();
+                }
+            }
+
+            if (preferences.getString("action", "").equals("cat")) {
+                if (!preferences.getString("sub_cat_item_pos", "").equals("")) {
+                    productsClickInterface.OnProductClicked(productModelList.get(Integer.parseInt(preferences.getString("sub_cat_item_pos", "0"))));
+//                preferences.edit().clear().apply();
+                }
+            }
+
         } else if (holder.getItemViewType() == AD_VIEW) {
             ((AdViewHolder) holder).bindAdData();
         }
@@ -116,7 +138,7 @@ public class ProductsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         notifyDataSetChanged();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder {
         ImageView itemImage;
         TextView itemTitle;
 
@@ -124,6 +146,7 @@ public class ProductsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             super(itemView);
             itemImage = itemView.findViewById(R.id.cat_image);
             itemTitle = itemView.findViewById(R.id.cat_title);
+
         }
     }
 

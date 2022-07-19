@@ -2,7 +2,9 @@ package com.pr.productkereview.activities;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
@@ -61,12 +63,13 @@ public class ShowAllItemsActivity extends AppCompatActivity implements LatestPro
     String key, productId;
     Dialog loading;
     ShowAds showAds;
-    // Room Database
-    private ProductAppDatabase productAppDatabase;
+    SharedPreferences preferences;
 
 
     // List<Section> sectionList = new ArrayList<>();
     // MainRecyclerAdapter mainRecyclerAdapter;
+    // Room Database
+    private ProductAppDatabase productAppDatabase;
 
     @Override
 
@@ -74,6 +77,7 @@ public class ShowAllItemsActivity extends AppCompatActivity implements LatestPro
         super.onCreate(savedInstanceState);
         binding = ActivityShowAllItemsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        preferences = PreferenceManager.getDefaultSharedPreferences(this);
         productId = getIntent().getStringExtra("id");
         key = getIntent().getStringExtra("key");
         binding.backIcon.setOnClickListener(v -> onBackPressed());
@@ -84,9 +88,10 @@ public class ShowAllItemsActivity extends AppCompatActivity implements LatestPro
 
         productAppDatabase = Room.databaseBuilder(this, ProductAppDatabase.class, "ProductDB").allowMainThreadQueries()
                 .build();
-        StaggeredGridLayoutManager gridLayoutManager =
-                new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
-        binding.allItemsRecyclerview.setLayoutManager(gridLayoutManager);
+        LinearLayoutManager layoutManager =
+                new LinearLayoutManager(this);
+        layoutManager.setOrientation(RecyclerView.VERTICAL);
+        binding.allItemsRecyclerview.setLayoutManager(layoutManager);
         binding.allItemsRecyclerview.setNestedScrollingEnabled(false);
 
         switch (key) {
@@ -113,6 +118,10 @@ public class ShowAllItemsActivity extends AppCompatActivity implements LatestPro
                 break;
 
             case "topBrands":
+                StaggeredGridLayoutManager gridLayoutManager =
+                        new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
+                binding.allItemsRecyclerview.setLayoutManager(gridLayoutManager);
+                binding.allItemsRecyclerview.setNestedScrollingEnabled(false);
                 binding.activityTitle.setText("Top Brands");
                 brandViewModel = new ViewModelProvider(ShowAllItemsActivity.this).get(BrandViewModel.class);
                 topBrandsAdapter = new TopBrandsAdapter(ShowAllItemsActivity.this, this, true);
@@ -125,9 +134,9 @@ public class ShowAllItemsActivity extends AppCompatActivity implements LatestPro
                 productViewModel = new ViewModelProvider(ShowAllItemsActivity.this,
                         new ProductModelFactory(this.getApplication(), productId)).get(ProductViewModel.class);
                 productsAdapter = new ProductsAdapter(ShowAllItemsActivity.this, this, true);
-                LinearLayoutManager layoutManager = new LinearLayoutManager(ShowAllItemsActivity.this);
-                layoutManager.setOrientation(RecyclerView.VERTICAL);
-                binding.allItemsRecyclerview.setLayoutManager(layoutManager);
+                LinearLayoutManager layoutManager2 = new LinearLayoutManager(ShowAllItemsActivity.this);
+                layoutManager2.setOrientation(RecyclerView.VERTICAL);
+                binding.allItemsRecyclerview.setLayoutManager(layoutManager2);
                 binding.allItemsRecyclerview.setAdapter(productsAdapter);
                 fetchProductsOfCategories();
                 break;
@@ -200,7 +209,7 @@ public class ShowAllItemsActivity extends AppCompatActivity implements LatestPro
             productAppDatabase.getProductDAO().addProducts(new Products(0, latestProductModel.getCategoryId(), latestProductModel.getProductImage()
                     , latestProductModel.getBanner(), latestProductModel.getProductTitle(), latestProductModel.getBuingGuideHindi(),
                     latestProductModel.getBuingGuideEnglish(), latestProductModel.getRatingHindi(), latestProductModel.getRatingEnglish()
-                    , latestProductModel.getLatestProduct(), latestProductModel.getBestProduct(), latestProductModel.getTrendingProduct(),latestProductModel.getUrl()));
+                    , latestProductModel.getLatestProduct(), latestProductModel.getBestProduct(), latestProductModel.getTrendingProduct(), latestProductModel.getUrl()));
 
         }
         showAds.destroyBanner();
@@ -219,7 +228,7 @@ public class ShowAllItemsActivity extends AppCompatActivity implements LatestPro
             productAppDatabase.getProductDAO().addProducts(new Products(0, bestProductModel.getCategoryId(), bestProductModel.getProductImage()
                     , bestProductModel.getBanner(), bestProductModel.getProductTitle(), bestProductModel.getBuingGuideHindi(),
                     bestProductModel.getBuingGuideEnglish(), bestProductModel.getRatingHindi(), bestProductModel.getRatingEnglish()
-                    , bestProductModel.getLatestProduct(), bestProductModel.getBestProduct(), bestProductModel.getTrendingProduct(),bestProductModel.getUrl()));
+                    , bestProductModel.getLatestProduct(), bestProductModel.getBestProduct(), bestProductModel.getTrendingProduct(), bestProductModel.getUrl()));
 
         }
         showAds.destroyBanner();
@@ -246,9 +255,19 @@ public class ShowAllItemsActivity extends AppCompatActivity implements LatestPro
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        finish();
-        showAds.destroyBanner();
+        if (preferences.getString("action", "").equals("")) {
+            super.onBackPressed();
+            showAds.destroyBanner();
+        } else {
+            showAds.destroyBanner();
+            preferences.edit().clear().apply();
+            Intent intent = new Intent(this, HomeActivity.class);
+            startActivity(intent);
+            overridePendingTransition(0, 0);
+            finish();
+            overridePendingTransition(0, 0);
+
+        }
     }
 
     @Override
@@ -258,7 +277,7 @@ public class ShowAllItemsActivity extends AppCompatActivity implements LatestPro
             productAppDatabase.getProductDAO().addProducts(new Products(0, productModel.getCategoryId(), productModel.getProductImage()
                     , productModel.getBanner(), productModel.getProductTitle(), productModel.getBuingGuideHindi(),
                     productModel.getBuingGuideEnglish(), productModel.getRatingHindi(), productModel.getRatingEnglish()
-                    , productModel.getLatestProduct(), productModel.getBestProduct(), productModel.getTrendingProduct(),productModel.getUrl()));
+                    , productModel.getLatestProduct(), productModel.getBestProduct(), productModel.getTrendingProduct(), productModel.getUrl()));
 
         }
         showAds.destroyBanner();
@@ -280,7 +299,7 @@ public class ShowAllItemsActivity extends AppCompatActivity implements LatestPro
             productAppDatabase.getProductDAO().addProducts(new Products(0, productModel.getCategoryId(), productModel.getProductImage()
                     , productModel.getBanner(), productModel.getProductTitle(), productModel.getBuingGuideHindi(),
                     productModel.getBuingGuideEnglish(), productModel.getRatingHindi(), productModel.getRatingEnglish()
-                    , productModel.getLatestProduct(), productModel.getBestProduct(), productModel.getTrendingProduct(),productModel.getUrl()));
+                    , productModel.getLatestProduct(), productModel.getBestProduct(), productModel.getTrendingProduct(), productModel.getUrl()));
 
         }
         Intent intent = new Intent(ShowAllItemsActivity.this, ItemDetailsActivity.class);

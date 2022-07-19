@@ -246,6 +246,7 @@ public class ShowSubCategory extends AppCompatActivity implements CateogryInterf
             best = productLaytoutBinding.bestProduct.isChecked();
             latest = productLaytoutBinding.latestProduct.isChecked();
             String tittle = productLaytoutBinding.titleTv.getText().toString().trim();
+            String url = productLaytoutBinding.url.getText().toString().trim();
             String buyingGuideHindi = productLaytoutBinding.buyingGuideHindi.getText().toString().trim();
             String buyingGuideEnglish = productLaytoutBinding.buyingGuideEnglish.getText().toString().trim();
             String enterRatingInHindi = productLaytoutBinding.enterRatingInHindi.getText().toString().trim();
@@ -260,6 +261,10 @@ public class ShowSubCategory extends AppCompatActivity implements CateogryInterf
             } else if (TextUtils.isEmpty(tittle)) {
                 productLaytoutBinding.titleTv.setError("Url Required");
                 productLaytoutBinding.titleTv.requestFocus();
+                loadingDialog.dismiss();
+            } else if (TextUtils.isEmpty(url)) {
+                productLaytoutBinding.url.setError("Url Required");
+                productLaytoutBinding.url.requestFocus();
                 loadingDialog.dismiss();
             } else if (TextUtils.isEmpty(buyingGuideHindi)) {
                 productLaytoutBinding.buyingGuideHindi.setError("Url Required");
@@ -282,6 +287,7 @@ public class ShowSubCategory extends AppCompatActivity implements CateogryInterf
                 map.put("img", encodedImage);
                 map.put("banner", encodedImage2);
                 map.put("title", tittle);
+                map.put("url", url);
                 map.put("buyGuideH", buyingGuideHindi);
                 map.put("buyGuideE", buyingGuideEnglish);
                 map.put("ratingH", enterRatingInHindi);

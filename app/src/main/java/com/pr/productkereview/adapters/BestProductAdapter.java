@@ -2,6 +2,8 @@ package com.pr.productkereview.adapters;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,11 +40,15 @@ public class BestProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     Activity context;
     BestProductClickInterface bestProductClickInterface;
     ShowAds showAds = new ShowAds();
+    SharedPreferences preferences;
+
 
     public BestProductAdapter(Activity context, BestProductClickInterface bestProductClickInterface, boolean shouldShowAllItems) {
         this.context = context;
         this.bestProductClickInterface = bestProductClickInterface;
         this.shouldShowAllItems = shouldShowAllItems;
+        preferences = PreferenceManager.getDefaultSharedPreferences(context);
+
     }
 
     @Override
@@ -61,7 +67,7 @@ public class BestProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if (shouldShowAllItems) {
             if (viewType == ITEM_VIEW) {
-                View view = LayoutInflater.from(context).inflate(R.layout.best_product_layout, parent, false);
+                View view = LayoutInflater.from(context).inflate(R.layout.show_full_screen_layout, parent, false);
                 return new ViewHolder(view);
 
             } else if (viewType == AD_VIEW) {
@@ -90,13 +96,20 @@ public class BestProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 int position = pos - Math.round(pos / ITEM_FEED_COUNT);
                 ProductModel bestProductModel = bestProductModelList.get(position);
                 Glide.with(context).load(ApiWebServices.base_url + "all_products_images/"
-                        + bestProductModel.getProductImage())
+                                + bestProductModel.getProductImage())
                         .placeholder(CommonMethods.setShimmer(context))
                         .into(((ViewHolder) holder).itemImage);
                 ((ViewHolder) holder).itemTitle.setText(HtmlCompat.fromHtml(bestProductModel.getProductTitle(), HtmlCompat.FROM_HTML_MODE_LEGACY));
                 holder.itemView.setOnClickListener(v -> {
                     bestProductClickInterface.OnBestProductClicked(bestProductModelList.get(position));
                 });
+                if (preferences.getString("action", "").equals("best")) {
+                    if (!preferences.getString("pos", "").equals("")) {
+                        bestProductClickInterface.OnBestProductClicked(bestProductModelList.get(Integer.parseInt(preferences.getString("pos", "0"))));
+//                preferences.edit().clear().apply();
+                    }
+                }
+
             } else if (holder.getItemViewType() == AD_VIEW) {
                 ((AdViewHolder) holder).bindAdData();
 
@@ -105,14 +118,22 @@ public class BestProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         } else {
             ProductModel bestProductModel = bestProductModelList.get(pos);
             Glide.with(context).load(ApiWebServices.base_url + "all_products_images/"
-                    + bestProductModel.getProductImage())
+                            + bestProductModel.getProductImage())
                     .placeholder(CommonMethods.setShimmer(context))
                     .into(((ViewHolder) holder).itemImage);
             ((ViewHolder) holder).itemTitle.setText(HtmlCompat.fromHtml(bestProductModel.getProductTitle(), HtmlCompat.FROM_HTML_MODE_LEGACY));
             holder.itemView.setOnClickListener(v -> {
                 bestProductClickInterface.OnBestProductClicked(bestProductModelList.get(pos));
             });
+            if (preferences.getString("action", "").equals("best")) {
+                if (!preferences.getString("pos", "").equals("")) {
+                    bestProductClickInterface.OnBestProductClicked(bestProductModelList.get(Integer.parseInt(preferences.getString("pos", "0"))));
+//                preferences.edit().clear().apply();
+                }
+            }
+
         }
+
 
     }
 
@@ -138,7 +159,7 @@ public class BestProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         notifyDataSetChanged();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder {
         ImageView itemImage;
         TextView itemTitle;
 
@@ -146,6 +167,7 @@ public class BestProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             super(itemView);
             itemImage = itemView.findViewById(R.id.item_img);
             itemTitle = itemView.findViewById(R.id.item_title);
+
         }
     }
 

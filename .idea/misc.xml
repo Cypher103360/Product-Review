@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/ANDROID PROJECTS/Product-Review/app/src/main/res/layout-land/item_layout.xml" value="0.21927083333333333" />
         <entry key="..\:/ANDROID PROJECTS/Product-Review/app/src/main/res/layout/activity_home.xml" value="0.19895833333333332" />
         <entry key="..\:/ANDROID PROJECTS/Product-Review/app/src/main/res/layout/activity_item_details.xml" value="0.19895833333333332" />
         <entry key="..\:/ANDROID PROJECTS/Product-Review/app/src/main/res/layout/activity_privacy_policy.xml" value="0.19895833333333332" />
@@ -27,8 +28,11 @@
         <entry key="..\:/ANDROID PROJECTS/Product-Review/app/src/main/res/layout/layout_share_icon.xml" value="0.19895833333333332" />
         <entry key="..\:/ANDROID PROJECTS/Product-Review/app/src/main/res/layout/loading.xml" value="0.19895833333333332" />
         <entry key="..\:/ANDROID PROJECTS/Product-Review/app/src/main/res/layout/section_row.xml" value="0.19895833333333332" />
+        <entry key="..\:/ANDROID PROJECTS/Product-Review/app/src/main/res/layout/show_full_screen_layout.xml" value="0.19895833333333332" />
         <entry key="..\:/ANDROID PROJECTS/Product-Review/app/src/main/res/layout/sub_cat_layout.xml" value="0.19895833333333332" />
         <entry key="..\:/ANDROID PROJECTS/Product-Review/app/src/main/res/layout/top_brands_layout.xml" value="0.19895833333333332" />
+        <entry key="..\:/ANDROID PROJECTS/Product-Review/app/src/main/res/layout/view_all_item_layout.xml" value="0.19895833333333332" />
+        <entry key="..\:/ANDROID PROJECTS/Product-Review/app/src/main/res/layout/view_all_top_brands_layout.xml" value="0.19479166666666667" />
         <entry key="..\:/ANDROID PROJECTS/Product-Review/productreviewadmin/src/main/res/drawable/item_bg.xml" value="0.1685" />
         <entry key="..\:/ANDROID PROJECTS/Product-Review/productreviewadmin/src/main/res/layout/activity_main.xml" value="0.19895833333333332" />
         <entry key="..\:/ANDROID PROJECTS/Product-Review/productreviewadmin/src/main/res/layout/activity_show_brands.xml" value="0.19895833333333332" />

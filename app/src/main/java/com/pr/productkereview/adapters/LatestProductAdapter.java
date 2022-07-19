@@ -3,6 +3,8 @@ package com.pr.productkereview.adapters;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,11 +50,14 @@ public class LatestProductAdapter extends RecyclerView.Adapter<RecyclerView.View
     Activity context;
     LatestProductClickInterface latestProductClickInterface;
     ShowAds showAds = new ShowAds();
+    SharedPreferences preferences;
+
 
     public LatestProductAdapter(Activity context, LatestProductClickInterface latestProductClickInterface, boolean shouldShowAllItems) {
         this.context = context;
         this.latestProductClickInterface = latestProductClickInterface;
         this.shouldShowAllItems = shouldShowAllItems;
+        preferences = PreferenceManager.getDefaultSharedPreferences(context);
     }
 
     @Override
@@ -74,7 +79,7 @@ public class LatestProductAdapter extends RecyclerView.Adapter<RecyclerView.View
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if (shouldShowAllItems) {
             if (viewType == ITEM_VIEW) {
-                View view = LayoutInflater.from(context).inflate(R.layout.item_layout, parent, false);
+                View view = LayoutInflater.from(context).inflate(R.layout.show_full_screen_layout, parent, false);
                 return new ViewHolder(view);
 
             } else if (viewType == AD_VIEW) {
@@ -121,6 +126,14 @@ public class LatestProductAdapter extends RecyclerView.Adapter<RecyclerView.View
                 holder.itemView.setOnClickListener(v -> {
                     latestProductClickInterface.OnLatestProductClicked(latestProductModelList.get(position), position);
                 });
+
+                if (preferences.getString("action", "").equals("lat")) {
+                    if (!preferences.getString("pos", "").equals("")) {
+                        latestProductClickInterface.OnLatestProductClicked(latestProductModelList.get(Integer.parseInt(preferences.getString("pos", "0"))), position);
+//                preferences.edit().clear().apply();
+                    }
+                }
+
             } else if (holder.getItemViewType() == AD_VIEW) {
                 ((AdViewHolder) holder).bindAdData();
 
@@ -138,6 +151,14 @@ public class LatestProductAdapter extends RecyclerView.Adapter<RecyclerView.View
                 holder.itemView.setOnClickListener(v -> {
                     latestProductClickInterface.OnLatestProductClicked(latestProductModelList.get(pos), pos);
                 });
+
+                if (preferences.getString("action", "").equals("lat")) {
+                    if (!preferences.getString("pos", "").equals("")) {
+                        latestProductClickInterface.OnLatestProductClicked(latestProductModelList.get(Integer.parseInt(preferences.getString("pos", "0"))), pos);
+//                preferences.edit().clear().apply();
+                    }
+                }
+
             } else if (holder.getItemViewType() == BUTTON_VIEW_ALL) {
                 ((ButtonViewHolder) holder).fab.setOnClickListener(v -> {
                     showAds.destroyBanner();
@@ -184,7 +205,7 @@ public class LatestProductAdapter extends RecyclerView.Adapter<RecyclerView.View
         }
     }
 
-    public static class ButtonViewHolder extends RecyclerView.ViewHolder {
+    public class ButtonViewHolder extends RecyclerView.ViewHolder {
         MaterialCardView viewAllCardBtn;
         ImageView fab;
         TextView viewAllText;
@@ -194,6 +215,8 @@ public class LatestProductAdapter extends RecyclerView.Adapter<RecyclerView.View
             viewAllCardBtn = itemView.findViewById(R.id.view_all_card_btn);
             fab = itemView.findViewById(R.id.view_all_fab_btn);
             viewAllText = itemView.findViewById(R.id.view_all_text);
+
+
         }
     }
 

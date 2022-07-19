@@ -12,15 +12,12 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.applovin.sdk.AppLovinSdk;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.ironsource.mediationsdk.IronSource;
 import com.pr.productkereview.R;
 import com.pr.productkereview.databinding.ActivityWelcomeBinding;
 import com.pr.productkereview.utils.CommonMethods;
 import com.pr.productkereview.utils.ShowAds;
-
-import java.util.Calendar;
 
 public class WelcomeActivity extends AppCompatActivity {
     ActivityWelcomeBinding binding;
@@ -35,7 +32,7 @@ public class WelcomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityWelcomeBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-       // AppLovinSdk.getInstance(this).showMediationDebugger();
+        // AppLovinSdk.getInstance(this).showMediationDebugger();
         // apiInterface = ApiWebServices.getApiInterface();
 
 //        Calendar calendar = Calendar.getInstance();

@@ -2,16 +2,16 @@ package com.pr.productkereview.activities;
 
 import static androidx.fragment.app.FragmentStatePagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT;
 
-import android.content.pm.PackageManager;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
-import android.text.Html;
+import android.preference.PreferenceManager;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.text.HtmlCompat;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
@@ -19,12 +19,10 @@ import com.ironsource.mediationsdk.IronSource;
 import com.pr.productkereview.adapters.BuyingRatingPagerAdapter;
 import com.pr.productkereview.databinding.ActivityItemDetailsBinding;
 import com.pr.productkereview.fragments.BuyingGuideFragment;
-import com.pr.productkereview.fragments.RatingsFragment;
 import com.pr.productkereview.models.AllProducts.ProductModel;
 import com.pr.productkereview.models.UrlsModels.UrlModel;
 import com.pr.productkereview.utils.ApiInterface;
 import com.pr.productkereview.utils.ApiWebServices;
-import com.pr.productkereview.utils.CommonMethods;
 import com.pr.productkereview.utils.Prevalent;
 import com.pr.productkereview.utils.ShowAds;
 
@@ -44,6 +42,16 @@ public class ItemDetailsActivity extends AppCompatActivity {
     ShowAds showAds = new ShowAds();
     ApiInterface apiInterface;
     String whatsappText;
+    SharedPreferences preferences;
+
+    public static String decodeEmoji(String message) {
+        try {
+            return URLDecoder.decode(
+                    message, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            return message;
+        }
+    }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
@@ -54,11 +62,13 @@ public class ItemDetailsActivity extends AppCompatActivity {
         apiInterface = ApiWebServices.getApiInterface();
         binding.backIcon.setOnClickListener(v -> onBackPressed());
         fetchWhatsappText("whatsapp");
+        preferences = PreferenceManager.getDefaultSharedPreferences(this);
+
 
         getLifecycle().addObserver(showAds);
         Bundle bundle = getIntent().getExtras();
         productModel = (ProductModel) bundle.getSerializable("latest");
-       // binding.activityTitle.setText(HtmlCompat.fromHtml(productModel.getProductTitle(), HtmlCompat.FROM_HTML_MODE_LEGACY));
+        // binding.activityTitle.setText(HtmlCompat.fromHtml(productModel.getProductTitle(), HtmlCompat.FROM_HTML_MODE_LEGACY));
 
 //        binding.lottieContact.setOnClickListener(v -> {
 //            try {
@@ -83,9 +93,19 @@ public class ItemDetailsActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        finish();
-        showAds.destroyBanner();
+        if (preferences.getString("action", "").equals("")) {
+            super.onBackPressed();
+            showAds.destroyBanner();
+        } else {
+            showAds.destroyBanner();
+            preferences.edit().clear().apply();
+            Intent intent = new Intent(this, HomeActivity.class);
+            startActivity(intent);
+            overridePendingTransition(0, 0);
+            finish();
+            overridePendingTransition(0, 0);
+
+        }
     }
 
     public void fetchWhatsappText(String whatsapp) {
@@ -105,14 +125,6 @@ public class ItemDetailsActivity extends AppCompatActivity {
 
             }
         });
-    }
-    public static String decodeEmoji(String message) {
-        try {
-            return URLDecoder.decode(
-                    message, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            return message;
-        }
     }
 
     @Override

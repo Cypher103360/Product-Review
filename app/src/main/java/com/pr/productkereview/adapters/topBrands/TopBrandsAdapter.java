@@ -3,6 +3,8 @@ package com.pr.productkereview.adapters.topBrands;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,11 +50,14 @@ public class TopBrandsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     List<BrandsModel> topBrandsModelList = new ArrayList<>();
     Activity context;
     TopBrandsClickInterface topBrandsClickInterface;
+    SharedPreferences preferences;
 
     public TopBrandsAdapter(Activity context, TopBrandsClickInterface topBrandsClickInterface, boolean shouldShowAllItems) {
         this.context = context;
         this.topBrandsClickInterface = topBrandsClickInterface;
         this.shouldShowAllItems = shouldShowAllItems;
+        preferences = PreferenceManager.getDefaultSharedPreferences(context);
+
     }
 
     @Override
@@ -125,6 +130,12 @@ public class TopBrandsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 holder.itemView.setOnClickListener(v -> {
                     topBrandsClickInterface.OnTopBrandClicked(topBrandsModelList.get(position));
                 });
+                if (preferences.getString("action", "").equals("top")) {
+                    if (!preferences.getString("pos", "").equals("")) {
+                        topBrandsClickInterface.OnTopBrandClicked(topBrandsModelList.get(Integer.parseInt(preferences.getString("pos", "0"))));
+//                preferences.edit().clear().apply();
+                    }
+                }
 
             } else if (holder.getItemViewType() == AD_VIEW) {
                 ((AdViewHolder) holder).bindAdData();
@@ -144,6 +155,14 @@ public class TopBrandsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 holder.itemView.setOnClickListener(v -> {
                     topBrandsClickInterface.OnTopBrandClicked(topBrandsModelList.get(position));
                 });
+
+                if (preferences.getString("action", "").equals("top")) {
+                    if (!preferences.getString("pos", "").equals("")) {
+                        topBrandsClickInterface.OnTopBrandClicked(topBrandsModelList.get(Integer.parseInt(preferences.getString("pos", "0"))));
+//                preferences.edit().clear().apply();
+                    }
+                }
+
             } else if (holder.getItemViewType() == BUTTON_VIEW_ALL) {
                 ((ButtonViewHolder) holder).viewAllBtn.setOnClickListener(v -> {
                     showAds.destroyBanner();
@@ -194,7 +213,7 @@ public class TopBrandsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         }
     }
 
-    public static class ButtonViewHolder extends RecyclerView.ViewHolder {
+    public class ButtonViewHolder extends RecyclerView.ViewHolder {
         ImageView viewAllBtn;
         TextView viewAllText;
 
@@ -202,6 +221,7 @@ public class TopBrandsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             super(itemView);
             viewAllBtn = itemView.findViewById(R.id.view_all_imageView);
             viewAllText = itemView.findViewById(R.id.top_view_all_text);
+
         }
     }
 
