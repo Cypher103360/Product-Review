@@ -5,10 +5,14 @@ import static com.pr.productkereview.activities.ItemDetailsActivity.productModel
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.text.Spanned;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +24,7 @@ import androidx.fragment.app.Fragment;
 import com.bumptech.glide.Glide;
 import com.google.android.material.button.MaterialButtonToggleGroup;
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.pr.productkereview.BuildConfig;
 import com.pr.productkereview.R;
 import com.pr.productkereview.databinding.FragmentBuyingGuideBinding;
 import com.pr.productkereview.models.UrlsModels.UrlModel;
@@ -29,6 +34,8 @@ import com.pr.productkereview.utils.CommonMethods;
 import com.pr.productkereview.utils.Prevalent;
 import com.pr.productkereview.utils.ShowAds;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.regex.Matcher;
@@ -102,7 +109,6 @@ public class BuyingGuideFragment extends Fragment {
                         chars = new char[spanned.length()];
                         TextUtils.getChars(spanned, 0, spanned.length(), chars, 0);
                         plainText = new String(chars);
-
                         binding.buyingWebView.loadData(plainText, "text/html", "UTF-8");
                         break;
 
@@ -111,9 +117,7 @@ public class BuyingGuideFragment extends Fragment {
         });
 
         binding.whatsappShareBtn.setOnClickListener(v -> {
-            bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "Whatsapp Share Btn");
-            mFirebaseAnalytics.logEvent("Clicked_On_Whatsapp_share_btn", bundle);
-            CommonMethods.shareApp(requireActivity(),shareText);
+            shareData(productModel.getProductTitle());
         });
 
 
@@ -135,6 +139,38 @@ public class BuyingGuideFragment extends Fragment {
 
 
         return binding.getRoot();
+    }
+
+    private void shareData(String title) {
+        bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "Share on whatsapp");
+        mFirebaseAnalytics.logEvent("Clicked_On_share_on_whatsapp", bundle);
+        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+        StrictMode.setVmPolicy(builder.build());
+        File file = new File(requireActivity().getExternalCacheDir(), File.separator + "/" + "Product Review" + ".jpeg");
+        BitmapDrawable bitmapDrawable = (BitmapDrawable) binding.buyingBannerImg.getDrawable();
+        Bitmap bitmap = bitmapDrawable.getBitmap();
+
+        try {
+            FileOutputStream outputStream = new FileOutputStream(file);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+            outputStream.flush();
+            outputStream.close();
+            Intent i = new Intent(Intent.ACTION_SEND);
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            i.setType("image/*");
+//            i.setPackage("com.whatsapp");
+            i.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            String shareMessage = title + "\n\n" + "That's Awesome...\uD83D\uDC40 \n\n Install Now!☺☺ \n\n";
+            shareMessage = shareMessage + "https://play.google.com/store/apps/details?id=" + BuildConfig.APPLICATION_ID + "\n\n";
+            i.putExtra(Intent.EXTRA_TEXT, shareMessage);
+            startActivity(Intent.createChooser(i, "Share Products from " + this.getString(R.string.app_name)));
+
+        } catch (Exception e) {
+            Log.e("ContentValue", e.getMessage());
+
+        }
+
     }
 
     @SuppressLint("QueryPermissionsNeeded")
